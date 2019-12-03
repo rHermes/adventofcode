@@ -1,53 +1,31 @@
 import fileinput
 
-def solve(ss):
-    x1, y1 = 0, 0
-    x2, y2 = 0, 0
-
+def solve(lines):
     places1 = set()
     places2 = set()
 
     trans = {
-            "L": (-1, 0),
             "U": (0, 1),
             "R": (1, 0),
-            "D": (0, -1)
+            "D": (0, -1),
+            "L": (-1, 0)
             }
+    for p, line in zip([places1, places2], lines):
+        x, y = 0, 0
 
-    for k in ss[0].split(","):
-        d = k[:1]
-        num = int(k[1:])
+        for k in line.split(","):
+            d = k[:1]
+            num = int(k[1:])
 
-        dx, dy = trans[d]
+            dx, dy = trans[d]
+            for i in range(num):
+                x += dx
+                y += dy
+                p.add((x,y))
 
-        for i in range(num):
-            x1, y1 = x1 + dx, y1 + dy
-            places1.add((x1,y1))
-
-
-    for k in ss[1].split(","):
-        d = k[:1]
-        num = int(k[1:])
-
-        dx, dy = trans[d]
-
-
-        for i in range(num):
-            x2, y2 = x2 + dx, y2 + dy
-            places2.add((x2,y2))
-
-    
-    sames = []
-    for p1 in places1 & places2:
-        if not (p1[0] == 0 and p1[1] == 0):
-            sames.append(abs(p1[0]) + abs(p1[1]))
-
-    return min(sames)
-
-         
-
+    sames = places1 & places2 - set([(0,0)])
+    return min(abs(x) + abs(y) for x,y in sames)
 
 
 lines = [line.rstrip() for line in fileinput.input()]
-
 print(solve(lines))
