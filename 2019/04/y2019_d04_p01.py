@@ -1,24 +1,24 @@
 import fileinput
 
 
+def solve(lo, hi):
+    n = 0
+    for x in range(lo, hi+1):
+        y = [int(c) for c in str(x)]
+        if y != sorted(y):
+            continue
+        
+        for i in range(len(y)-1):
+            if y[i] == y[i+1]:
+                break
+        else:
+            continue
+        
+        n += 1
 
-s = "272091-815432"
+    return n
 
-n = 0
-for x in range(272091, 815432):
-    y = [int(c) for c in str(x)]
-    if y != sorted(y):
-        continue
-    
-    found = False
-    for i in range(len(y)-1):
-        if y[i] == y[i+1]:
-            found = True
-            break
-    
-    if not found:
-        continue
 
-    n += 1
-
-print(n)
+for line in fileinput.input():
+    a, b = [int(x) for x in line.rstrip().split("-")]
+    print(solve(a,b))
