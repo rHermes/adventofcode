@@ -1,21 +1,13 @@
 import fileinput
+from collections import Counter
 
 
 def solve(lo, hi):
     n = 0
     for x in range(lo, hi+1):
-        y = [int(c) for c in str(x)]
-        if y != sorted(y):
-            continue
-        
-        for i in range(len(y)-1):
-            if y[i] == y[i+1]:
-                break
-        else:
-            continue
-        
-        n += 1
-
+        s = str(x)
+        if list(s) == sorted(s) and any(x >= 2 for x in Counter(s).values()):
+            n += 1
     return n
 
 
