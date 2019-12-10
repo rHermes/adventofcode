@@ -1,6 +1,33 @@
 import fileinput
 import math
 
+# The logic for checking if two vectors are multiples here are as following:
+#
+# Assume that you have u = (x1,y1) and v = (x2, y2). The two vectors are 
+# multiples if:
+#
+# (u.v)*u == (u.u)*v
+#
+# In the 2d case, it factors down to: x1*y2 == y1*x2
+#
+# To prove this then, we can just state that x2 = x1*k and y2 = y1*j
+# and plug it into the equation
+#
+# x1*y1*j == y1*x2*k <=> j == k
+#
+# If j and k are the same, then v is a multiple of u.
+#
+# In our case, we use this and we need to check the signs of both, to
+# make sure they are thesame
+
+def sign(x):
+    if x < 0:
+        return -1 
+    elif x > 0:
+        return 1
+    else:
+        return 0
+
 def can_be_seen(x,y, asts):
     if (x,y) not in asts:
         return 0
@@ -13,68 +40,51 @@ def can_be_seen(x,y, asts):
         if (cx,cy) not in see:
             continue
 
-        dx, dy = (cx-x, cy-y)
-
-        # This can be prime factor but for now we are not doing that
+        dx, dy = cx-x, cy-y
+        sdx, sdy = sign(dx), sign(dy)
         for kx, ky in see - set([(cx,cy)]):
-            lx, ly = (kx-x, ky-y)
-            
-            # We must check if lx, ly is a multiple of dx,dy. We could primefactor
-            # but not doing that 
-            remove = False
-            if dx == 0:
-                if lx == 0 and (ly / dy > 0):
-                    remove = True
-            elif dy == 0:
-                if ly == 0 and (lx / dx > 0):
-                    remove = True
-            else:
-                if ((lx / dx) == (ly / dy)) and (lx / dx) > 0:
-                    remove = True
-
-            if remove:
+            lx, ly = kx-x, ky-y
+            if (dx*ly == dy*lx) and sdx == sign(lx) and sdy == sign(ly):
                 see.remove((kx, ky))
 
     return see
-
-
-asts = set()
-
-for y, line in enumerate(fileinput.input()):
-    asts.update([(x,y) for (x,c) in enumerate(line.strip()) if c == "#"])
-
-
-#pos = [(x,y,can_be_seen(x,y,asts)) for (x,y) in asts]
-
-#bx,by,bs = max(pos, key=lambda p: p[2])
-
-#print("({},{}): {}".format(bx,by,bs))
-
-
 
 
 def solve(bx, by, asts):
     i = 0
     while len(asts) > 1:
         cbs = can_be_seen(bx, by, asts)
-        # Now we need to sort them by their angle
-        # We convert to radians, push them by 
-        fx = lambda p: ((math.atan2(by - p[1], bx - p[0]) - (math.pi/2)) % (2*math.pi)) 
-        order = sorted(list(cbs), key=fx)
+        
+        www = []
+        for kx, ky in cbs:
+            dx, dy = kx - bx, ky - by
+            rad = math.atan2(dy, dx)
+            shift_rad = (rad-(math.pi/2)) % (2*math.pi)
+            # This is to avoid the case, where we get a rounding error
+            if dx == 0 and dy > 0:
+                shift_rad = math.pi*2
 
-        for p in order:
+            www.append((kx,ky,shift_rad))
+
+        order = sorted(www, key=lambda p: p[2], reverse=True)
+        for (kx,ky,srad) in order:
             i += 1
-            asts.remove(p)
+            asts.remove((kx,ky))
             if i == 200:
-                return p
-
+                return (kx,ky)
+    
     raise Exception("What?")
 
 
-#wow = solve(11, 13, asts)
-wow = solve(20, 20, asts)
+# Read in input
+asts = set()
+for y, line in enumerate(fileinput.input()):
+    asts.update([(x,-y) for (x,c) in enumerate(line.strip()) if c == "#"])
 
-print(wow[0]*100 + wow[1])
+pos = [(x,y,len(can_be_seen(x,y,asts))) for (x,y) in asts]
+bx,by,bs = max(pos, key=lambda p: p[2])
 
+ans = solve(bx, by, asts)
 
-
+# We have flipped the y axis, so we need to fix this here
+print(ans[0]*100 + (-ans[1]))

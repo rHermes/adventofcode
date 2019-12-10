@@ -1,13 +1,38 @@
 import fileinput
 import math
 
+# The logic for checking if two vectors are multiples here are as following:
+#
+# Assume that you have u = (x1,y1) and v = (x2, y2). The two vectors are 
+# multiples if:
+#
+# (u.v)*u == (u.u)*v
+#
+# In the 2d case, it factors down to: x1*y2 == y1*x2
+#
+# To prove this then, we can just state that x2 = x1*k and y2 = y1*j
+# and plug it into the equation
+#
+# x1*y1*j == y1*x2*k <=> j == k
+#
+# If j and k are the same, then v is a multiple of u.
+#
+# In our case, we use this and we need to check the signs of both, to
+# make sure they are thesame
 
+def sign(x):
+    if x < 0:
+        return -1 
+    elif x > 0:
+        return 1
+    else:
+        return 0
 
 def can_be_seen(x,y, asts):
     if (x,y) not in asts:
         return 0
 
-    see = set(asts)
+    see = set(asts) 
     see.remove((x,y))
     bdist = sorted(list(asts), key=lambda p: math.sqrt((p[0]-x)**2 + (p[1]-y)**2))
 
@@ -15,48 +40,26 @@ def can_be_seen(x,y, asts):
         if (cx,cy) not in see:
             continue
 
-        dx, dy = (cx-x, cy-y)
-
-        # This can be prime factor but for now we are not doing that
+        dx, dy = cx-x, cy-y
+        sdx, sdy = sign(dx), sign(dy)
         for kx, ky in see - set([(cx,cy)]):
-            lx, ly = (kx-x, ky-y)
-            
-            # We must check if lx, ly is a multiple of dx,dy. We could primefactor
-            # but not doing that 
-            remove = False
-            if dx == 0:
-                if lx == 0 and (ly / dy > 0):
-                    remove = True
-            elif dy == 0:
-                if ly == 0 and (lx / dx > 0):
-                    remove = True
-            else:
-                if ((lx / dx) == (ly / dy)) and (lx / dx) > 0:
-                    remove = True
+            lx, ly = kx-x, ky-y
 
-            if remove:
-                # print(("At ({},{}) does ({},{}) block ({}, {}): ({},{}) vs ({},{})".format(x,y, cx, cy, kx, ky, dx, dy, lx, ly)))
+            if (dx*ly == dy*lx) and sdx == sign(lx) and sdy == sign(ly):
                 see.remove((kx, ky))
 
+    return see
 
-    return(len(see))
 
 
 asts = set()
 
 for y, line in enumerate(fileinput.input()):
-    asts.update([(x,y) for (x,c) in enumerate(line.strip()) if c == "#"])
+    asts.update([(x,-y) for (x,c) in enumerate(line.strip()) if c == "#"])
 
 
-pos = [(x,y,can_be_seen(x,y,asts)) for (x,y) in asts]
+pos = [(x,y,len(can_be_seen(x,y,asts))) for (x,y) in asts]
 
 bx,by,bs = max(pos, key=lambda p: p[2])
 
 print("({},{}): {}".format(bx,by,bs))
-
-#for (x,y) in asts:
-#    ss = can_be_seen(x,y,asts)
-#    print("From ({},{}): We can see {}".format(x,y,ss))
-# ss = can_be_seen(3,4,asts)
-# print("From ({},{}): We can see {}".format(3,4,ss))
-
