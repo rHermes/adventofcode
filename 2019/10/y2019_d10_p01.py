@@ -28,11 +28,14 @@ def sign(x):
     else:
         return 0
 
-def can_be_seen(x,y, asts):
+def can_be_seen(x,y, asts, cutoff=None):
+    if cutoff is None:
+        cutoff = 0
+
     if (x,y) not in asts:
         return 0
 
-    see = set(asts) 
+    see = set(asts)
     see.remove((x,y))
     bdist = sorted(list(asts), key=lambda p: math.sqrt((p[0]-x)**2 + (p[1]-y)**2))
 
@@ -44,22 +47,32 @@ def can_be_seen(x,y, asts):
         sdx, sdy = sign(dx), sign(dy)
         for kx, ky in see - set([(cx,cy)]):
             lx, ly = kx-x, ky-y
-
             if (dx*ly == dy*lx) and sdx == sign(lx) and sdy == sign(ly):
                 see.remove((kx, ky))
+                if len(see) < cutoff:
+                    return set()
 
     return see
 
 
-
+# Read in input
+mx = 0
 asts = set()
-
 for y, line in enumerate(fileinput.input()):
+    mx = max(mx, len(line.strip()))
     asts.update([(x,-y) for (x,c) in enumerate(line.strip()) if c == "#"])
 
+# Center of drawing for speed
+cen_x = mx / 2
+cen_y = y / 2
 
-pos = [(x,y,len(can_be_seen(x,y,asts))) for (x,y) in asts]
+# Sorted by distance to middle, to eliminate most quickly
+bdist = sorted(list(asts), key=lambda p: math.sqrt((p[0]-cen_x)**2 + (p[1]-cen_y)**2))
 
-bx,by,bs = max(pos, key=lambda p: p[2])
+bx, by, bs = 0, 0, 0
+for x, y in bdist:
+    s = len(can_be_seen(x, y, asts, cutoff=bs))
+    if s > bs:
+        bx, by, bs = x, y, s
 
 print("({},{}): {}".format(bx,by,bs))
