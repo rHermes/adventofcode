@@ -155,7 +155,7 @@ def solve(s):
     for y in range(maxy,miny-1,-1):
         for x in range(minx,maxx+1):
             if plane[(x,y)]:
-                buf += "X"
+                buf += "█"
             else:
                 buf += " "
         buf += "\n"
