@@ -25,25 +25,28 @@ def step(s):
     return s
 
 
-
-
-def energy(s):
+def total_energy(state):
     ans = 0
-    for p in s:
-        pp = [abs(x) for x in p]
-        wow  = sum(pp[:3]) * sum(pp[3:])
-        ans += wow
+    for p in state:
+        xs = [abs(x) for x in p]
+        ans += sum(xs[:3]) * sum(xs[3:])
 
     return ans
 
 
+state = []
+for line in fileinput.input():
+    s = line.strip()[1:-1].split(", ")
+    planet  = [0,0,0,0,0,0]
+    for kv in s:
+        c, v = kv.split("=")
+        v = int(v)
+        idx = {"x": 0, "y": 1, "z": 2}[c]
+        planet[idx] = v
 
-state = [[7,10,17,0,0,0], [-2,7,0,0,0,0], [12,5,12,0,0,0],[5,-8,6,0,0,0]]
-#state = [[-1,0,2,0,0,0], [2,-10,-7,0,0,0], [4,-8,8,0,0,0],[3,5,-1,0,0,0]]
-
+    state.append(planet)
 
 for i in range(1000):
     state = step(state)
 
-
-print(energy(state))
+print(total_energy(state))
