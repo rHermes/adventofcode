@@ -73,6 +73,7 @@ def exec(ops, inputs):
         
         elif bop == 4: # OUTPUT
             src, = get_params(ops, eip, base, 1)
+            yield src
             outputs.append(src)
             eip += 2
 
@@ -129,8 +130,8 @@ def print_board(board, minx, miny, maxx, maxy):
 # Solution here can be to figure out ball position and where we are?
 
 
-def animate(codes, inputs):
-    ops, outs = exec(codes[:], it.chain(inputs,it.repeat(0)))
+def animate(codes):
+    #ops, outs = exec(codes[:], it.chain(inputs,it.repeat(0)))
     # Board is 42 wide x 23 tall?
     board = {}
 
@@ -140,8 +141,10 @@ def animate(codes, inputs):
     i = 0
     blocks = 0
     first_score = 0
-    while i < len(outs):
-        x, y, tile = outs[i], outs[i+1], outs[i+2]
+    its = iter(exec(codes[:], it.repeat(1)))
+    while True:
+        x, y, tile = next(its), next(its), next(its)
+        i += 3
         # print("We have {} {} of type {}".format(x, y, tile))
         i += 3
         
@@ -175,7 +178,8 @@ def animate(codes, inputs):
             #print_board(board, minx, miny, maxx, maxy)
         else:
             raise Exception("THIS IS AN ERROR")
-        
+    
+
 
 # This gives out the ball position and how many blocks are left.
 def one_run(codes, thing):
@@ -194,6 +198,7 @@ def one_run(codes, thing):
         i += 3
 
         if x == -1 and y == 0:
+            print("NEW SCORE: {}".format(title))
             scores.append(tile)
         elif tile == 0:
             board[(x,y)] = " "
@@ -217,8 +222,65 @@ def one_run(codes, thing):
             raise Exception("THIS IS AN ERROR")
 
     return (ball_pos, paddle_pos, scores, blocks)
+
+def one_run_solve(codes):
+    board = {}
+
+    ball_pos = []
+    paddle_pos = []
+    scores = []
+
+    i = 0
+    blocks = 0
+    its = iter(exec(codes[:], it.repeat(1)))
+    while True:
+        try:
+            x, y, tile = next(its), next(its), next(its)
+        except:
+            break
+        i += 3
+
+        if x == -1 and y == 0:
+            if not isinstance(tile, int):
+                break
+            # print("NEW SCORE: {}".format(tile))
+            scores.append(tile)
+        elif tile == 0:
+            board[(x,y)] = " "
+            #print_board(board, minx, miny, maxx, maxy)
+        elif tile == 1:
+            board[(x,y)] = "W"
+            #print_board(board, minx, miny, maxx, maxy)
+        elif tile == 2:
+            board[(x,y)] = "X"
+            #print_board(board, minx, miny, maxx, maxy)
+            blocks += 1
+        elif tile == 3:
+            board[(x,y)] = "-"
+            paddle_pos.append((x,y))
+            #print_board(board, minx, miny, maxx, maxy)
+        elif tile == 4:
+            board[(x,y)] = "O"
+            ball_pos.append((x,y))
+            #print_board(board, minx, miny, maxx, maxy)
+        else:
+            raise Exception("THIS IS AN ERROR")
+
+    # return (ball_pos, paddle_pos, scores, blocks)
+    return scores[-1]
         
 def solve(s):
+    codes = [int(x) for x in s.split(",")]
+    codes[0] = 2
+    # THis is where we cheat and replace the bottom with floor
+    for i in range(1564, 1604):
+        codes[i] = 1
+
+    #bps, pps, scores, nb = one_run_solve(codes)
+    #animate(codes)
+    return one_run_solve(codes)
+
+def solve3(s):
     codes = [int(x) for x in s.split(",")]
     codes[0] = 2
 
@@ -238,7 +300,6 @@ def solve(s):
         
         blocks_left = nb - len(scores) + 2
 
-
         #print("BPS: {}".format([x for x, _ in bps]))
        # print("BPS: {}".format([x for x, _ in bps]))
         #print("BPS: {}".format([x for x, y in bps if y == 21]))
@@ -247,6 +308,8 @@ def solve(s):
         print("MOVES: {}".format(paths))
         print("SCORES: {}".format(scores))
         print("BLOCKS LEFT: {}".format(nb - len(scores) + 2))
+
+        break
 
         lx, ly = bps[-2]
         px, py = pps[-1]
