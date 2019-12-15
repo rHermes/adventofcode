@@ -8,9 +8,9 @@ def solve(s):
 
     BOARD_OFFSET = 639
 
-    M1 = (ops[612] *  ops[613]) or (ops[612] + ops[613])
-    M2 = (ops[616] *  ops[617]) or (ops[616] + ops[617])
-    M3 = (ops[620] *  ops[621]) or (ops[620] + ops[621])
+    M1 = (ops[612] * ops[613]) or (ops[612] + ops[613])
+    M2 = (ops[616] * ops[617]) or (ops[616] + ops[617])
+    M3 = (ops[620] * ops[621]) or (ops[620] + ops[621])
     M4 = ops[632]
 
     score = 0
