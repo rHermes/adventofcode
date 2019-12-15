@@ -3,7 +3,35 @@ import itertools as it
 from collections import defaultdict, deque
 import threading
 import queue
-import time
+
+import sys,tty,termios
+class _Getch:
+    def __call__(self):
+            fd = sys.stdin.fileno()
+            old_settings = termios.tcgetattr(fd)
+            try:
+                tty.setraw(sys.stdin.fileno())
+                ch = sys.stdin.read(3)
+            finally:
+                termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+            return ch
+
+def get_dir_key():
+        inkey = _Getch()
+        while(1):
+                k=inkey()
+                if k!='':break
+        if k=='\x1b[A':
+            return 2
+        elif k=='\x1b[B':
+            return 1
+        elif k=='\x1b[C':
+            return 4
+        elif k=='\x1b[D':
+            return 3
+        else:
+            raise Exception("Not an arrow key")
+
 
 def get_params(ops, eip, base, nargs, last_dst=False):
     op = ops[eip]
@@ -185,13 +213,25 @@ def route_to(G, x, y, tx, ty):
                 prev[v] = u
 
 
-    print("Target was {}".format((tx,ty)))
-    raise Exception("We should never reach this")
+
+    
+    return dist
 
 
-        
+def deepest(G, ox, oy):
+    INF = 10000000000000000
+    dists = route_to(G, ox, oy, -100000000, -1000000000)
+    
+    deep = 0
+    for k, v in dists.items():
+        if v == INF:
+            continue
+
+        deep = max(deep, v)
+
+    return deep 
+
 def solve(s):
-    print('\033c', end="")
     codes = [int(x) for x in s.split(",")]
 
     q1 = queue.Queue()
@@ -276,20 +316,26 @@ def solve(s):
                 q2.get()
 
         explored.add((x,y))
+        #print('\033c')
+        #print_world(world, x, y)
 
-
-        
-        # Move to edge of screen
-        print("\033[0;0H", end="")
-        print_world(world, x, y)
-        time.sleep(1/30)
-
-    # To terminate the seach
+    
+    # To terminate bot
     q1.put(None)
 
-    # Now we can get the length form start to tx, ty
-    rr = route_to(G, 0, 0, ox, oy)
-    return len(rr)
+
+    # dfs to find deepst
+    return deepest(G, ox, oy)
+
+    
+    # THis is quite easy, we simply loop
+    # maxt = 0
+    # for (lx,ly) in G:
+    #     rr = route_to(G, lx,ly, ox, oy)
+    #     if len(rr) > maxt:
+    #         maxt = len(rr)
+
+    return maxt
 
 
 
