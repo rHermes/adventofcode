@@ -1,5 +1,4 @@
 import fileinput
-import itertools as it
 from collections import defaultdict
 
 def get_params(ops, eip, base, nargs, last_dst=False):
@@ -31,10 +30,7 @@ def get_params(ops, eip, base, nargs, last_dst=False):
     return outs
 
 def exec(ops, inputs):
-    #ops = [int(x) for x in s.split(",")]
-
     mops = defaultdict(int)
-
     for i, x in enumerate(ops):
         mops[i] = x
 
@@ -62,9 +58,8 @@ def exec(ops, inputs):
             
             # We are faking the input
             ins = inputs.pop(0)
+            ops[dst] = ins
             
-            # ops[dst] = int(plane[(x,y)])
-
             eip += 2
         
         elif bop == 4: # OUTPUT
@@ -115,44 +110,16 @@ def solve(s):
     codes = [int(x) for x in s.split(",")]
     ops, outs = exec(codes, [1])
     
-    board = {}
-
-    minx, miny = 10000000000000, 100000000000000
-    maxx, maxy = -minx, -miny
-
-    i = 0
     blocks = 0
+    i = 0
     while i < len(outs):
-        x, y, tile = outs[i], outs[i+1], outs[i+2]
-        print("We have {} {} of type {}".format(x, y, tile))
+        _, _, tile = outs[i], outs[i+1], outs[i+2]
         i += 3
-        
-        minx, miny = min(minx,x), min(miny,y)
-        maxx, maxy = max(maxx,x), max(maxy,y)
-
-        if tile == 0:
-            board[(x,y)] = " "
-        elif tile == 1:
-            board[(x,y)] = "W"
-        elif tile == 2:
-            board[(x,y)] = "X"
+        if tile == 2:
             blocks += 1
-        elif tile == 3:
-            board[(x,y)] = "-"
-        elif tile == 4:
-            board[(x,y)] = "O"
-        else:
-            raise Exception("THIS IS AN ERROR")
 
-    sss = ""
-    
-    for y in range(miny, maxy+1):
-        for x in range(minx, maxx+1):
-            sss += board[(x,y)]
-        sss += "\n"
-    
     return blocks
-    # return outs
+
 
 for line in fileinput.input():
     print(solve(line.strip()))
