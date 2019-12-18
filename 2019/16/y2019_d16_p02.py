@@ -3,21 +3,17 @@ import itertools as it
 
 def FFT(digs):
     outs = []
-    for i in range(1,len(digs)+1):
+    for i in range(1, len(digs)+1):
+        x = 0
+        ans = 0
+        while x < len(digs):
+            jx =  x - 1
+            ones = digs[(jx+i):(jx+2*i)]
+            minus = digs[(jx+(3*i)):(jx+(4*i))]
+            ans += sum(ones) - sum(minus)
+            x += 4*i
 
-        pat = it.islice(it.cycle(
-                it.chain(
-                    it.repeat(0,i),
-                    it.repeat(1,i),
-                    it.repeat(0,i),
-                    it.repeat(-1,i)
-                )
-            ), 1, None)
-
-
-        wow = [a*b for (a,b) in zip(digs,pat)]
-        nn = abs(sum(wow)) % 10
-        outs.append(nn)
+        outs.append(abs(ans) % 10)
 
     return outs
 
