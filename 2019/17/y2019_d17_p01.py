@@ -1,8 +1,6 @@
 import fileinput
 import itertools as it
-from collections import defaultdict, deque
-import threading
-import queue
+from collections import defaultdict
 
 def get_params(ops, eip, base, nargs, last_dst=False):
     op = ops[eip]
@@ -32,7 +30,7 @@ def get_params(ops, eip, base, nargs, last_dst=False):
 
     return outs
 
-def exec(ops, input_queue, output_queue):
+def exec(ops, inputs):
     mops = defaultdict(int)
 
     for i, x in enumerate(ops):
@@ -61,16 +59,13 @@ def exec(ops, input_queue, output_queue):
             dst, = get_params(ops, eip, base, 1, last_dst=True)
             
             # We are reading inputs
-            ins = input_queue.get()
-            if ins is None:
-                return
-            else:
-                ops[dst] = ins
+            ins = inputs.pop(0)
+            ops[dst] = ins
             eip += 2
         
         elif bop == 4: # OUTPUT
             src, = get_params(ops, eip, base, 1)
-            output_queue.put(src)
+            outputs.append(src)
             eip += 2
 
         elif bop == 5: # JT
@@ -114,20 +109,11 @@ def exec(ops, input_queue, output_queue):
 
 def solve(s):
     codes = [int(x) for x in s.split(",")]
-
-    q1 = queue.Queue()
-    q2 = queue.Queue()
-
-    t = threading.Thread(target=exec, args=(codes[:], q1, q2))
-    t.start()
-
-    t.join()
-    
+    _, outs = exec(codes[:], [])
 
     world = {}
     x, y = 0, 0
-    while not q2.empty():
-        m = q2.get()
+    for m in outs:
         if m == 10:
             x = 0
             y += 1
