@@ -1,104 +1,50 @@
 import fileinput
 
-def egcd(a, b):
-    if a == 0:
-        return (b, 0, 1)
-    else:
-        g, y, x = egcd(b % a, a)
-        return (g, x - (b // a) * y, y)
+# This is learned from the reddit thread about solutons:
+#
+# https://web.archive.org/web/20191223080504/https://old.reddit.com/r/adventofcode/comments/ee0rqi/2019_day_22_solutions/fbnkaju/
 
-def modinv(a, m):
-    g, x, y = egcd(a, m)
-    if g != 1:
-        raise Exception('modular inverse does not exist')
-    else:
-        return x % m
+def solve(insts, N, R, pos):
+    # We need to figure out what the offset and increment we have
+    # between two rounds
+    offset_diff = 0
+    increment_mul = 1
 
-
-# Returns the deck
-def solve(deck, insts):
-    deck = len(deck)
+    # We can cheat here and use euleres theorem since all our ns
+    # will be prime, as they have to cover everything without overlap
+    def inv(n):
+        return pow(n, N-2, N)
 
     for inst in insts:
         if inst == "deal into new stack":
-            deck = list(reversed(deck))
-            # print(deck)
-        elif inst.startswith("cut"):
-            n = int(inst[3:])
-            if n < 0:
-                n = N + n
+            increment_mul *= -1
+            increment_mul %= N
 
-            deck = deck[n:] + deck[:n]
-        elif inst.startswith("deal with increment"):
-            kk = len("deal with increment ")
-            ix = int(inst[kk:])
-
-            # deck = [deck[(i*ix) % N] for i in range(N)]
-            newdeck = list(range(N))
-            for i, c in enumerate(deck):
-                newdeck[(i*ix) % N] = c
-
-            deck = newdeck
-
-        else:
-            raise Exception("Don't know inst: {}".format(inst))
-
-    return deck
-
-# reverse pos i
-def reverse_pos(insts, I, N=119315717514047):
-    # reverse the ints
-    P = I
-    for inst in reversed(insts):
-        if inst == "deal into new stack":
-            P = N - P - 1
+            offset_diff += increment_mul
+            offset_diff %= N
         elif inst.startswith("cut"):
             n = int(inst[3:])
 
-            # reverse the path
-            n = -n
-            if n < 0:
-                n = N + n
-
-            P = (P + n) % N
+            offset_diff += increment_mul * n
+            offset_diff %= N
 
         elif inst.startswith("deal with increment"):
-            kk = len("deal with increment ")
-            ix = int(inst[kk:])
-            
-            kk = modinv(ix, N)
-            P = (kk*P) % N
+            n = int(inst[20:])
 
+            increment_mul *= inv(n)
+            increment_mul %= N
         else:
             raise Exception("Don't know inst: {}".format(inst))
+
+
+    increment = pow(increment_mul, R, N)
     
-    return P
+    # this is based on a geometric series
+    offset = offset_diff * (1 - increment) * inv(1 - increment_mul)
+    offset %= N
 
-
+    return (offset + increment*pos) % N
 
 
 insts = [line.strip() for line in fileinput.input()]
-
-#deck = list(range(119315717514047))
-#for x in range(101741582076661):
-#   deck = solve(insts)
-# print(deck.index(2020))
-# print(deck)
-
-
-# cur = 2020
-# for i in range(101741582076661):
-#     if (i % 10000) == 0:
-#         print(i, cur)
-#     cur = reverse_pos(insts, cur)
-
-
-things = {}
-cur = 2020
-while cur not in things:
-    things[cur] = reverse_pos(insts, cur)
-    cur = things[cur]
-
-
-
-
+print(solve(insts, 119315717514047, 101741582076661, 2020))
