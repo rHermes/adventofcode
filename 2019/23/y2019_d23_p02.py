@@ -1,5 +1,4 @@
 import fileinput
-import itertools as it
 from collections import defaultdict, deque
 
 
@@ -125,14 +124,9 @@ def solve(s):
     for i, m in enumerate(ms):
         m.inputs.append(i)
 
-    l_nat_x, l_nat_y = -1, -1
-    nat_x, nat_y = 0, 0
-
-
     buffs = [[] for _ in range(N)]
     
-    nat_last = None
-    nat = None
+    nat = []
     while True:
         idle = True
         for i, m in enumerate(ms):
@@ -154,25 +148,21 @@ def solve(s):
                     y = m.outputs.pop(0)
 
                     if dst == 255:
-                        nat_last = nat
-                        nat = (x,y)
+                        nat.append((x,y))
                     else:
                         buffs[dst].append((x,y))
             else:
                 print("WHAT?")
 
         if idle and nat:
-            print("We have a nat: {}".format(nat))
-            if nat_last and nat_last[1] == nat[1]:
-                print("And the answer is: {}".format(nat[1]))
-            elif not nat_last:
-                print("The first nat is: {}".format(nat[1]))
-            else:
-                print("We got nat {} and the lat one was: {}".format(nat, nat_last))
+            # We need 3 instead of 2, because for some reason the first thing
+            # that repeats for me is not the right answer. Luckly the answe ris
+            # repeated infininite times, so checking for 3 is enough
+            if 3 <= len(nat) and nat[-1][1] == nat[-2][1] == nat[-3][1]:
+                return nat[-1][1]
 
-            buffs[0].append(nat)
+            buffs[0].append(nat[-1])
                 
-
 
 for line in fileinput.input():
     print(solve(line.strip()))

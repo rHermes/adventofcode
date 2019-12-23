@@ -1,9 +1,6 @@
 import fileinput
-import itertools as it
-from collections import defaultdict, deque
-import threading
-import queue
-import time
+from collections import defaultdict
+
 
 def get_params(ops, eip, base, nargs, last_dst=False):
     op = ops[eip]
@@ -33,122 +30,125 @@ def get_params(ops, eip, base, nargs, last_dst=False):
 
     return outs
 
-def exec(ops, input_queue, output_queue):
-    mops = defaultdict(int)
 
-    for i, x in enumerate(ops):
-        mops[i] = x
+class IntCode:
 
-    ops = mops
+    def __init__(self, ops):
+        self.ops = defaultdict(int)
+        for i, x in enumerate(ops):
+            self.ops[i] = x
 
-    outputs = []
-    eip = 0
-    base = 0
-    while True:
-        op = ops[eip]
-        bop = op % 100
 
-        if bop == 1: # ADD 
-            a, b, dst = get_params(ops, eip, base, 3, last_dst=True)
-            ops[dst] = a + b
-            eip += 4
+        self.inputs = []
+        self.outputs = []
+        self.eip = 0
+        self.base = 0
+    
+    def run(self):
+        # returns an event
+        while True:
+            op = self.ops[self.eip]
+            bop = op % 100
 
-        elif bop == 2: # MULT
-            a, b, dst = get_params(ops, eip, base, 3, last_dst=True)
-            ops[dst] = a * b
-            eip += 4
+            if bop == 1: # ADD 
+                a, b, dst = get_params(self.ops, self.eip, self.base, 3, last_dst=True)
+                self.ops[dst] = a + b
+                self.eip += 4
 
-        elif bop == 3: # INPUT
-            dst, = get_params(ops, eip, base, 1, last_dst=True)
+            elif bop == 2: # MULT
+                a, b, dst = get_params(self.ops, self.eip, self.base, 3, last_dst=True)
+                self.ops[dst] = a * b
+                self.eip += 4
+
+            elif bop == 3: # INPUT
+                dst, = get_params(self.ops, self.eip, self.base, 1, last_dst=True)
+
+                if len(self.inputs) == 0:
+                    return "input"
+                
+                ins = self.inputs.pop(0)
+                self.ops[dst] = ins
+                self.eip += 2
             
-            # We are reading inputs
-            try:
-                ins = input_queue.get(block=False)
-            except:
-                ins = -1
+            elif bop == 4: # OUTPUT
+                src, = get_params(self.ops, self.eip, self.base, 1)
+                self.outputs.append(src)
+                self.eip += 2
+                return "output"
 
-            ops[dst] = ins
-            eip += 2
-        
-        elif bop == 4: # OUTPUT
-            src, = get_params(ops, eip, base, 1)
-            output_queue.put(src)
-            eip += 2
+            elif bop == 5: # JT
+                a, b = get_params(self.ops, self.eip, self.base, 2)
 
-        elif bop == 5: # JT
-            a, b = get_params(ops, eip, base, 2)
+                if a != 0:
+                    self.eip = b
+                else:
+                    self.eip += 3
 
-            if a != 0:
-                eip = b
+            elif bop == 6: # JF
+                a, b = get_params(self.ops, self.eip, self.base, 2)
+
+                if a == 0:
+                    self.eip = b
+                else:
+                    self.eip += 3
+
+            elif bop == 7: # LT
+                a, b, dst = get_params(self.ops, self.eip, self.base, 3, last_dst=True)
+                self.ops[dst] = int(a < b)
+                self.eip += 4
+
+            elif bop == 8: # EQ
+                a, b, dst = get_params(self.ops, self.eip, self.base, 3, last_dst=True)
+                self.ops[dst] = int(a == b)
+                self.eip += 4
+
+            elif bop == 9: # BASE
+                a, = get_params(self.ops, self.eip, self.base, 1)
+                self.base += a
+                self.eip += 2
+
+            elif bop == 99:
+                return "exit"
             else:
-                eip += 3
-
-        elif bop == 6: # JF
-            a, b = get_params(ops, eip, base, 2)
-
-            if a == 0:
-                eip = b
-            else:
-                eip += 3
-
-        elif bop == 7: # LT
-            a, b, dst = get_params(ops, eip, base, 3, last_dst=True)
-            ops[dst] = int(a < b)
-            eip += 4
-
-        elif bop == 8: # EQ
-            a, b, dst = get_params(ops, eip, base, 3, last_dst=True)
-            ops[dst] = int(a == b)
-            eip += 4
-
-        elif bop == 9: # BASE
-            a, = get_params(ops, eip, base, 1)
-            base += a
-            eip += 2
-
-        elif bop == 99:
-            break
-        else:
-            raise Exception("Unkown op: {}".format(op))
+                raise Exception("Unkown op: {}".format(op))
 
     
-    return (ops, outputs)
-
 def solve(s):
     codes = [int(x) for x in s.split(",")]
 
     N = 50
 
-    qins = [queue.Queue() for _ in range(N)]
-    qouts = [queue.Queue() for _ in range(N)]
+    ms = [IntCode(codes[:]) for _ in range(N)]
 
     # Put in network ids
-    for i in range(N):
-        qins[i].put(i)
+    for i, m in enumerate(ms):
+        m.inputs.append(i)
 
-    threads = [threading.Thread(target=exec, args=(codes[:], qins[i], qouts[i])) for i in range(N)]
-
-    for t in threads:
-        t.start()
-
+    buffs = [[] for _ in range(N)]
+    
     while True:
-        # Go through all things
-        for q in qouts:
-            if q.qsize() < 3:
-                continue
-            
-            dst, x, y = q.get(), q.get(), q.get()
+        for i, m in enumerate(ms):
+            k = m.run()
 
-            if dst == 255:
-                print("We got the first 255 packet: {}".format(y))
+            if k == "input":
+                if buffs[i]:
+                    x, y = buffs[i].pop(0)
+                    m.inputs.append(x)
+                    m.inputs.append(y)
+                else:
+                    m.inputs.append(-1)
+            elif k == "output":
+                while 3 <= len(m.outputs):
+                    dst = m.outputs.pop(0)
+                    x = m.outputs.pop(0)
+                    y = m.outputs.pop(0)
+
+                    if dst == 255:
+                        return y
+                    else:
+                        buffs[dst].append((x,y))
             else:
-                print("activity")
-                qins[dst].put(x)
-                qins[dst].put(y)
-
-        time.sleep(1/60)
-
-
+                print("WHAT?")
 
 for line in fileinput.input():
     print(solve(line.strip()))
