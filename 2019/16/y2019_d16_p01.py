@@ -12,7 +12,7 @@ def FFT(digs):
             minus = digs[(jx+(3*i)):(jx+(4*i))]
             ans += sum(ones) - sum(minus)
             x += 4*i
-
+    
         outs.append(abs(ans) % 10)
 
     return outs

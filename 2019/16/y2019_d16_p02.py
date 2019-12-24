@@ -1,32 +1,48 @@
 import fileinput
 import itertools as it
 
-def FFT(digs):
+def FFT(idx, offset):
     outs = []
-    for i in range(1, len(digs)+1):
+    for i in range(0, offset):
+        outs.append(0)
+
+    LEN = len(idx) + offset - 1
+
+    for i in range(offset, LEN):
         x = 0
         ans = 0
-        while x < len(digs):
+        while x < LEN:
             jx =  x - 1
-            ones = digs[(jx+i):(jx+2*i)]
-            minus = digs[(jx+(3*i)):(jx+(4*i))]
-            ans += sum(ones) - sum(minus)
+            ones = idx[min(jx+2*i, LEN-1)] - idx[min(jx+i, LEN-1)]
+            minus = idx[min(jx+4*i, LEN-1)] - idx[min(jx+3*i, LEN-1)]
+            ans += ones - minus
             x += 4*i
-
+    
         outs.append(abs(ans) % 10)
 
     return outs
 
+def build_index(kv, offset):
+    idx = {}
+    idx[offset-1] = 0
+    for x in range(offset,len(kv)):
+        idx[x] = kv[x] + idx[x-1]
+
+    return idx
+
+
 def solve(s):
     ns = [int(x) for x in s]
-    kv = list(it.chain.from_iterable(it.repeat(ns,1000)))
-    for j in range(100):
-        print(j)
-        kv = FFT(kv)
+    offset = int(s[:7])
+    kv = list(it.chain.from_iterable(it.repeat(ns,10000)))
 
-    mem = "".join(str(x) for x in kv[:8])
-    return mem
+    N = 100
 
+    for i in range(N):
+        idx = build_index(kv, offset)
+        kv = FFT(idx, offset)
+
+    return "".join(str(x) for x in kv[offset:offset+8])
 
 for line in fileinput.input():
     print(solve(line.strip()))
