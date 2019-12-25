@@ -216,7 +216,7 @@ def find_smallest_path(grid, keys, doors, start_points, max_x, max_y):
     return min([p.length for p in full_paths]), counter
 
     
-grid, keys, doors, start_points, max_x, max_y = get_grid(part_b=False)
+grid, keys, doors, start_points, max_x, max_y = get_grid(part_b=True)
 min_length, counter = find_smallest_path(grid, keys, doors, start_points, max_x, max_y)
 print(min_length)
 
