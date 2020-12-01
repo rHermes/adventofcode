@@ -2,6 +2,8 @@
 
 My solutions, in various languages, mostly python.
 
+I write more detailed notes in the commit messages!
+
 ## Task notes
 
 ### 2019
@@ -26,6 +28,14 @@ Had to get the explanation about how it worked from redditor. Learned a lot
 by doing this.
 
 ## Personal Stats
+
+### 2020
+
+```
+      -------Part 1--------   -------Part 2--------
+Day       Time  Rank  Score       Time  Rank  Score
+  1   00:07:01   127      0   00:07:46   112      0
+```
 
 ### 2019
 
