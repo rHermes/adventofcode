@@ -1,11 +1,7 @@
 import fileinput
+import itertools as it
+import math
 
-nums = []
-for line in fileinput.input():
-    nums.append(int(line.rstrip()))
-
-for x in range(len(nums)):
-    for y in range(x,len(nums)):
-        for z in range(y,len(nums)):
-            if nums[x]+nums[y]+nums[z] == 2020:
-                print(nums[x]*nums[y]*nums[z])
+nums = [int(line.rstrip()) for line in fileinput.input()]
+ans = next(filter(lambda x: sum(x) == 2020, it.combinations(nums, 3)))
+print(math.prod(ans))
