@@ -1,21 +1,11 @@
 import fileinput
 import re
 
-
 ans = 0
 for line in fileinput.input():
-    mth = re.match("([0-9]+)-([0-9]+) ([a-z]): ([a-z]+)", line).groups()
-    low = int(mth[0])
-    hi = int(mth[1])
+    (lo, hi, c, pwd) = re.match("^(\d+)-(\d+) ([a-z]): ([a-z]+)$", line).groups()
 
-    cnt = 0
-    if mth[3][low-1] == mth[2]:
-        cnt += 1
-
-    if mth[2] == mth[3][hi-1]:
-        cnt += 1
-
-    if cnt == 1:
+    if sum(pwd[int(x)-1] == c for x in (lo, hi)) == 1:
         ans += 1
 
 print(ans)
