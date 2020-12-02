@@ -34,6 +34,7 @@ by doing this.
 ```
       -------Part 1--------   -------Part 2--------
 Day       Time  Rank  Score       Time  Rank  Score
+  2   00:05:45   954      0   00:08:40   763      0
   1   00:07:01   127      0   00:07:46   112      0
 ```
 
