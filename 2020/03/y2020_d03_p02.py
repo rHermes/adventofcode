@@ -1,30 +1,10 @@
 import fileinput
+import math
 
+M = {(1,1): 0, (3,1): 0, (5,1): 0, (7,1): 0, (1,2): 0}
+for (i,l) in enumerate(fileinput.input()):
+    for (dx, dy) in M.keys():
+        if i % dy == 0:
+            M[(dx,dy)] += l[((i//dy)*dx) % (len(l)-1)] == '#'
 
-M = []
-for line in fileinput.input():
-    l = []
-    for x in line.rstrip():
-        if x == '.':
-            l.append(0)
-        else:
-            l.append(1)
-        
-    M.append(l)
-
-ans = 1
-for (dx, dy) in [(1,1), (3,1), (5,1), (7,1), (1,2)]:
-    x, y = 0, 0
-    lans = 0
-    lans += M[y][x]
-    N = len(M[0])
-    while y < len(M):
-        lans += M[y][x % N]
-        y += dy
-        x += dx
-
-    if lans > 0:
-        ans = ans * lans
-
-        
-print(ans)
+print(math.prod(M.values()))
