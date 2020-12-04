@@ -1,62 +1,57 @@
 import fileinput
-import re
-import itertools as it
 
-def valid(p):
-    if not all([(x in c) for x in ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]]):
-        return False
+REQUIRED = frozenset(("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"))
+OPTIONAL = frozenset(("cid",))
+HCL = frozenset("0123456789abcdef")
+ECL = frozenset(("amb", "blu", "brn", "gry", "grn", "hzl", "oth"))
 
-    if len(p["pid"]) != 9 or not p["pid"].isnumeric():
-        return False
-    
-    if len(p["byr"]) != 4 or not p["byr"].isnumeric() or not (1920 <= int(p["byr"]) <= 2002):
-        return False
+# We solve this with an iterator to keep the memory requirements
+def passports():
+    c = {} 
+    for l in fileinput.input():
+        l = l.rstrip()
+        if l == "":
+            yield c
+            c.clear()
+        else:
+            for pair in l.split():
+                key, val = pair.split(":", maxsplit=1)
+                c[key] = val
 
-    if len(p["iyr"]) != 4 or not p["iyr"].isnumeric() or not (2010 <= int(p["iyr"]) <= 2020):
-        return False
+    yield c
 
-    if len(p["eyr"]) != 4 or not p["eyr"].isnumeric() or not (2020 <= int(p["eyr"]) <= 2030):
-        return False
+# Validators
+def valid_num(r, lo, hi):
+    return r.isnumeric() and lo <= int(r) <= hi
 
-    if not (p["hgt"].endswith("cm") or p["hgt"].endswith("in")):
-        return False
-
-    if p["hgt"][-2:] == "cm":
-        if not (150 <= int(p["hgt"][:-2]) <= 193):
-            return False
-    elif p["hgt"][-2:] == "in":
-        if not (59 <= int(p["hgt"][:-2]) <= 76):
-            return False
+def valid_height(h):
+    num, unit = h[:-2], h[-2:]
+    if unit == "cm":
+        return valid_num(num, 150, 193)
+    elif unit == "in":
+        return valid_num(num, 59, 76)
     else:
         return False
 
-    hcl = p["hcl"]
+def valid_hcl(h):
+    return len(h) == 7 and h[0] == '#' and set(h[1:]) <= HCL
 
-    if hcl[0] != '#' or len(hcl) != 7 or not all([x in "0123456789abcdef" for x in hcl[1:]]):
-        return False
+def valid_pid(p):
+    return len(p) == 9 and p.isnumeric()
 
-    if p["ecl"] not in ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]:
-        return False
-    
-    return True
+def valid(p):
+    # We want to make sure that no invalid keys are in there
+    v = (frozenset(p.keys()) - OPTIONAL) == REQUIRED
 
-    
-ans = 0
-c = {}
-for line in fileinput.input():
-    line = line.rstrip()
+    v = v and valid_num(p["byr"], 1920, 2002)
+    v = v and valid_num(p["iyr"], 2010, 2020)
+    v = v and valid_num(p["eyr"], 2020, 2030)
+    v = v and valid_height(p["hgt"])
+    v = v and valid_hcl(p["hcl"])
+    v = v and p["ecl"] in ECL
+    v = v and valid_pid(p["pid"])
 
-    if line == "":
-        if valid(c):
-            ans += 1
+    return v
 
-        c = {}
 
-    for pair in line.split(" "):
-        kk = pair.split(":")
-        c[kk[0]] = ":".join(kk[1:])
-
-if valid(c):
-    ans += 1
-
-print(ans)
+print(sum(map(valid, passports())))

@@ -1,22 +1,25 @@
 import fileinput
-import re
-import itertools as it
-
-ans = 0
-current_pass = []
-for line in fileinput.input():
-    line = line.rstrip()
-
-    if line == "":
-        if all([(x in current_pass) for x in ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]]):
-            ans += 1
-        current_pass = []
-
-    for pair in line.split(" "):
-        kk = pair.split(":")
-        current_pass.append(kk[0])
 
 
-if all([(x in current_pass) for x in ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]]):
-    ans += 1
-print(ans)
+REQUIRED = frozenset(("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"))
+OPTIONAL = frozenset(("cid",))
+
+# We want to make sure that no invalid keys are in there
+def valid(s):
+    return (s - OPTIONAL) == REQUIRED
+
+# We solve this with an iterator to keep the memory requirements
+def passports():
+    c = set()
+    for l in fileinput.input():
+        l = l.rstrip()
+        if l == "":
+            yield c
+            c.clear()
+        else:
+            for pair in l.split():
+                c.add(pair.split(":")[0])
+
+    yield c
+
+print(sum(map(valid, passports())))

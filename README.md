@@ -6,6 +6,13 @@ I write more detailed notes in the commit messages!
 
 ## Task notes
 
+### 2020
+
+#### 4
+
+This task is very practical, maybe the most practical one of all the tasks in
+AoC that I've solved so far. It also turned out very clean when I cleaned it up :)
+
 ### 2019
 
 #### 12
