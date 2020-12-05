@@ -1,38 +1,15 @@
 import fileinput
 
+# The list is of true, meaning upper, and false meaning lower.
+def bsp(a):
+    s = [0, 2**len(a) - 1]
+    for d in a:
+        s[not d] = (s[0] + s[1]) // 2 + d
 
-def pass_to_seat(p):
-    s = [0, 127]
-    for c in p[:7]:
-        if c == 'F':
-            s[1] = (s[0] + s[1]) // 2
-        elif c == 'B':
-            s[0] = (s[0] + s[1]) // 2 + 1
-        else:
-            raise Exception("WTF")
+    return s[0]
 
-
-    assert(s[0] == s[1])
-
-    k = [0, 7]
-    for c in p[7:]:
-        if c == 'L':
-            k[1] = (k[0] + k[1]) // 2
-        elif c == 'R':
-            k[0] = (k[0] + k[1]) // 2 + 1
-        else:
-            raise Exception("WTF")
+def pass_to_id(p):
+    b = [x in 'BR' for x in p]
+    return bsp(b[:7])*8 + bsp(b[7:10])
     
-    assert(k[0] == k[1])
-                
-    # return (s[0], k[0]) 
-    return s[0]*8 + k[0] 
-
-ans = 0
-passes = [line.rstrip() for line in fileinput.input()]
-
-print(max(map(pass_to_seat, passes)))
-# for p in passes:
-#     print("{}: {}".format(p, pass_to_seat(p)))
-
-
+print(max(map(pass_to_id, fileinput.input())))
