@@ -1,16 +1,14 @@
 import fileinput
+from functools import reduce
+from operator import xor
 
-# The list is of true, meaning upper, and false meaning lower.
-def bsp(a):
-    s = [0, 2**len(a) - 1]
-    for d in a:
-        s[not d] = (s[0] + s[1]) // 2 + d
-
-    return s[0]
-
+# Convert straight from pass to id
 def pass_to_id(p):
-    b = [x in 'BR' for x in p]
-    return bsp(b[:7])*8 + bsp(b[7:10])
+    return sum(1<<(9-i) for (i,c) in enumerate(p) if c in "BR")
 
-seen = set(map(pass_to_id, fileinput.input()))
-print(next(x-1 for x in seen if x-1 not in seen and x-2 in seen))
+def red(acc, cur):
+    mi, ma, xo = acc
+    return (min(cur,mi), max(cur,ma), xo ^ cur)
+
+mi, ma, inperf = reduce(red, map(pass_to_id, fileinput.input()), (2**10,0,0))
+print(reduce(xor, range(mi, ma+1), inperf))
