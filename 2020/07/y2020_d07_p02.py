@@ -1,37 +1,21 @@
 import fileinput
-import itertools as it
-import functools as fn
-import re
+from functools import lru_cache, reduce
 
-# print(sum(len(set(x) - set("\n")) for x in "".join(fileinput.input()).split("\n\n")))
-
-# for group in "".join(fileinput.input()).split("\n\n"):
-#     print(group)
-#     print()
-
-
-ans = 0
-bags = {}
+BAGS = {}
 for line in fileinput.input():
-    line = line.rstrip()[:-1]
-    bag, rst = line.split(" bags contain ")
-    klt = {}
+    bag, rst = line.rstrip()[:-1].split(" bags contain ")
+    cons = {}
     if rst != "no other bags":
-        for bb in rst.split(", "):
-            aa = bb.split(" ")
-            num = int(aa[0])
-            name = " ".join(aa[1:-1])
-            klt[name] = num
+        for obags in rst.split(", "):
+            xs = obags.split(" ")
+            cons[" ".join(xs[1:-1])] = int(xs[0])
 
-    bags[bag] = klt
+    BAGS[bag] = cons
 
+# We use dynamic programming here, to avoid recomputing values
+# we have previously computed
+@lru_cache(None)
+def sum_up(bag):
+    return sum(n * (sum_up(b)+1) for (b,n) in BAGS[bag].items())
 
-def sum_up(bags, bag):
-    ans = 0
-    for subbag, num in bags[bag].items():
-        ans += num * (sum_up(bags, subbag) + 1)
-
-    return ans
-        
-
-print(sum_up(bags, "shiny gold"))
+print(sum_up("shiny gold"))

@@ -1,49 +1,20 @@
 import fileinput
-import itertools as it
-import functools as fn
-import re
+from functools import lru_cache
 
-# print(sum(len(set(x) - set("\n")) for x in "".join(fileinput.input()).split("\n\n")))
-
-# for group in "".join(fileinput.input()).split("\n\n"):
-#     print(group)
-#     print()
-
-
-ans = 0
-bags = {}
+BAGS = {}
 for line in fileinput.input():
-    line = line.rstrip()[:-1]
-    bag, rst = line.split(" bags contain ")
-    klt = {}
+    bag, rst = line.rstrip()[:-1].split(" bags contain ")
+    cons = set()
     if rst != "no other bags":
-        for bb in rst.split(", "):
-            aa = bb.split(" ")
-            num = int(aa[0])
-            name = " ".join(aa[1:-1])
-            klt[name] = num
+        for obags in rst.split(", "):
+            cons.add(" ".join(obags.split(" ")[1:-1]))
 
-    bags[bag] = klt
+    BAGS[bag] = cons
 
+# We use dynamic programming here, to avoid recomputing values
+# we have previously computed
+@lru_cache(None)
+def can_contain(bag):
+    return bag == "shiny gold" or any(map(can_contain, BAGS[bag]))
 
-
-def can_contain(bags, bag):
-    if bag == "shiny gold":
-        return True
-
-    for subbag in bags[bag]:
-        if can_contain(bags, subbag):
-            return True
-        
-
-    return False
-        
-
-for k in bags.keys():
-    if k == "shiny gold":
-        continue
-
-    if can_contain(bags, k):
-        ans += 1
-
-print(ans)
+print(sum(map(can_contain, BAGS)) - 1)
