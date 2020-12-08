@@ -1,5 +1,5 @@
 import fileinput
-from functools import lru_cache, reduce
+from functools import lru_cache
 
 BAGS = {}
 for line in fileinput.input():
@@ -7,8 +7,8 @@ for line in fileinput.input():
     cons = {}
     if rst != "no other bags":
         for obags in rst.split(", "):
-            xs = obags.split(" ")
-            cons[" ".join(xs[1:-1])] = int(xs[0])
+            n, *xs, _ = obags.split(" ")
+            cons[" ".join(xs)] = int(n)
 
     BAGS[bag] = cons
 
