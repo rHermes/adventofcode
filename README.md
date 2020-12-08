@@ -13,6 +13,11 @@ I write more detailed notes in the commit messages!
 This task is very practical, maybe the most practical one of all the tasks in
 AoC that I've solved so far. It also turned out very clean when I cleaned it up :)
 
+#### 8
+
+Real times where 00:05:49.26 for part 1 and 00:04:43.44 for part 2, for a total
+of 00:10:32.7. I wouldn't have gotten on the leaderboards, but just noting it down.
+
 ### 2019
 
 #### 12
@@ -39,15 +44,16 @@ by doing this.
 ### 2020
 
 ```
-      -------Part 1--------   -------Part 2--------
-Day       Time  Rank  Score       Time  Rank  Score
-  7   00:09:42   160      0   00:14:45   136      0
-  6   00:06:51  2075      0   00:13:39  2134      0
-  5   00:28:39  5190      0   00:35:20  4589      0
-  4   00:06:13   483      0   00:19:12   376      0
-  3   00:06:02  1000      0   00:08:34   620      0
-  2   00:05:45   954      0   00:08:40   763      0
-  1   00:07:01   127      0   00:07:46   112      0
+      --------Part 1--------   --------Part 2--------
+Day       Time   Rank  Score       Time   Rank  Score
+  8   02:26:23  14118      0   02:31:06  11216      0
+  7   00:09:42    160      0   00:14:45    136      0
+  6   00:06:51   2075      0   00:13:39   2134      0
+  5   00:28:39   5190      0   00:35:20   4589      0
+  4   00:06:13    483      0   00:19:12    376      0
+  3   00:06:02   1000      0   00:08:34    620      0
+  2   00:05:45    954      0   00:08:40    763      0
+  1   00:07:01    127      0   00:07:46    112      0
 ```
 
 ### 2019
