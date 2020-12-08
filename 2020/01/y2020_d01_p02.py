@@ -1,15 +1,13 @@
-import fileinput
+import fileinput as fi
 
+def solve(a, T=2020):
+    for i, x in enumerate(a):
+        s = set()
+        for y in a[i+1:]:
+            z = T - y - x
+            if y in s:
+                return x * y * z
 
-def solve(nums, target, N):
-    for i, x in enumerate(nums, 1):
-        nt = target - x
-        if nt == 0 and N == 1:
-            return x
-        elif nt > 0 and N > 1:
-            nx = solve(nums[i:], nt, N-1)
-            if nx:
-                return x * nx
+            s.add(z)
 
-nums = [int(line.rstrip()) for line in fileinput.input()]
-print(solve(nums, 2020, 3))
+print(solve([int(x) for x in fi.input()]))
