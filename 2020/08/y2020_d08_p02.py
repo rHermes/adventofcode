@@ -1,36 +1,18 @@
 import fileinput
-import functools as ft
-import itertools as it
-import more_itertools as mit
 
-# findall
-# parse
-# search
-
-from parse import *
-
+# Read in program
 prog = []
 for line in fileinput.input():
-    line = line.rstrip()
-    if line == "":
-        continue
-    op, arg = line.split(" ")
-    prog.append([op, int(arg)])
-
+    if line.rstrip():
+        op, arg = line.rstrip().split(" ")
+        prog.append([op, int(arg)])
 
 def does_terminate(prog):
-    seen = set()
-    ip = 0
-    acc = 0
-    while True:
-        if ip in seen:
-            return None
-        
-        if ip == len(prog):
-            return acc
-        
+    # By adding the one beyond to seen, we exit when needed
+    seen = set([len(prog)])
+    ip, acc = 0, 0
+    while ip not in seen:
         seen.add(ip)
-
         op, arg = prog[ip]
 
         if op == "acc":
@@ -43,29 +25,20 @@ def does_terminate(prog):
         else:
             raise Exception("WTF")
 
-for i in range(len(prog)):
-    op, arg = prog[i]
+    if ip == len(prog):
+        return acc
+
+# Map between instructions
+M = {"jmp": "nop", "nop": "jmp"}
+
+for (i, (op, arg)) in enumerate(prog):
     if op == "acc":
         continue
 
-    # try to flip it
-    if op  == "jmp":
-        new_op, old_op = "nop", "jmp"
-    else:
-        new_op, old_op = "jmp", "nop"
-    
-    prog[i][0] = new_op
+    prog[i][0] = M[op]
     ans = does_terminate(prog)
+    prog[i][0] = M[M[op]]
     if ans:
-        print(ans)
-    
-    prog[i][0] = old_op
+        break
 
-
-
-
-
-
-
-
-# print(acc)
+print(ans)

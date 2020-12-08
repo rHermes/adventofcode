@@ -1,33 +1,15 @@
 import fileinput
-import functools as ft
-import itertools as it
-import more_itertools as mit
-
-# findall
-# parse
-# search
-
-from parse import *
 
 prog = []
 for line in fileinput.input():
-    line = line.rstrip()
-    if line == "":
-        continue
-    op, arg = line.split(" ")
-    prog.append([op, int(arg)])
-
-print(prog)
+    if line.rstrip():
+        op, arg = line.rstrip().split(" ")
+        prog.append([op, int(arg)])
 
 seen = set()
-ip = 0
-acc = 0
-while True:
-    if ip in seen:
-        break
-    
+ip, acc = 0, 0
+while ip not in seen:
     seen.add(ip)
-
     op, arg = prog[ip]
 
     if op == "acc":
@@ -39,8 +21,5 @@ while True:
         ip += arg
     else:
         raise Exception("WTF")
-
-
-
 
 print(acc)
