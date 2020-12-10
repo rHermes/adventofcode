@@ -2,11 +2,11 @@ import fileinput as fi
 
 nums = frozenset([int(x) for x in fi.input() if x.rstrip()] + [0,])
 
-diffs = {1: 0, 2: 0, 3: 1}
+d1, d3 = 0, 1
 for x in nums:
-    for y in range(1,4):
-        if x+y in nums:
-            diffs[y] += 1
-            break
+    if x+1 in nums:
+        d1 += 1
+    elif x+3 in nums:
+        d3 += 1 
 
-print(diffs[1]*diffs[3])
+print(d1*d3)

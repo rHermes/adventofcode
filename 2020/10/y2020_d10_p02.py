@@ -1,6 +1,6 @@
 import fileinput as fi
 
-nums = frozenset([int(x) for x in fi.input() if x.rstrip()] + [0,])
+nums = frozenset([int(x) for x in fi.input() if x.rstrip()])
 
 # We rely on the cache for terminating, makes the code a bit shorter.
 def solver(nums, cur, cache):
