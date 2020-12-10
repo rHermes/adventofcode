@@ -31,7 +31,7 @@ for x in lines:
     span.append(x)
     while s > TARGET:
         s -= span.popleft()
-        
+
     if s == TARGET:
         print(min(span) + max(span))
         break
