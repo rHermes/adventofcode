@@ -18,6 +18,10 @@ AoC that I've solved so far. It also turned out very clean when I cleaned it up 
 Real times where 00:05:49.26 for part 1 and 00:04:43.44 for part 2, for a total
 of 00:10:32.7. I wouldn't have gotten on the leaderboards, but just noting it down.
 
+#### 10
+
+Very cool to be able to solve this with tribonacci!
+
 ### 2019
 
 #### 12
