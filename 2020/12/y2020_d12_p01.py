@@ -1,5 +1,5 @@
 import fileinput as fi
-
+from collections import deque
 
 lookup = {
     "N": (0, 1),
@@ -8,48 +8,29 @@ lookup = {
     "W": (-1, 0)
 }
 
-# First is left, second rigth
-lookup_turn = {
-    "N": ["W", "E"],
-    "E": ["N", "S"],
-    "S": ["E", "W"],
-    "W": ["S", "N"]
-}
-
-
 def solve(insts):
-    d = 'E'
+    # We use a queue, because it has easy rolling
+    d = deque(lookup[x] for x in "ESWN")
     x, y = 0, 0
 
-    # print(x, y)
-    for nd, amt in insts:
-        # print(nd, amt)
-        if nd == "F":
-            dx, dy = lookup[d]
+    for inst, amt in insts:
+        if inst == "F":
+            dx, dy = d[0]
             x += dx*amt
             y += dy*amt
-        elif nd in lookup:
-            dx, dy = lookup[nd]
+        elif inst in lookup:
+            dx, dy = lookup[inst]
             x += dx*amt
             y += dy*amt
-        elif nd in "LR":
-            while amt > 0:
-                d = lookup_turn[d][nd != "L"]
-                amt -= 90
+        elif inst in "LR":
+            a = amt//90
+            if inst == "R":
+                a = -a
+            d.rotate(a)
         else:
             raise Error("WTF!")
 
-        # print(x, y, d)
-
     return abs(x) + abs(y)
 
-insts = []
-for line in fi.input():
-    if not line.rstrip():
-        continue
-
-    d, xr = line[0], int(line[1:])
-    insts.append((d, xr))
-
-
+insts = [(x[0], int(x[1:])) for x in fi.input() if x.rstrip()]
 print(solve(insts))
