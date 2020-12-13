@@ -22,6 +22,10 @@ of 00:10:32.7. I wouldn't have gotten on the leaderboards, but just noting it do
 
 Very cool to be able to solve this with tribonacci!
 
+#### 13
+
+Part 2 of this day was the first good task this year and I really liked it!
+
 ### 2019
 
 #### 12
@@ -50,6 +54,7 @@ by doing this.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 13   00:05:29    311      0   01:21:29   2157      0
  12   00:46:57   5644      0   00:56:39   3695      0
  11   00:16:06    665      0   00:26:48    647      0
  10   00:44:05   8561      0   01:03:06   3448      0
