@@ -1,15 +1,17 @@
+# Here we use the chinese remainder theorem, the sieving method.
 import fileinput as fi
-from math import lcm
-
 
 inp = fi.input()
 erl = int(next(inp))
-busses = ((i, int(x)) for (i,x) in enumerate(next(inp).split(",")) if x.rstrip() != 'x')
+buses = [((-i) % int(x), int(x)) for (i,x) in enumerate(next(inp).split(",")) if x.rstrip() != 'x']
 
-t, df = 0, 1
-for i, b in busses:
-    while (t+i) % b != 0:
+# Sorting the inputs makes this much faster
+buses = sorted(buses, key=lambda x: x[1], reverse=True)
+
+t, df = buses[0]
+for i, b in buses[1:]:
+    while (t-i) % b != 0:
         t += df
-    df = lcm(b, df)
+    df *= b
 
 print(t)
