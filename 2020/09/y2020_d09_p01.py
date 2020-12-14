@@ -16,4 +16,4 @@ def solve(stream, N=25):
         nums.append(x)
 
 # Create generator to read from list
-print(solve(int(x) for x in fileinput.input() if x.rstrip()))
+print(solve(int(x) for x in fileinput.input()))

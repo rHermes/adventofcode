@@ -2,7 +2,7 @@
 # tribonacci I realized that this could be done with just 3 numbers.
 import fileinput as fi
 
-nums = sorted([int(x) for x in fi.input() if x.rstrip()])
+nums = sorted([int(x) for x in fi.input()])
 
 # we use tribbonacci here
 a, b, c, last = [nums[0] == x for x in [3,2,1,0]]

@@ -2,9 +2,8 @@ import fileinput
 
 prog = []
 for line in fileinput.input():
-    if line.rstrip():
-        op, arg = line.rstrip().split(" ")
-        prog.append([op, int(arg)])
+    op, arg = line.rstrip().split(" ")
+    prog.append([op, int(arg)])
 
 seen = set()
 ip, acc = 0, 0

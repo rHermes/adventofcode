@@ -7,7 +7,7 @@ ECL = frozenset(("amb", "blu", "brn", "gry", "grn", "hzl", "oth"))
 
 # We solve this with an iterator to keep the memory requirements
 def passports():
-    c = {} 
+    c = {}
     for l in fileinput.input():
         l = l.rstrip()
         if l == "":

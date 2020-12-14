@@ -20,7 +20,7 @@ def solve_part1(stream, N=25):
 
         nums.append(x)
 
-lines = [int(x) for x in fileinput.input() if x.rstrip()]
+lines = [int(x) for x in fileinput.input()]
 
 TARGET = solve_part1(iter(lines))
 

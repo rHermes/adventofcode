@@ -32,5 +32,5 @@ def solve(insts):
 
     return abs(x) + abs(y)
 
-insts = [(x[0], int(x[1:])) for x in fi.input() if x.rstrip()]
+insts = [(x[0], int(x[1:])) for x in fi.input()]
 print(solve(insts))

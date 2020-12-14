@@ -55,7 +55,7 @@ def step(M, N, jmp):
     return changed
 
 
-lines = [line.rstrip() for line in fileinput.input() if line.rstrip()]
+lines = [line.rstrip() for line in fileinput.input()]
 ROWS = len(lines)
 COLS = len(lines[0])
 

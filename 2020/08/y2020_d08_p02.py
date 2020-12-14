@@ -3,9 +3,8 @@ import fileinput
 # Read in program
 prog = []
 for line in fileinput.input():
-    if line.rstrip():
-        op, arg = line.rstrip().split(" ")
-        prog.append([op, int(arg)])
+    op, arg = line.rstrip().split(" ")
+    prog.append([op, int(arg)])
 
 def does_terminate(prog):
     # By adding the one beyond to seen, we exit when needed
