@@ -1,53 +1,12 @@
-import math
-import re
-
-import z3
-
 import fileinput as fi
-import itertools as it
-import functools as ft
 
-import more_itertools as mit
+def solve(init, N):
+    spoken = {k: v for (v,k) in enumerate(init)}
+    last = init[-1]
+    for i in range(len(init),N):
+        spoken[last], last = i-1, i-1 - spoken.get(last, i-1)
 
-import collections
+    return last
 
-# findall
-# search
-# parse
-from parse import *
-
-lines = []
-
-for line in fi.input():
-    # w = parse()
-    lines.append(line.rstrip())
-
-numbers = [int(x) for x in lines[0].split(",")]
-
-spoken = collections.defaultdict(lambda x: 0)
-# spoken2 = collections.defaultdict(lambda x: 0)
-
-
-i = 1
-last = 0
-for x in numbers: 
-    print(i, x)
-    spoken[x] = i
-    last = x
-    i += 1
-
-while i <= 30000000:
-    if last in spoken:
-        df = i-1 - spoken[last]
-        spoken[last] = i-1
-    else:
-        spoken[last] = i-1
-        df = 0
-
-    # print(i, df)
-    last = df
-    i += 1
-
-print(last)
-
-
+numbers = [int(x) for x in next(fi.input()).split(",")]
+print(solve(numbers, 30000000))
