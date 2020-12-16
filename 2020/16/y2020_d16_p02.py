@@ -1,104 +1,74 @@
 import fileinput as fi
-
-import re
 import itertools as it
-import functools as ft
+from math import prod
 
-import more_itertools as mit
+# I know I could have used regex here, but I prefer to not use it for very
+# simple inputs like this, where it just adds overhead.
+def parse_range(x):
+    l, h = x.split("-")
+    return (int(l), int(h))
 
-import math
+def parse_field(line):
+    *names, a, _, b = line.split(" ")
+    return (" ".join(names)[:-1], parse_range(a), parse_range(b))
 
-# findall
-# search
-# parse
-from parse import *
+def parse_fields(lines):
+    fields = {}
+    for line in lines:
+        if not line:
+            return fields
 
-lines = []
+        name, a, b = parse_field(line)
+        fields[name] = (a,b)
 
-for line in fi.input():
-    lines.append(line.rstrip())
+    raise "Invalid input!"
 
+# Returns an iterator for your and the nearby tickets
+def parse_tickets(lines):
+    for line in lines:
+        # Just skip other lines
+        if not line or line[0] in "yn":
+            continue
 
-i = 0
-fields = {}
-for line in lines:
-    if line == "":
-        i += 2
-        break
-    name, one_x, two_x, one_y, two_y = parse("{}: {:d}-{:d} or {:d}-{:d}", line).fixed
-    fields[name] = ((one_x, two_x), (one_y, two_y))
-    i += 1
+        yield [int(x) for x in line.split(",")]
 
-# print(fields)
+lines = map(str.rstrip, fi.input())
 
-valid = []
-for line in lines[i:]:
-    if line == "":
-        i += 2
-        break
-    nums = [int(x) for x in line.split(",")]
-    for num in nums:
-        for name, ((x1,x2), (y1,y2)) in fields.items():
-            if (x1 <= num <= x2 or y1 <= num <= y2):
-                break
-        else:
+# We should build and interval tree here, but we just can't be bothered
+fields = parse_fields(lines)
+tickets = parse_tickets(lines)
+
+our_ticket = None
+fields_pos = {name: set(range(len(fields))) for name in fields.keys()}
+for ticket in tickets:
+    if our_ticket is None:
+        our_ticket = ticket
+
+    changes = []
+    for (i,x) in enumerate(ticket):
+        valid = 0
+        for name, ((al,ah), (bl,bh)) in fields.items():
+            if al <= x <= ah or bl <= x <= bh:
+                valid += 1
+            else:
+                changes.append((name,i))
+
+        if valid == 0:
             break
     else:
-        # print(nums)
-        valid.append(nums)
-    i += 1
+        # We made it all the way through, now we need to apply the changes
+        for name, i in changes:
+            fields_pos[name].remove(i)
 
-ans = 0
-valid_fields = {k: 0 for k in fields.keys()}
-for line in lines[i:]:
-    if line == "":
-        break
-    nums = [int(x) for x in line.split(",")]
-    for num in nums:
-        for name, ((x1,x2), (y1,y2)) in fields.items():
-            if (x1 <= num <= x2 or y1 <= num <= y2):
-                break
-        else:
-            break
-    else:
-        # print(nums)
-        valid.append(nums)
-
-    # print(line)
-
-vf = {}
-for k in fields.keys():
-    vf[k] = [True for _ in range(len(valid[0]))]
-
-
-for nums in valid:
-    for (i,num) in enumerate(nums):
-        for name, ((x1,x2), (y1,y2)) in fields.items():
-            if not (x1 <= num <= x2 or y1 <= num <= y2):
-                vf[name][i] = False
-
-# print(vf)
-field_pos = {}
 taken = set()
-while len(field_pos) != len(fields):
-    for k, v in vf.items():
-        if sum(v) == 1:
-            for i, l in enumerate(v):
-                if l:
-                    field_pos[k] = i
+positions = {}
+while len(positions) != len(fields):
+    for field, fpos in fields_pos.items():
+        ppos = fpos - taken
+        if len(ppos) == 1:
+            x = ppos.pop()
+            positions[field] = x
+            taken.add(x)
 
-    for k, v in vf.items():
-        for l in field_pos.values():
-            v[l] = False
 
-    # break
-
-# print(field_pos)
-# for nums in valid:
-
-ans = 1
-for k, v in field_pos.items():
-    if k.startswith("departure"):
-        ans *= valid[0][v]
-
-print(ans)
+print(prod(our_ticket[v] for k,v in positions.items() if k.startswith("departure")))
