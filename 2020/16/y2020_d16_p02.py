@@ -1,6 +1,5 @@
 import fileinput as fi
 import itertools as it
-from math import prod
 
 # I know I could have used regex here, but I prefer to not use it for very
 # simple inputs like this, where it just adds overhead.
@@ -70,5 +69,9 @@ while len(positions) != len(fields):
             positions[field] = x
             taken.add(x)
 
+ans = 1
+for k, v in positions.items():
+    if k.startswith("departure"):
+        ans *= our_ticket[v]
 
-print(prod(our_ticket[v] for k,v in positions.items() if k.startswith("departure")))
+print(ans)
