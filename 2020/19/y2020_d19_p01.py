@@ -9,12 +9,10 @@ def parse_rules(rs):
             break
 
         num, rest = line.split(": ")
-
         if rest[0] == '"':
-            d[int(num)] = (True,rest[1:-1])
+            d[num] = rest[1:-1]
         else:
-            pss = [[int(x) for x in alt.split()] for alt in rest.split(" | ")]
-            d[int(num)] = (False, pss)
+            d[num] = [alt.split() for alt in rest.split(" | ")]
 
     return d
 
@@ -25,8 +23,8 @@ def build_regex(rules, num, cache):
 
     dfs = lambda x: build_regex(rules, x, cache)
 
-    done, alts = rules[num]
-    if done:
+    alts = rules[num]
+    if type(alts) == str:
         ans = alts
     else:
         pos = ["".join(dfs(x) for x in alt) for alt in alts]
@@ -41,7 +39,7 @@ def build_regex(rules, num, cache):
 G = map(str.rstrip, fi.input())
 
 rules = parse_rules(G)
-rule0 = "^{}$".format(build_regex(rules, 0, {}))
+rule0 = "^{}$".format(build_regex(rules, "0", {}))
 
 # Find all matches in the rest of the string
 print(sum(1 for _ in re.finditer(rule0, "\n".join(G), flags=re.MULTILINE)))
