@@ -1,6 +1,7 @@
 import fileinput as fi
 import re
 
+
 def parse_rules(rs):
     d = {}
     for line in rs:
@@ -29,19 +30,18 @@ def build_regex(rules, num, cache):
         ans = alts
     else:
         pos = ["".join(dfs(x) for x in alt) for alt in alts]
-        ans = "({})".format("|".join(pos))
+        if len(pos) == 1:
+            ans = pos[0]
+        else:
+            ans = "(?:{})".format("|".join(pos))
 
     cache[num] = ans
     return ans
 
-
 G = map(str.rstrip, fi.input())
 
 rules = parse_rules(G)
-rule0 = build_regex(rules, 0, {})
-
-# Not really needed, but helps make the program clearer
-prog = re.compile("^" + rule0 + "$", flags=re.MULTILINE)
+rule0 = "^{}$".format(build_regex(rules, 0, {}))
 
 # Find all matches in the rest of the string
-print(sum(1 for _ in prog.finditer("\n".join(G))))
+print(sum(1 for _ in re.finditer(rule0, "\n".join(G), flags=re.MULTILINE)))

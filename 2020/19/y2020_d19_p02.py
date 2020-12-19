@@ -1,6 +1,7 @@
 import fileinput as fi
 import re
 
+
 def parse_rules(rs):
     d = {}
     for line in rs:
@@ -25,7 +26,7 @@ def build_regex(rules, num, cache):
     dfs = lambda x: build_regex(rules, x, cache)
 
     if num == 8:
-        ans = "({}+)".format(dfs(42))
+        ans = "(?:{}+)".format(dfs(42))
 
     elif num == 11:
         p42 = dfs(42)
@@ -34,7 +35,7 @@ def build_regex(rules, num, cache):
         for x in range(2,10):
             pss += "|{}{{{}}}{}{{{}}}".format(p42,x,p31,x)
 
-        ans = "(" + pss + ")"
+        ans = "(?:" + pss + ")"
 
     else:
         done, alts = rules[num]
@@ -42,7 +43,10 @@ def build_regex(rules, num, cache):
             ans = alts
         else:
             pos = ["".join(dfs(x) for x in alt) for alt in alts]
-            ans = "({})".format("|".join(pos))
+            if len(pos) == 1:
+                ans = pos[0]
+            else:
+                ans = "(?:{})".format("|".join(pos))
 
     cache[num] = ans
     return ans
@@ -51,10 +55,7 @@ def build_regex(rules, num, cache):
 G = map(str.rstrip, fi.input())
 
 rules = parse_rules(G)
-rule0 = build_regex(rules, 0, {})
-
-# Not really needed, but helps make the program clearer
-prog = re.compile("^" + rule0 + "$", flags=re.MULTILINE)
+rule0 = "^{}$".format(build_regex(rules, 0, {}))
 
 # Find all matches in the rest of the string
-print(sum(1 for _ in prog.finditer("\n".join(G))))
+print(sum(1 for _ in re.finditer(rule0, "\n".join(G), flags=re.MULTILINE)))
