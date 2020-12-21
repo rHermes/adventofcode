@@ -26,6 +26,10 @@ Very cool to be able to solve this with tribonacci!
 
 Part 2 of this day was the first good task this year and I really liked it!
 
+#### 20
+
+Best task of the year so far, even if it is sort of simple once you know the trick.
+
 ### 2019
 
 #### 12
@@ -54,6 +58,7 @@ by doing this.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 21   00:11:06     89     12   00:15:12     83     18
  20   03:26:09   3552      0   13:45:26   4073      0
  19   00:28:37    516      0   01:16:27    964      0
  18   00:30:32   1523      0   00:43:14   1196      0
