@@ -1,75 +1,25 @@
 import fileinput as fi
-
-import re
+from collections import Counter
 import itertools as it
-import functools as ft
-
-import more_itertools as mit
-
-import math
-
-import collections
-
-import numpy as np
-
-# import z3
-
-# findall
-# search
-# parse
-from parse import *
-
-INPUT = "".join(fi.input())
-
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-
-
-rules = []
-for line in lines:
-    if not line:
-        break
-    a, b = line.split(" (contains ")
-    a = a.split()
-    b = b[:-1].split(", ")
-    rules.append((a,b))
-
 
 all_foods = set()
-all_algs = set()
-times = {}
-for foods, algs in rules:
-    for food in foods:
-        times[food] = times.get(food,0) + 1
-        all_foods.add(food)
+times = Counter()
+
+pos = {}
+for line in map(str.rstrip, fi.input()):
+    a, b = line.split(" (contains ")
+    foods = set(a.split())
+    algs = set(b[:-1].split(", "))
+
+    all_foods |= foods
+    times.update(foods)
 
     for alg in algs:
-        all_algs.add(alg)
+        if alg not in pos:
+            pos[alg] = foods.copy()
+        else:
+            pos[alg] &= foods
 
-# print(rules)
+bad = set(it.chain.from_iterable(pos.values()))
 
-# print(all_algs)
-ans = {alg: None for alg in all_algs}
-
-for alg in all_algs:
-    for foods, algs in rules:
-        if alg in algs:
-            if not ans[alg]:
-                ans[alg] = set(foods)
-            else:
-                ans[alg] &= set(foods)
-
-# print(ans)
-
-maybe_alg = all_foods.copy()
-for alg, foods in ans.items():
-    maybe_alg -= foods
-
-# print(maybe_alg)
-# print(len(maybe_alg))
-
-rans = 0
-for food in maybe_alg:
-    rans += times[food]
-
-print(rans)
+print(sum(times[food] for food in (all_foods - bad)))
