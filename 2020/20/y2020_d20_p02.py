@@ -1,215 +1,153 @@
 import fileinput as fi
 import itertools as it
-import functools as ft
-import numpy as np
-import collections
+from collections import deque
 
+def get_images():
+    groups = "".join(fi.input()).split("\n\n")
+    for group in groups:
+        lines = group.splitlines()
+        tid = int(lines[0][5:-1])
+        img = [[x == '#' for x in line] for line in lines[1:]]
+        yield (tid,img)
 
-def parse_input(INPUT):
-    IN = None
-    images = {}
-    groups = INPUT.split("\n\n")
-    for grp in INPUT.split("\n\n"):
-        # print(grp)
-        lins = list(grp.splitlines())
-        tid = int(lins[0][5:-1])
-        img = np.array([[x == '#' for x in line] for line in lins[1:]])
-        if IN == None:
-            IN = len(img[0])
-        images[tid] = img
+def reverse_bits(n, no_of_bits):
+    """reverse bits in number"""
+    result = 0
+    for i in range(no_of_bits):
+        result <<= 1
+        result |= n & 1
+        n >>= 1
+    return result
 
-    PN = int(len(images)**(0.5))
+def get_int_borders(image):
+    BN = len(image)
+    n = sum(image[0][i] << (BN-1-i) for i in range(BN))
+    e = sum(image[i][BN-1] << (BN-1-i) for i in range(BN))
+    s = sum(image[BN-1][i] << (BN-1-i) for i in range(BN))
+    w = sum(image[i][0]  << (BN-1-i) for i in range(BN))
+    return (n, e, s, w)
 
-    return (PN,IN,images)
+def rot_borders(borders, BN):
+    """return the border rotated clockwise"""
+    n,e,s,w = borders
+    return (reverse_bits(w, BN), n, reverse_bits(e, BN), s)
 
+def flip_borders(borders, BN):
+    """returns the border flipped upside down"""
+    n,e,s,w = borders
+    return (s, reverse_bits(e, BN), n, reverse_bits(w, BN))
 
-def morph_image(image, ud, rot):
-    M = image
+def morph_borders(borders, ud, rot, BN):
+    """Returns a version of borders, which is rotated"""
+    M = borders
     if ud:
-        M = np.flipud(M)
+        M = flip_borders(M, BN)
 
-    return np.rot90(M,-rot)
+    for _ in range(rot):
+        M = rot_borders(M, BN)
 
-def get_side(image, side):
-    if side == 0:
-        return image[0]
-    elif side == 1:
-        return image[:,-1]
-    elif side == 2:
-        return image[-1]
-    elif side == 3:
-        return image[:,0]
-    else:
-        raise "invalid side given!"
-
-# yields all possible versions of an image
-def generate_permutations(image):
-    for flipud in [False, True]:
-        for rot in [0,1,2,3]:
-            yield (flipud, rot, morph_image(image, flipud, rot))
-
-def print_image(image):
-    for v in image:
-        for vv in v:
-            if vv:
-                print("#", end="")
-            else:
-                print(".", end="")
-        print("")
-
-# prints just the ids or print the board too
-def print_board(images, board, ids=True):
-    assert(ids == True)
-
-    for y in board:
-        for x in y:
-            if x:
-                print("{} ".format(x[2]), end="")
-            else:
-                print("XXXX ", end="")
-        print("")
-        # for ud, rot, tid in y:
-        #     print()
+    return M
 
 
+# This has been tested to make sure it's correct. DON'T TOUCH!
+def orient(i, j, rev):
+    """What rotation must we apply to get border i, to border j, rev is true if it must be reversed"""
+    O = bool(i % 2)
+    E = not O
+
+    dst = (j - i) % 4
+    if dst == 0:
+        return (rev, rev*2*E)
+    elif dst == 1:
+        return (rev ^ O, 1 + 2*(rev and E))
+    elif dst == 2:
+        return (not rev, 2*(O or rev))
+    elif dst == 3:
+        return (rev ^ E, 3 - 2*(not rev and E))
+
+def solve_puzzle(images):
+    borders = {tid: get_int_borders(image) for tid, image in images.items()}
+    PN = int(len(images)**(0.5))
+    ids = list(borders.keys())
 
 
-# Takes in an image, an iterator of others, and a side to compare against.
-# This will return the number of items which match that side.
-# Takes the images, our id and a set of other ids
-def check_side(images, image, others, side):
-    s = get_side(image, side)
-    ans = []
-    for oid in others:
-        for ud,rot,perm in generate_permutations(images[oid]):
-            o = get_side(perm, (side+2)%4)
-            if (s == o).all():
-                ans.append((ud,rot,oid))
+    pile = set(ids[1:])
+    places = {(0,0): (ids[0], False, 0)}
+    frontier = deque([(0,0)])
+    BN = len(images[ids[0]])
 
-    return ans
-
-
-def check_sides(images, image, others):
-    ans = [[],[],[],[]]
-    for oid in others:
-        for ud,rot,perm in generate_permutations(images[oid]):
-            for side in [0,1,2,3]:
-                s = get_side(image, side)
-                o = get_side(perm, (side+2)%4)
-                if (s == o).all():
-                    ans[side].append((ud,rot,oid))
-
-    return ans
-
-# This find the borders pieces in the pile
-def find_borders(images, pile):
-    corners = set()
-    borders = set()
-    for tid in pile:
-        sides = check_sides(images, images[tid], ids - set((tid,)))
-        matches = sum(len(x) == 0 for x in sides)
-        if matches == 2:
-            corners.add(tid)
-        if matches == 1:
-            borders.add(tid)
-
-    # We return the corners and borders
-    return (corners, borders)
-
-# Builds the entire picture frame, and returns it as an array
-# of the rotations and such of the picture
-def build_frame(images, corners, borders):
-    # We just pick the corner with the least value
-    start_corner = min(corners)
-    # print("We will start with {} in the upper left corner".format(start_corner))
-    PN = len(borders)//4 + 2
-    board = [[None for _ in range(PN)] for _ in range(PN)]
-
-    # Now we place the first piece, orienting it so that it's done
-    for ud, rot, perm in generate_permutations(images[start_corner]):
-        north, east, south, west = check_sides(images, perm, borders - set([start_corner]))
-        if len(north) == 0 and len(west) == 0:
-            assert(len(east) == 1)
-            assert(len(south) == 1)
-            break
-    else:
-        raise "Not valid orientation found" 
-
-    # These are the ids that are taken
-    taken = set([start_corner, east[0][2], south[0][2]])
-
-    # We fill in the ones we know
-    board[0][0] = (ud, rot, start_corner)
-    board[0][1] = east[0]
-    board[1][0] = south[0]
-
-    # Now to simply build the rest of the picture,
-    # assuming that there is only one 
-    frontier = collections.deque([(0,1), (1,0)])
     while frontier:
-        py,px = frontier.pop()
-        pud, prot, pid = board[py][px]
-        pimg = morph_image(images[pid], pud, prot)
-        # print("We are processing ({},{}) which has id {}".format(px,py, pid))
+        px, py = frontier.popleft()
+        pid, pud, prot = places[(px,py)]
 
-        north, east, south, west = check_sides(images, pimg, (borders | corners) - taken)
-        assert(all(len(x) in [0,1] for x in [north, east, south, west]))
+        pborders = morph_borders(borders[pid], pud, prot, BN)
+        for i, (dx,dy) in enumerate([(0,-1), (1,0), (0,1), (-1,0)]):
+            spot = (px+dx,py+dy)
+            if spot in places:
+                continue
 
-        if north:
-            tmp = north[0]
-            board[py-1][px] = tmp
-            frontier.appendleft((py-1,px))
-            taken.add(tmp[2])
+            pborder = pborders[i]
+            rev_pborder = reverse_bits(pborder, BN)
 
-        if east:
-            tmp = east[0]
-            board[py][px+1] = tmp
-            frontier.appendleft((py,px+1))
-            taken.add(tmp[2])
+            for tid in pile:
+                tborders = borders[tid]
 
-        if south:
-            tmp = south[0]
-            board[py+1][px] = tmp
-            frontier.appendleft((py+1,px))
-            taken.add(tmp[2])
+                for j, tborder in enumerate(tborders):
+                    if tborder in [pborder, rev_pborder]:
+                        mud, mrot = orient(j,(i+2)%4, tborder == rev_pborder)
+                        pile.remove(tid)
+                        places[spot] = (tid,mud,mrot)
+                        frontier.append(spot)
+                        break
+                else:
+                    continue
 
-        if west:
-            tmp = west[0]
-            board[py][px-1] = tmp
-            frontier.appendleft((py,px-1))
-            taken.add(tmp[2])
-
-        # assert(sum(len(x) == ))
-
-    return board
+                break
 
 
-# This fills the frame, starting at 
-def fill_frame(images, board, pile, taken):
-    PN = len(borders)//4 + 2
-    board = board.copy()
+    mx,my = min(places.keys())
+    return [[places[(mx+dx,my+dy)] for dx in range(PN)] for dy in range(PN)]
 
-    # We fill the puzzle from upper left corner always going up and down
-    py, px = 1, 1
-    while not board[py][px]:
-        # print("We are checking out ({},{})".format(px,py))
-        # Check above us
-        # print(board)
-        nud, nrot, nid = board[py-1][px]
-        nimg = morph_image(images[nid], nud, nrot)
+def rotate_image(image):
+    ans = [[] for _ in range(len(image))]
+    for row in reversed(image):
+        for i,c in enumerate(row):
+            ans[i].append(c)
 
-        ns = check_side(images, nimg, pile - taken, 2)
-        assert(len(ns) == 1)
-        board[py][px] = ns[0]
-        taken.add(ns[0][2])
+    return ans
 
+def flip_image(image):
+    return list(reversed(image))
 
-        # break
-        # move on to the next cell
-        if board[py+1][px]:
-            py, px = 1, px + 1
-        else:
-            py += 1
+def morph_image(image, up, rot):
+    M = image
+    if up:
+        M = flip_image(M)
+    for _ in range(rot):
+        M = rotate_image(M)
+
+    return M
+
+def trim_image(image):
+    return [x[1:-1] for x in image[1:-1]]
+
+# Returns a 2d bool array
+def create_picture(images, solved):
+    PN = int(len(images)**(0.5))
+    BN = len(next(iter(images.values())))
+
+    pic = []
+    for row in solved:
+        prow = [[] for _ in range(BN-2)]
+
+        for tid, ud, rot in row:
+            image = morph_image(trim_image(images[tid]), ud, rot)
+            for i, irow in enumerate(image):
+                prow[i].extend(irow)
+
+        pic.extend(prow)
+
+    return pic
 
 # Returns the positions of an offset x
 def get_dragon_pos():
@@ -219,66 +157,52 @@ def get_dragon_pos():
         " #  #  #  #  #  #   ",
     ]
     pos = []
+    mx = 0
+    my = 0
     for y, row in enumerate(dragon):
         for x, c in enumerate(row):
             if c == "#":
-                pos.append([y,x])
+                if mx < x:
+                    mx = x
+                my = y
+                pos.append((y,x))
 
-    return np.array(pos)
+    return (pos,mx,my)
 
-
-def build_image(images, board):
-    act = [
-        [morph_image(images[tid], ud, rot)[1:-1,1:-1] for ud,rot,tid in row]
-        for row in board
-    ]
-    return np.block(act)
 
 def find_dragons(pic):
-    ROWS, COLS = pic.shape
-    pos = get_dragon_pos()
-    mx = pos[0][1]+2
+    ROWS, COLS = len(pic), len(pic[0])
+    (dd,MX,MY) = get_dragon_pos()
     dragon_pos = []
-    for y in range(ROWS-3):
-        for x in range(COLS-mx):
-            if pic[y + pos[:,0], x + pos[:,1]].all():
+    for y in range(ROWS-MY):
+        for x in range(COLS-MX):
+            for dy, dx in dd:
+                if not pic[y + dy][x + dx]:
+                    break
+            else:
                 dragon_pos.append((y,x))
-
 
     return dragon_pos
 
-
 def water_roughness(pic, dragons):
-    pos = get_dragon_pos()
-    for dy,dx in dragons:
-        pic[dy + pos[:,0], dx + pos[:,1]] = False
+    dd, _, _ = get_dragon_pos()
+    for y,x in dragons:
+        for dy,dx in dd:
+            pic[y+dy][x+dx] = False
 
-    return np.sum(pic)
+    return sum(it.chain.from_iterable(pic))
 
 
-INPUT = "".join(fi.input())
-(PN,IN,images) = parse_input(INPUT)
+images = dict(get_images())
+solved = solve_puzzle(images)
+picture = create_picture(images, solved)
+for i in range(8):
+    if i == 3:
+        picture = flip_image(picture)
 
-# print("The grid of images is {0}x{0}".format(PN))
-# print("An image is {0}x{0}".format(IN))
-
-ids = set(images.keys())
-
-# We cheat here to make experimentation a bit faster
-corners, borders = find_borders(images, ids)
-
-# print("CORNERS:",corners)
-# print("BORDERS:",borders)
-
-board = build_frame(images, corners, borders)
-# print_board(images, board)
-fill_frame(images,board, ids, corners | borders)
-# print("")
-# print_board(images, board)
-
-img = build_image(images, board)
-for ud, rot, perm in generate_permutations(img):
-    dragons = find_dragons(perm)
+    dragons = find_dragons(picture)
     if dragons:
-        # print(dragons)
-        print(water_roughness(perm, dragons))
+        print(water_roughness(picture, dragons))
+        break
+
+    picture = rotate_image(picture)

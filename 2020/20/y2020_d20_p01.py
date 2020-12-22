@@ -1,82 +1,62 @@
 import fileinput as fi
-
-import re
 import itertools as it
-import functools as ft
 
-import more_itertools as mit
+def get_boards():
+    groups = "".join(fi.input()).split("\n\n")
+    for group in groups:
+        lines = group.splitlines()
+        tid = int(lines[0][5:-1])
+        img = [[x == '#' for x in line] for line in lines[1:]]
+        yield (tid,img)
 
-import math
+def get_int_borders(board):
+    BN = len(board)
+    n = sum(board[0][i] << (BN-1-i) for i in range(BN))
+    e = sum(board[i][BN-1] << (BN-1-i) for i in range(BN))
+    s = sum(board[BN-1][i] << (BN-1-i) for i in range(BN))
+    w = sum(board[i][0]  << (BN-1-i) for i in range(BN))
+    return [n, e, s, w]
 
-import collections
+def reverse_bits(n, no_of_bits):
+    result = 0
+    for i in range(no_of_bits):
+        result <<= 1
+        result |= n & 1
+        n >>= 1
+    return result
 
-import z3
+boards = dict(get_boards())
+borders = {tid: get_int_borders(board) for tid, board in boards.items()}
+ids = list(borders.keys())
 
-import numpy as np
-
-# findall
-# search
-# parse
-from parse import *
-
-
-INPUT = "".join(fi.input())
-
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-
-
-VV = None
-ss = {}
-for grp in groups:
-    # print(grp)
-    lins = list(grp.splitlines())
-    tid = int(lins[0][5:-1])
-    img = [[x == '#' for x in line] for line in lins[1:]]
-    if VV == None:
-        VV = len(img[0])
-    ss[tid] = img
+BN = len(boards[ids[0]])
 
 
-N = int(len(ss)**(0.5))
+matches = {i: 0 for i in boards.keys()}
+for i, aid in enumerate(ids):
+    ab = borders[aid]
+    ar = [reverse_bits(x,BN) for x in ab]
+    pls = set(ab + ar)
 
-ids = list(ss.keys())
+    # Not need to check onces with 4 matches pieces around it
+    if matches[aid] == 4:
+        continue
 
-JJ = {}
-for I in range(len(ids)):
-    a = ss[ids[I]]
-    an = [a[0][i] for i in range(VV)]
-    ae = [a[i][VV-1] for i in range(VV)]
-    ass = [a[VV-1][i] for i in range(VV)]
-    aw = [a[i][0] for i in range(VV)]
-    JJ[ids[I]] = 0
+    for j, bid in enumerate(ids[i+1:]):
+        if matches[bid] == 4:
+            continue
 
-
-    for ax in [an, ae, ass, aw]:
-        matches = 0
-        for J in range(len(ids)):
-            if I == J:
-                continue
-
-            b = ss[ids[J]]
-
-            bn = [b[0][i] for i in range(VV)]
-            be = [b[i][VV-1] for i in range(VV)]
-            bss = [b[VV-1][i] for i in range(VV)]
-            bw = [b[i][0] for i in range(VV)]
-
-            # Check if any can match with any
-            for y in [bn, be, bss, bw]:
-                if ax == y or ax == list(reversed(y)):
-
-                    matches += 1
-
-        if matches == 0:
-            JJ[ids[I]] += 1
+        for bx in borders[bid]:
+            if bx in pls:
+                break
+        else:
+            continue
+        matches[aid] += 1
+        matches[bid] += 1
 
 ans = 1
-for k, v in JJ.items():
+for k, v in matches.items():
     if v == 2:
         ans *= k
-    
+
 print(ans)
