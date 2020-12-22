@@ -1,31 +1,26 @@
 import fileinput as fi
 from itertools import takewhile, islice
-from collections import deque
 
 def get_cards():
     G = map(str.strip, fi.input())
-    p1d = deque(map(int, takewhile(bool, islice(G,1,None))))
-    p2d = deque(map(int, takewhile(bool, islice(G,1,None))))
+    p1d = list(map(int, takewhile(bool, islice(G,1,None))))
+    p2d = list(map(int, takewhile(bool, islice(G,1,None))))
     return p1d, p2d
-
-# This returns the object we use to lookup in the hash
-def zsig(p1d, p2d):
-    return (tuple(p1d), tuple(p2d))
 
 # Returns True for p1d and False for p2d
 # modifies both p1d and p2d. Seen is a set
 def game(p1d, p2d, seen):
     while p1d and p2d:
-        zs = zsig(p1d, p2d)
+        zs = tuple(p1d)
         if zs in seen:
             return True
         seen.add(zs)
 
-        p1, p2 = p1d.popleft(), p2d.popleft()
+        p1, p2 = p1d.pop(0), p2d.pop(0)
 
         if p1 <= len(p1d) and p2 <= len(p2d):
-            z1d = deque(islice(p1d, p1))
-            z2d = deque(islice(p2d, p2))
+            z1d = p1d[:p1]
+            z2d = p2d[:p2]
             winner = game(z1d, z2d, set())
         else:
             winner = p2 < p1
