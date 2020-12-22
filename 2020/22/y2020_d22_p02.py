@@ -19,9 +19,7 @@ def game(p1d, p2d, seen):
         p1, p2 = p1d.pop(0), p2d.pop(0)
 
         if p1 <= len(p1d) and p2 <= len(p2d):
-            z1d = p1d[:p1]
-            z2d = p2d[:p2]
-            winner = game(z1d, z2d, set())
+            winner = game(p1d[:p1], p2d[:p2], set())
         else:
             winner = p2 < p1
 
