@@ -25,18 +25,10 @@ int main() {
 	}
 	long cur = nums[0];
 	for (long i = 0; i < 10000000; i++) {
-		/* printf("\n"); */
-		/* printf("Move %ld\n", i+1); */
-		/* for (const auto kk : ls) { */
-		/* 	printf("%ld ", kk); */
-		/* } */
-
-		/* printf("\n"); */
 		auto elem = pos[cur-1];
 		auto a = next(elem);
 		auto b = next(a);
 		auto c = next(b);
-		/* printf("%ld %ld %ld\n", *a, *b, *c); */
 
 		long nextcc = *elem - 1;
 		while (nextcc == 0 || nextcc == *a || nextcc == *b || nextcc == *c) {
@@ -47,7 +39,6 @@ int main() {
 			}
 		}
 
-		/* printf("NExt: %d\n", nextcc); */
 		auto nn = pos[nextcc-1];
 		ls.splice(next(nn), ls, a, next(c));
 		cur = *(next(elem));
@@ -58,14 +49,6 @@ int main() {
 	auto a = next(mm) == ls.end() ? ls.begin() : next(mm);
 	auto b = next(a) == ls.end() ? ls.begin() : next(a);
 	printf("%ld\n", (*a)*(*b));
-	/* while (mm != kk) { */
-	/* 	printf("%ld", *kk); */
-	/* 	kk++; */
-	/* 	if (kk == ls.end()) { */
-	/* 		kk = ls.begin(); */
-	/* 	} */
-	/* } */
-	/* printf("\n"); */
 
 	return 0;
 }
