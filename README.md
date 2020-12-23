@@ -30,6 +30,10 @@ Part 2 of this day was the first good task this year and I really liked it!
 
 Best task of the year so far, even if it is sort of simple once you know the trick.
 
+#### 23
+
+Had to use C++ for this one, python didn't quite cut it.
+
 ### 2019
 
 #### 12
@@ -58,6 +62,7 @@ by doing this.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 23   00:20:36    523      0   01:28:49    935      0
  22   00:13:48   1801      0   00:55:02   1498      0
  21   00:11:06     89     12   00:15:12     83     18
  20   03:26:09   3552      0   13:45:26   4073      0
