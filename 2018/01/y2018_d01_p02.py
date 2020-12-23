@@ -1,12 +1,11 @@
-import fileinput
+import fileinput as fi
+import itertools as it
 
-xs = [int(line.rstrip()) for line in fileinput.input()]
-seen = set()
+seen = {0}
+xs = it.accumulate(it.cycle(map(int,fi.input())))
+for f in xs:
+    if f in seen:
+        break
+    seen.add(f)
 
-cur = 0
-i = 0
-while cur not in seen:
-    seen.add(cur)
-    cur += xs[i]
-    i = (i+1) % len(xs)
-print(cur)
+print(f)

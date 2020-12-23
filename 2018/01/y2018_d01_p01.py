@@ -1,6 +1,3 @@
-import fileinput
+import fileinput as fi
 
-ans = 0
-for line in fileinput.input():
-    ans += int(line.rstrip())
-print(ans)
+print(sum(map(int,fi.input())))
