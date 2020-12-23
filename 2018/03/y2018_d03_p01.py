@@ -1,20 +1,15 @@
-import fileinput
+import fileinput as fi
+import itertools as it
+from collections import defaultdict
 
-
-mem = {}
-for line in fileinput.input():
+mem = defaultdict(int) 
+for line in fi.input():
     parts = line.rstrip().split(" ")
     ids = int(parts[0][1:])
     x, y = [int(k) for k in parts[2][:-1].split(",")]
     w, h = [int(k) for k in parts[3].split("x")]
 
-    for i in range(w):
-        for j in range(h):
-            cx = x + i
-            cy = y + j
+    for p in it.product(range(x,x+w),range(y,y+h)):
+        mem[p] += 1
 
-            mem[(cx,cy)] = mem.get((cx,cy), 0) + 1
-
-over = [(k,v) for k, v in mem.items() if v > 1]
-
-print(len(over))
+print(sum(1 for v in mem.values() if v > 1))
