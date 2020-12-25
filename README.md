@@ -8,6 +8,11 @@ I write more detailed notes in the commit messages!
 
 ### 2020
 
+The first year I placed, just on a single task, and also the first year I had
+an informal contest with Stensrud. This was awesome and it was real close!
+The tasks this year was not that good sadly :/
+
+
 #### 4
 
 This task is very practical, maybe the most practical one of all the tasks in
@@ -36,6 +41,9 @@ Had to use C++ for this one, python didn't quite cut it.
 
 ### 2019
 
+My first year and still the best year I've done so far. The use of intcode throughout
+was mega awesome and the tasks where difficult!
+
 #### 12
 
 I got frustrated and read the hint that the axis are independent. Felt bad
@@ -62,6 +70,7 @@ by doing this.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 25   00:14:07    790      0   00:14:14    658      0
  24   00:26:31   1560      0   00:33:54    760      0
  23   00:20:36    523      0   01:28:49    935      0
  22   00:13:48   1801      0   00:55:02   1498      0
