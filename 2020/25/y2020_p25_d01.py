@@ -1,15 +1,25 @@
 import fileinput as fi
+from math import ceil, sqrt
 
-card, door = [int(x) for x in fi.input()]
+# https://en.wikipedia.org/wiki/Baby-step_giant-step
+# Returns x such that g^x % M == h
+def solve(g, h, M):
+    m = ceil(sqrt(M))
+    table = {}
+    e = 1
+    for i in range(m):
+        table[e] = i
+        e = (e*g) % M
+
+    factor = pow(g, M-m-1, M)
+    e = h
+    for i in range(m):
+        if e in table:
+            return i * m + table[e]
+        e = (e*factor) % M
+
+    return None
 
 M = 20201227
-v = 1
-for i in range(1,M+1):
-    v = (v*7) % M
-    if v == card:
-        print(pow(door,i,M))
-    elif v == door:
-        print(pow(card,i,M))
-    else:
-        continue
-    break
+card, door = [int(x) for x in fi.input()]
+print(pow(door,solve(7,card,M),M))
