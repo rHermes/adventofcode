@@ -1,95 +1,50 @@
 import fileinput as fi
 
 import re
-import itertools as it
-import functools as ft
-
-import more_itertools as mit
-
-import math
-
 import collections
 
-import z3
+import lark
 
-import numpy as np
+def generate_grammar(lines: str) -> str:
+    """generate a grammar from the input"""
+    rules = collections.defaultdict(set)
+    for line in lines.splitlines():
+        rule_name, rest = line.split(" => ")
+        atoms = re.findall(r"[A-Z][a-z]*", rest)
 
-import string
+        # Add the rule literal
+        rules[rule_name].add('"{}"'.format(rule_name))
+        # Add all the atoms
+        rules[rule_name].add(" ".join(map(str.lower, atoms)))
 
-# findall
-# search
-# parse
-from parse import *
+        # We also want to make sure we append literals for all atoms
+        for atom in atoms:
+            rules[atom].add('"{}"'.format(atom))
 
+    sg = ""
+    for name, rule in rules.items():
+        rs = " | ".join(list(rule))
+        sg += "{}: {}\n".format(name.lower(), rs)
+
+    return sg
+
+def count_nodes(tree: lark.Tree) -> int:
+    """Used to get the number of parent nodes in the tree"""
+    return sum(len(x.children) > 0 for x in tree.iter_subtrees())
+
+# Parse the input
 INPUT = "".join(fi.input()).rstrip()
-
 groups = INPUT.split("\n\n")
-# print(groups[-1])
-lines = list(INPUT.splitlines())
 
-reps = collections.defaultdict(set)
-for line in groups[0].splitlines():
-    i, o = line.split(" => ")
-    reps[o].add(i)
-
-# print(reps)
-
-final_atom = "e"
-start_atom = groups[1]
-# print(atom)
+grammar = generate_grammar(groups[0])
+try:
+    parser = lark.Lark(grammar, start="e", parser="lalr")
+    tree = parser.parse(groups[1])
+except:
+    # Some grammars cannot be parsed with the lalr, so it's worth
+    # falling back to the slower, but more robust earley
+    parser = lark.Lark(grammar, start="e", paresr="earley")
+    tree = parser.parse(groups[1])
 
 
-def newpos_rep(atom):
-    pos = set()
-    for i in range(len(atom)):
-        # print("before: [{}], cur: [{}], after: [{}]".format(atom[:i], atom[i:], atom[i+1:]))
-        before = atom[:i]
-        cur = atom[i:]
-
-        for k, repss in reps.items():
-            if cur.startswith(k):
-                after = atom[i+len(k):]
-                for rep in repss:
-                    pos.add(before + rep + after)
-
-    return pos
-
-lens = {start_atom: 0}
-pos = set([start_atom])
-
-# max_len = -1
-max_len = 100000000000000000
-
-while len(pos) > 0:
-    # we find the pos with the smallest current length.
-    min_key = None
-    min_val = 10000000000000000000000
-    for k in pos:
-        # val = lens[k]
-        val = len(k)
-        if val < min_val:
-            min_key = k
-            min_val = val
-
-
-    # if min_val > max_len:
-    if min_val < max_len:
-        max_len = min_val
-        print("new max depth: {}: {}".format(max_len, min_key))
-
-    pos.remove(min_key)
-    # Remove from the heap
-    # if max_len < 25:
-    #     print("we are doing {} with len {}".format(min_key, min_val))
-
-    new_pos = newpos_rep(min_key)
-    for pp in new_pos:
-        if pp == final_atom:
-            print(lens[min_key] + 1)
-            pos.clear()
-            break
-        if pp in lens:
-            continue
-        else:
-            lens[pp] = lens[min_key] + 1
-            pos.add(pp)
+print(count_nodes(tree))
