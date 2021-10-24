@@ -21,9 +21,14 @@ import string
 # parse
 from parse import *
 
+import lark
+import regex
+
 INPUT = "".join(fi.input()).rstrip()
 
 groups = INPUT.split("\n\n")
 # print(groups[-1])
 lines = list(INPUT.splitlines())
 
+for line in lines:
+    print(line)
