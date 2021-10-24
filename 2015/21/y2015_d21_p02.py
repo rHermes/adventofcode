@@ -1,34 +1,5 @@
 import fileinput as fi
-
 import re
-import itertools as it
-import functools as ft
-
-import more_itertools as mit
-
-import math
-
-import collections
-
-import z3
-
-import numpy as np
-
-import string
-
-# findall
-# search
-# parse
-from parse import *
-
-import lark
-import regex
-
-INPUT = "".join(fi.input()).rstrip()
-
-groups = INPUT.split("\n\n")
-# print(groups[-1])
-lines = list(INPUT.splitlines())
 
 shop_text = """
 Weapons:    Cost  Damage  Armor
@@ -54,7 +25,6 @@ Defense +2   40     0       2
 Defense +3   80     0       3
 """.lstrip()
 
-grps = shop_text.split("\n\n")
 
 def parse_group(g):
     ll = g.splitlines()
@@ -81,13 +51,13 @@ def combat(player, boss):
 
     return bHP <= 0
 
-# print(grps[0])
 
+grps = shop_text.split("\n\n")
 weps = parse_group(grps[0])
 arms = parse_group(grps[1])
 rings = parse_group(grps[2])
 
-boss = (103, 9, 2)
+boss = list(map(int,re.findall("[1-9][0-9]*", "".join(fi.input()))))
 
 max_cost = -1
 for wep in weps:
@@ -112,21 +82,10 @@ for wep in weps:
                     ATK += a
                     DEF += d
 
-                if cost < max_cost:
+                if cost <= max_cost:
                     continue
-                
+
                 if not combat((100, ATK, DEF), boss):
                     max_cost = cost
 
-
 print(max_cost)
-
-
-    
-
-
-# print(combat((8, 5, 5), (13, 7, 2)))
-
-
-# for line in lines:
-#     print(line)
