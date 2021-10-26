@@ -50,6 +50,11 @@ I got frustrated and read the hint that the axis are independent. Felt bad
 about this one, since I could have puzzled this out, but I guess I learned
 a lesson about what the real fun is.
 
+#### 13
+
+I ended up reverse engineering this task, using my own dissassembler and
+everything! It was beyond awesome, one of the tasks I'm the proudest about.
+
 #### 16
 
 Had to get a hint about area summation tables to finish it.
