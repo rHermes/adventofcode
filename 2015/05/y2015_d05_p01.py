@@ -1,0 +1,61 @@
+import fileinput as fi
+
+import re
+import itertools as it
+import functools as ft
+
+import more_itertools as mit
+
+import math
+
+import collections
+
+import z3
+
+import numpy as np
+
+import string
+
+# findall
+# search
+# parse
+from parse import *
+
+import lark
+import regex
+
+INPUT = "".join(fi.input()).rstrip()
+
+groups = INPUT.split("\n\n")
+# print(groups[-1])
+lines = list(INPUT.splitlines())
+
+def goodstring(s):
+    c = 0
+    for x in s:
+        if x in "aeiou":
+            c += 1
+
+    if c < 3:
+        return False
+
+    for i in range(len(s)-1):
+        if s[i] == s[i+1]:
+            break
+    else:
+        return False
+
+    for i in range(len(s)-1):
+        if s[i] + s[i+1] in ["ab", "cd", "pq", "xy"]:
+            return False
+
+    return True
+
+
+ans = 0
+for line in lines:
+    good = goodstring(line)
+    if good:
+        ans += 1
+
+print(ans)
