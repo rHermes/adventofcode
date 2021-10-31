@@ -1,65 +1,36 @@
-import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
 import collections
-import math
-import sys
+import fileinput as fi
+import functools as ft
+import re
+import string
 
-# findall, search, parse
-from parse import *
-import more_itertools as mit
-import z3
-import numpy as np
-import lark
-import regex
 
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-
-shifts = {a: b for a,b in zip(string.ascii_lowercase, string.ascii_lowercase[1:] + 'a')}
-def man_shift(s, n):
-    for _ in range(n):
-        s = shifts[s]
-    return s
+# This is based on the following:
+# chr((ord(s) - ord("a") + n) % (ord("z") - ord("a") + 1) + ord("a"))
+def smart_shift(s, n):
+    return (ord(s) - 97 + n) % 26 + 97
 
 @ft.cache
-def create_shift(n):
-    return {a: man_shift(a, n) for a in string.ascii_lowercase}
+def create_trans(n):
+   return {ord(a): smart_shift(a, n) for a in string.ascii_lowercase}
 
 
-ans = 0
-for line in lines:
+for line in fi.input():
     m  = re.match(r"(.*)-([0-9]+)\[(.*)\]", line)
-    
-    name, sid, ch = m.groups()
-    c = collections.Counter(sorted(name))
-    del c["-"]
-    ll = ""
-    for l, _ in c.most_common(5):
-        ll += l
-
-    if ll != ch:
+    if not m:
         continue
 
-    real = ""
-    shift = create_shift(int(sid) % len(string.ascii_lowercase))
-    for k in name:
-        if k == "-":
-            real += " "
-        else:
-            real += shift[k]
+    name, sid, ch = m.groups()
 
-    if "north" in real:
-        print(real, sid)
+    c = collections.Counter(sorted(name.replace("-", "")))
+    check = "".join(x for x, _ in c.most_common(5))
+
+    if check != ch:
+        continue
+
+    shift = create_trans(int(sid) % len(string.ascii_lowercase))
+    shift[ord("-")] = ord(" ")
+    real = name.translate(shift)
+
+    if "northpole" in real:
+        print(sid)
