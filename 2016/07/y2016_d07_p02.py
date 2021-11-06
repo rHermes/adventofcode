@@ -1,51 +1,19 @@
 import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
-import collections
-import math
-import sys
 
-# findall, search, parse
-from parse import *
-import more_itertools as mit
-import z3
-import numpy as np
-import lark
-import regex
-
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-
-for line in lines:
-    # gprint(line)
-
-    hypers = regex.sub("\[[a-z]*\]", " ", line)
-    ins = " ".join(regex.findall("\[([a-z]*)\]", line))
-    
-
-    for match in regex.findall(r"([a-z])([a-z])\1", hypers, overlapped=True):
-        a, b = match
-        if a == b:
-            continue
-
-        # if re.search("\[[a-z]*" + b + a +b + "[a-z]*\]", ins):
-        if re.search("[a-z]*" + b + a +b + "[a-z]*", ins):
-            break
-    else:
-        continue
-
-    print(line)
+# Returns the thing to find in the out group
+def find(s):
+    for i in range(len(s)-2):
+        if s[i] != s[i+1] and s[i] == s[i+2] and s[i] != " " and s[i+1] != " ":
+            yield s[i+1] + s[i] + s[i+1]
 
 
+ans = 0
+for line in map(str.rstrip, fi.input()):
+    raw = line.replace("[", " ").replace("]", " ").split(" ")
+    outs = " ".join(raw[::2])
+    ins = " ".join(raw[1::2])
+
+    if any(x in outs for x in find(ins)):
+        ans += 1
+
+print(ans)
