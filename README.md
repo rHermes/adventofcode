@@ -68,6 +68,13 @@ Had to copy a solution to get it done. Learned a lot.
 Had to get the explanation about how it worked from redditor. Learned a lot
 by doing this.
 
+### Year 2015
+
+#### Day 19
+
+For part two I used `Lark` to create a solution. It's a robust and fast solution
+to all inputs, even malicously crafted ones.
+
 ## Personal Stats
 
 ### 2020
