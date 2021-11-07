@@ -2,12 +2,7 @@ import fileinput as fi
 
 def print_screen(screen):
     for row in screen:
-        for c in row:
-            if c:
-                print("█", end="")
-            else:
-                print(" ", end="")
-        print("")
+        print("".join([[" ", "█"][bool(x)] for x in row]))
 
 W = 50
 H = 6
@@ -16,14 +11,13 @@ screen = [[False for _ in range(W)] for _ in range(H)]
 
 for line in fi.input():
     if line.startswith("rect "):
-        a, b = map(int,line[5:].split("x"))
+        a, b = map(int, line[5:].split("x"))
         for row in range(b):
             for col in range(a):
                 screen[row][col] = True
 
     elif line.startswith("rotate column "):
-        rest = line[14:]
-        first, sec = rest.split(" by ")
+        first, sec = line[14:].split(" by ")
         col = int(first[2:])
         shift = int(sec)
 
@@ -32,8 +26,7 @@ for line in fi.input():
             screen[(row+shift) % H][col] = oldy[row]
 
     elif line.startswith("rotate row "):
-        rest = line[11:]
-        first, sec = rest.split(" by ")
+        first, sec = line[11:].split(" by ")
         row = int(first[2:])
         shift = int(sec)
 
