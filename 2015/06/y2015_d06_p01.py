@@ -13,11 +13,13 @@ for line in map(str.rstrip, fi.input()):
     pa, pb = map(int, p1.split(","))
     ja, jb = map(lambda x: int(x) + 1, p2.split(","))
 
+    idx = np.s_[pb:jb, pa:ja]
+
     if line.startswith("toggle "):
-        a[pb:jb, pa:ja] = ~a[pb:jb, pa:ja]
+        a[idx] = ~a[idx]
     elif line.startswith("turn on"):
-        a[pb:jb, pa:ja] = True
+        a[idx] = True
     elif line.startswith("turn off"):
-        a[pb:jb, pa:ja] = False
+        a[idx] = False
 
 print(a.sum())
