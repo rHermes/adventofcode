@@ -38,8 +38,10 @@ Chip = collections.namedtuple("Chip", ["t", "k"])
 
 class Floor():
     def __init__(self, generators, chips):
-        self.gens = tuple(sorted(generators))
-        self.chips = tuple(sorted(chips))
+        # self.gens = tuple(sorted(generators))
+        # self.chips = tuple(sorted(chips))
+        self.gens = generators
+        self.chips = chips
 
     def __eq__(self, other):
         if not isinstance(other, type(self)): return NotImplemented
@@ -71,8 +73,10 @@ class Floor():
 class Elevator():
     def __init__(self, floor, generators, chips):
         self.floor = floor
-        self.gens = tuple(sorted(generators))
-        self.chips = tuple(sorted(chips))
+        # self.gens = tuple(sorted(generators))
+        # self.chips = tuple(sorted(chips))
+        self.gens = generators
+        self.chips = chips
 
     def __eq__(self, other):
         if not isinstance(other, type(self)): return NotImplemented
@@ -85,8 +89,8 @@ class Elevator():
         return "Elevator: {} {} {}".format(repr(self.floor), repr(self.gens), repr(self.chips))
 
 
-    def valid(self, floors):
-        return 0 <= self.floor < 4 and Floor(self.gens + floors[self.floor].gens, self.chips + floors[self.floor].chips).valid()
+    def valid(self, floor):
+        return 0 <= self.floor < 4 and Floor(self.gens + floor.gens, self.chips + floor.chips).valid()
 
 
 
@@ -95,12 +99,53 @@ class State():
         self.floors = (floor1, floor2, floor3, floor4)
         self.e = elevator
 
+        self.sig = self.signature()
+
     def __eq__(self, other):
         if not isinstance(other, type(self)): return NotImplemented
-        return self.floors == other.floors and self.e == other.e
+        if self.e.floor != other.e.floor:
+            return False
+
+        # ansA = self.signature == other.signature
+        ansA = self.sig == other.sig
+        # ansB = (self.floors == other.floors and self.e == other.e)
+        # if ansA != ansB:
+        #     # print("We skipped a state {} vs {}".format(ansA, ansB))
+        #     return ansA
+
+        return ansA
+
+        # return self.floors == other.floors and self.e == other.e
+    
+    # @property
+    # @ft.cached_property
+    def signature(self):
+        gens = {}
+        chips = {}
+        for i, floor in enumerate(self.floors):
+            for x in floor.gens:
+                gens[x.t] = i
+
+            for x in floor.chips:
+                chips[x.t] = i
+
+        for x in self.e.gens:
+            gens[x.t] = self.e.floor
+
+        for x in self.e.chips:
+            chips[x.t] = self.e.floor
+
+        # print(gens)
+        # print(chips)
+
+        sig = tuple(sorted((gens[k],chips[k]) for k in gens.keys()))
+
+
+        return (self.e.floor,) + sig
 
     def __hash__(self):
-        return hash((self.floors, self.e))
+        return hash(self.sig)
+        # return hash((self.floors, self.e))
 
 
     # If the state is valid
@@ -110,7 +155,7 @@ class State():
 
     def score(self):
         f1, f2, f3, f4 = [10*len(x.gens) + len(x.chips) for x in self.floors]
-        return 1000000 * f1 + 100000 * f2 + 10 * f3 + 1*(10*len(self.e.gens) + len(self.e.chips))
+        return 10000000 * f1 + 1000 * f2 + 10 * f3 + 1*(10*len(self.e.gens) + len(self.e.chips)) + (3-self.e.floor)*10
 
 
     def done(self):
@@ -155,17 +200,29 @@ class State():
                 # assert(len(all_together) == len(thangs) + len(combs))
 
                 upad = []
-                if self.e.floor != 0:
-                    upad.append(-1)
 
                 if self.e.floor != 3:
                     upad.append(1)
 
+                if self.e.floor != 0:
+                    fwl = self.floors[self.e.floor-1]
+                    if len(fwl.gens) + len(fwl.chips) == 0:
+                        # print("We skipping")
+                        pass
+                        upad.append(-1)
+                    else:
+                        upad.append(-1)
 
-                ee_gens = sorted([x for x in combs if isinstance(x, Generator)])
-                ee_chips = sorted([x for x in combs if isinstance(x, Chip)])
+                    # upad.append(-1)
+
+
+                ee_gens = tuple(sorted([x for x in combs if isinstance(x, Generator)]))
+                ee_chips = tuple(sorted([x for x in combs if isinstance(x, Chip)]))
                 f1, f2, f3, f4 = self.floors
-                fn = Floor([x for x in thangs if isinstance(x, Generator)], [x for x in thangs if isinstance(x, Chip)])
+                fn = Floor(tuple([x for x in thangs if isinstance(x, Generator)]), tuple([x for x in thangs if isinstance(x, Chip)]))
+
+                if not fn.valid():
+                    continue
 
                 for n in upad:
                     # if not (0 <= (self.e.floor + n) < 4):
@@ -173,7 +230,12 @@ class State():
 
 
                     ee = Elevator(self.e.floor + n, ee_gens, ee_chips)
+
                     # fn = Floor([x for x in thangs if isinstance(x, Generator)], [x for x in thangs if isinstance(x, Chip)])
+
+                    if not ee.valid(self.floors[ee.floor]):
+                        continue
+
 
                     if self.e.floor == 0:
                         SN = State(fn, f2, f3, f4, ee)
@@ -188,16 +250,19 @@ class State():
                     # SN.floors[self.e.floor].gens = tuple(sorted([x for x in thangs if isinstance(x, Generator)]))
                     # SN.floors[self.e.floor].chips = tuple(sorted([x for x in thangs if isinstance(x, Chip)]))
 
-                    if SN.valid():
-                        ans.append(SN)
+                    
+                    ans.append(SN)
+
+                    # if SN.valid():
+                    #     ans.append(SN)
 
 
-        if len(ans) == 0:
-            print("===BEGIN POS NEXT ===")
-            print(repr(self))
-            print(self)
-            print("=== END POS NEXT ===")
-            assert(False)
+        # if len(ans) == 0:
+        #     print("===BEGIN POS NEXT ===")
+        #     print(repr(self))
+        #     print(self)
+        #     print("=== END POS NEXT ===")
+        #     assert(False)
                     
        
         return ans
@@ -205,63 +270,62 @@ class State():
     def __lt__(self, other):
         return self.e.floor > other.e.floor
 
+    def pretty(self):
+        ans = ""
+        names = set([x.t for x in self.e.gens])
+        for floor in self.floors:
+            names.update([x.t for x in floor.gens])
 
+        ma = {k: v for k, v in zip("ABCDEFLX", sorted(names))}
 
-import tqdm
+        fxs = []
+        for i, floor in enumerate(self.floors):
+            gens = [x.t for x in floor.gens]
+            chips = [x.t for x in floor.chips]
 
-
-# S is the state
-def solve(S: State):
-    Q = collections.deque([(S, 0)])
-    # Q = [(S, 0)]
-
-    got_it = collections.defaultdict(lambda: 3000000000000)
-    got_it[S] = 0
-    seen = set()
-    max_depth = 0
-    min_find = 10000000000000000000000000000000
-    while len(Q) > 0:
-        if max_depth < 13:
-            qs, depth = Q.popleft()
-        else:
-            qs, depth = Q.pop()
-
-        # seen.add(qs)
-        
-        if depth + 1 >= min_find:
-            continue
-
-        if depth > max_depth:
-            print("new max depth of: {}".format(depth))
-            max_depth = depth
-        # print("new depth of: {}".format(depth))
-
-        added = 0
-        new = qs.pos_next()
-        for newq in new:
-            # we keep track of the minimal score to get here
-            if got_it[newq] > (depth + 1):
-                got_it[newq] = depth + 1
+            m = "F{}".format(i+1)
+            if i == self.e.floor:
+                gens += [x.t for x in self.e.gens]
+                chips += [x.t for x in self.e.chips]
+                m += " E"
             else:
-                continue
+                m += "  "
 
-            if newq.done():
-                if depth + 1 < min_find:
-                    min_find = depth + 1
-                    print("New min_find: {}".format(min_find))
+            for k, v in ma.items():
+                if v in gens:
+                    m += " G{}".format(k)
+                else:
+                    m += "   "
 
-            # if depth:
-            added += 1
-            Q.append((newq, depth + 1))
-                # nextQ.append((newq, depth + 1))
-            # else:
-            #     # print(" we have a duep")
-            #     pass
+                if v in chips:
+                    m += " M{}".format(k)
+                else:
+                    m += "   "
 
-        # if added == 0:
-        #     print("We added none")
+            fxs.append(m)
 
-    return min_find
+        ans += "\n".join(reversed(fxs))
+
+        return ans
+
+
+import time
+
+def animate_it(made_it, fin):
+    states = [fin]
+    while states[-1] in made_it:
+        states.append(made_it[states[-1]])
+
+    states = reversed(states)
+
+    for i, state in enumerate(states):
+        # print(chr(27) + "[2J")
+        print("\033c", end="")
+        print("=== STATE {} ===".format(i))
+        print(state.pretty())
+        time.sleep(0.5)
+
+
 # S is the state
 def solve_smart(S: State):
     # Q = collections.deque([(S, 0)])
@@ -305,6 +369,7 @@ def solve_smart(S: State):
                 if depth + 1 < min_find:
                     min_find = depth + 1
                     print("New min_find: {}".format(min_find))
+                    # animate_it(made_it, newq)
 
             # if depth:
             added += 1
@@ -337,17 +402,25 @@ test1 = State(
 # The third floor contains a cobalt-compatible microchip, a curium-compatible microchip, a ruthenium-compatible microchip, and a plutonium-compatible microchip.
 # The fourth floor contains nothing relevant.
 
+real1 = State(
+    Floor(tuple([Generator("promethium", "g")]), tuple([Chip("promethium", "c")])),
+    Floor((Generator("cobalt", "g"), Generator("curium", "g"), Generator("ruthenium", "g"), Generator("plutonium", "g")), ()),
+    Floor((), (Chip("cobalt", "c"), Chip("curium", "c"), Chip("ruthenium", "c"), Chip("plutonium", "c"))),
+    Floor((), ()),
+    Elevator(0, (), ()),
+)
 
-real = State(
-    Floor([Generator("elerium", "g"), Generator("promethium", "g"), Generator("dilithium", "g")], [Chip("promethium", "c"), Chip("elerium", "c"), Chip("dilithium", "c")]),
-    Floor([Generator("cobalt", "g"), Generator("curium", "g"), Generator("ruthenium", "g"), Generator("plutonium", "g")], []),
-    Floor([], [Chip("cobalt", "c"), Chip("curium", "c"), Chip("ruthenium", "c"), Chip("plutonium", "c")]),
-    Floor([], []),
-    Elevator(0, [], []),
+real2 = State(
+    Floor((Generator("elerium", "g"), Generator("promethium", "g"), Generator("dilithium", "g")), (Chip("promethium", "c"), Chip("elerium", "c"), Chip("dilithium", "c"))),
+    Floor((Generator("cobalt", "g"), Generator("curium", "g"), Generator("ruthenium", "g"), Generator("plutonium", "g")), ()),
+    Floor((), (Chip("cobalt", "c"), Chip("curium", "c"), Chip("ruthenium", "c"), Chip("plutonium", "c"))),
+    Floor((), ()),
+    Elevator(0, (), ()),
 )
 
 # b = copy.deepcopy(test1)
 # k = set()
 
 # print(solve_smart(test1))
-print(solve_smart(real))
+# print(solve_smart(real1))
+print(solve_smart(real2))
