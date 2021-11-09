@@ -1,72 +1,72 @@
 import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
-import collections
-import math
-import sys
 
-# findall, search, parse
-# from parse import *
-# import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-# Input parsing
 INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
 lines = list(INPUT.splitlines())
 
-ins = 0
-
-regs = {"a": 0, "b": 0, "c": 0, "d": 0}
-
-while ins < len(lines):
-    # print(ins, regs)
-    ops = lines[ins].split()
-
-    if ops[0] == "cpy":
-        x, y = ops[1], ops[2]
-        if x.isnumeric():
-            regs[y] = int(x)
-        else:
-            regs[y] = regs[x]
-
-        ins += 1
-
-    elif ops[0] == "inc":
-        regs[ops[1]] += 1
-        ins += 1
-    elif ops[0] == "dec":
-        regs[ops[1]] -= 1
-        ins += 1
-    elif ops[0] == "jnz":
-        if ops[1].isnumeric():
-            val = int(ops[1])
-        else:
-            val = regs[ops[1]]
-
-        if val != 0:
-            ins += int(ops[2])
-        else:
-            ins += 1
-
+def gen_cpy(x, y):
+    if x.isnumeric():
+        x = int(x)
+        def g(s):
+            s[y] = x
+            s["ins"] += 1
+        return g
     else:
-        raise Exception("SOMETHING MUST BE WRONG")
+        def g(s):
+            s[y] = s[x]
+            s["ins"] += 1
+        return g
+
+def gen_inc(reg, inc=True):
+    if inc:
+        def g(s):
+            s[reg] += 1
+            s["ins"] += 1
+        return g
+    else:
+        def g(s):
+            s[reg] -= 1
+            s["ins"] += 1
+        return g
+
+def gen_jnz(x, y):
+    y = int(y)
+    if x.isnumeric():
+        if int(x) == 0:
+            y = 1
+
+        def g(s):
+            s["ins"] += y
+
+        return g
+    else:
+        def g(s):
+            if s[x] != 0:
+                s["ins"] += y
+            else:
+                s["ins"] += 1
+        return g
+
+
+# convert lines to program
+opers = []
+for line in lines:
+    op, *args = line.split()
+    if op == "inc":
+        opers.append(gen_inc(args[0]))
+    elif op == "dec":
+        opers.append(gen_inc(args[0], inc=False))
+    elif op == "cpy":
+        opers.append(gen_cpy(*args))
+    elif op == "jnz":
+        opers.append(gen_jnz(*args))
+    else:
+        raise Exception("Something is wrong here")
 
 
 
-print(regs)
+state = {"a": 0, "b": 0, "c": 0, "d": 0, "ins": 0}
+N = len(lines)
+while state["ins"] < N:
+    opers[state["ins"]](state)
 
-
+print(state["a"])
