@@ -1,3 +1,6 @@
 part1: y2016_d11_p01.cpp
-	g++ -O2 -std=c++20 -Wall -Wextra -o part1 
+	g++ -O2 -std=c++20 -Wall -Wextra -o part1 y2016_d11_p01.cpp
+
+run: part1
+	./part1
 
