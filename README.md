@@ -68,6 +68,25 @@ Had to copy a solution to get it done. Learned a lot.
 Had to get the explanation about how it worked from redditor. Learned a lot
 by doing this.
 
+### Year 2016
+
+
+#### Day 11
+
+This one took a long time to get right, it ended up being my "hash" implementation
+for the "State" that made it not work.
+
+I'm proud that I was able to solve this without looking anything up. Coming up with the
+heuristic and such was very nice.
+
+#### Day 12
+
+The `solve_with_c_compiler.py` file includes a solution that transpiles the input
+to C and then compiles the program and executes it. Due to the loop being set, the
+compiler is able to optimize it away.
+
+This is pretty cool :)
+
 ### Year 2015
 
 #### Day 19
