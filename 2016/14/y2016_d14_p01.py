@@ -1,55 +1,36 @@
 import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
-import collections
-import math
-import sys
-
-# findall, search, parse
-from parse import *
-import more_itertools as mit
-import z3
-import numpy as np
-import lark
-import regex
+from collections import deque
 
 import hashlib
 
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
+def stream(salt):
+    i = 0
+    while True:
+        yield hashlib.md5((salt + str(i)).encode("latin1")).hexdigest()
+        i += 1
 
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
+# Create the hashes
+salt = next(fi.input()).rstrip()
+hashes = stream(salt)
 
-# # Input parsing
-# INPUT = "".join(fi.input()).rstrip()
-# groups = INPUT.split("\n\n")
-# lines = list(INPUT.splitlines())
-
-cands = [(0, "ø") for x in range(1000)]
+q = deque(x for _, x in zip(range(1000), hashes))
+idx = 0
 keys = []
-for line in fi.input():
-    idx, hsh = line.rstrip().split(" ")
-    idx = int(idx)
-    # print(idx)
 
-    for i, (adx, cand) in enumerate(cands):
-        if cand in hsh:
-            keys.append((adx, hsh))
-            cands[i] = (0, "ø")
-            print(adx, cand)
-            # break
-            
+while len(keys) < 64:
+    hsh = q.popleft()
+    q.append(next(hashes))
 
-    cands.pop(0)
     for i in range(len(hsh)-2):
         if hsh[i] == hsh[i+1] == hsh[i+2]:
-            cands.append((idx, hsh[i] + hsh[i] + hsh[i] + hsh[i] + hsh[i]))
+            needle = hsh[i] * 5
+            for h in q:
+                if needle in h:
+                    keys.append(idx)
+                    break
+
             break
-    else:
-        cands.append((0, "ø"))
-        continue
+
+    idx += 1
+
+print(keys[-1])
