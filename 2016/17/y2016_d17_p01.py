@@ -1,40 +1,9 @@
 import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
 import collections
-import math
-import sys
-
-# findall, search, parse
-from parse import *
-import more_itertools as mit
-import z3
-import numpy as np
-import lark
-import regex
-
 import hashlib
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-
-
-import heapq
 
 def solve(s):
     Q = collections.deque()
-
     Q.append(((0,0), ""))
 
     seen = set()
@@ -42,7 +11,6 @@ def solve(s):
     dirsl = "UDLR"
     while len(Q) > 0:
         (px, py), pth = Q.popleft()
-        # print((px, py), pth)
 
         if (px, py) == (3, 3):
             return pth
@@ -61,7 +29,4 @@ def solve(s):
 
 
 
-# print(solve("hijkl"))
-# print(solve("ihgpwlah"))
-print(solve("edjrjqaa"))
-
+print(solve(next(fi.input()).rstrip()))
