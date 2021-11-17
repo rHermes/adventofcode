@@ -1,58 +1,21 @@
 import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
-import collections
-import math
-import sys
 
-# findall, search, parse
-from parse import *
-import more_itertools as mit
-import z3
-import numpy as np
-import lark
-import regex
+def solve(ins, N):
+    a = ins[:]
+    b = a[:]
 
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
+    ans = 0
+    for _ in range(N):
+        ans += sum(not x for x in a)
+        b[0], b[-1] = a[1], a[-2]
 
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
+        for i in range(1, len(a)-1):
+            b[i] = a[i-1] ^ a[i+1]
 
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
+        a, b = b, a
 
-def step(s):
-    x = []
-    ss = [False] + s + [False]
-    for i in range(1,len(s)+1):
-        a, b, c = ss[i-1], ss[i], ss[i+1]
-        is_trap = [
-            a and b and (not c),
-            b and c and (not a),
-            (not a) and (not b) and c,
-            (not b) and (not c) and a,
-        ]
-
-        x.append(any(is_trap))
-    
-    return x
+    return ans
 
 
-ins = ['^' == x for x in lines[0]]
-
-ans = 0
-for _ in range(400000):
-    # print("".join([" #"[x] for x in ins]))
-    ans += sum(not x for x in ins)
-    ins = step(ins)
-
-print(ans)
-# for line in lines:
-#     gprint(line)
+ins = ['^' == x for x in next(fi.input()).rstrip()]
+print(solve(ins, 400000))
