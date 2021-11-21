@@ -1,51 +1,22 @@
 import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
 import collections
-import math
-import sys
 
-# findall, search, parse
-from parse import *
-import more_itertools as mit
-import z3
-import numpy as np
-import lark
-import regex
-import intervaltree as itree
-
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-
-
-
-inp = "abcde"
 inp = "abcdefgh"
 
-for line in lines:
-    parts = line.split(" ")
+for line in fi.input():
+    parts = line.rstrip().split(" ")
     if line.startswith("swap position"):
         src = int(parts[2])
         dst = int(parts[-1])
         x = list(inp)
         x[src], x[dst] = x[dst], x[src]
         inp = "".join(x)
+
     elif line.startswith("swap letter"):
         a = parts[2]
         b = parts[-1]
         inp = inp.replace(a,"ø").replace(b,a).replace("ø",b)
+
     elif line.startswith("reverse"):
         a = int(parts[2])
         b = int(parts[-1])
@@ -55,6 +26,7 @@ for line in lines:
             a += 1
             b -= 1
         inp = "".join(x)
+
     elif line.startswith("rotate based on"):
         let = parts[-1]
         adx = inp.index(let)
@@ -64,6 +36,7 @@ for line in lines:
         x = collections.deque(inp)
         x.rotate(1 + adx)
         inp = "".join(x)
+
     elif line.startswith("move"):
         src = int(parts[2])
         dst = int(parts[-1])
@@ -72,16 +45,12 @@ for line in lines:
         del x[src]
         x.insert(dst, get)
         inp = "".join(x)
+
     elif line.startswith("rotate"):
         ll = [-1, 1][parts[1] == "right"]
         idx = int(parts[-2])
         x = collections.deque(inp)
         x.rotate(idx*ll)
         inp = "".join(x)
-
-    else:
-        print("SOMETHING WENT WRONG!")
-        print(line)
-        break
 
 print(inp)
