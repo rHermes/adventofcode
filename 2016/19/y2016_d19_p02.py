@@ -1,59 +1,47 @@
 import fileinput as fi
-# import re
-# import itertools as it
-# import functools as ft
-# import string
-# import collections
-# import math
-# import sys
+import collections
 
-# # findall, search, parse
-# from parse import *
-# import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
+# This was a fast ish solution that I was clued into by the reddit thread.
+# It uses two deques to keep track of who to remove from the circle.
+def stack_solve(n):
+    left = collections.deque(range(1, n//2 + 1))
+    right = collections.deque(range(n, n//2, -1))
 
-# print(sys.getrecursionlimit())
-# sys.setrecursionlimit(6500)
+    while left and right:
+        if len(right) < len(left):
+            left.pop()
+        else:
+            right.pop()
 
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-# # Input parsing
-# INPUT = "".join(fi.input()).rstrip()
-# groups = INPUT.split("\n\n")
-# lines = list(INPUT.splitlines())
-
-def solve(n):
-    elves = [x+1 for x in range(n)]
-
-    idx = 0
-    while len(elves) > 3:
-        if len(elves) % 1000 == 0:
-            print(len(elves))
-
-        # next val
-        vali = elves[(idx + 1) % len(elves)]
-        adx = (idx + len(elves)//2) % len(elves)
-        # print("{} removes {}".format(elves[idx], elves[adx]))
-        # idx = (idx + 1) % len(elves)
-        del elves[adx]
-        idx = elves.index(vali)
-        # idx = (idx + 1) % len(elves)
-
-    # print(elves, idx)
-    return elves[(idx-1) % len(elves)]
-
-    # return elves[0]
+        # Rotate
+        right.appendleft(left.popleft())
+        left.append(right.pop())
 
 
+    if left:
+        return left[0]
+    else:
+        return right[0]
 
-# print(solve(5))
-# print(solve(3001330))
-# print(solve(3001330))
-for i in range(1,100):
-    print("{}: {}".format(i, solve(i)))
+
+# This was created by looking at the output and spotting a pattern.
+def smart_solve(N):
+    largest = 1
+    current = 1
+    step = 1
+
+    while step < N:
+        step += 1
+
+        if current < largest:
+            current += 1
+        elif current + 2 <= step:
+            current += 2
+            largest = current
+        else:
+            current = 1
+
+    return current
+
+
+print(smart_solve(int(next(fi.input()))))
