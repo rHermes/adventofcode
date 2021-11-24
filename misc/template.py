@@ -6,6 +6,7 @@ import string
 import collections
 import math
 import sys
+import heapq
 
 # findall, search, parse
 from parse import *
