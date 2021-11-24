@@ -1,39 +1,15 @@
 import fileinput as fi
-import re
 import itertools as it
-import functools as ft
-import string
-import collections
-import math
-import sys
-import heapq
-
-# findall, search, parse
-# from parse import *
-# import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
-
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
+import copy
 
 # Input parsing
 INPUT = "".join(fi.input()).rstrip()
 groups = INPUT.split("\n\n")
 lines = [x.split() for x in INPUT.splitlines()]
 
-
-import copy
 def perform(ilines, a_state):
-    lines = copy.deepcopy(ilines)
+    # lines = copy.deepcopy(ilines)
+    lines = ilines
 
     ins = 0
     regs = {"a": a_state, "b": 0, "c": 0, "d": 0}
@@ -86,7 +62,7 @@ def perform(ilines, a_state):
                 val = int(ops[1])
             else:
                 val = regs[ops[1]]
-        
+
             if ops[2] not in "abcd":
                 jval = int(ops[2])
             else:
@@ -107,7 +83,6 @@ def perform(ilines, a_state):
                 pass
             else:
                 oops = lines[ins+val]
-                print("Changing {} to ".format(oops[0]), end="")
                 if len(oops) == 2:
                     if oops[0] == "inc":
                         oops[0] = "dec"
@@ -120,7 +95,6 @@ def perform(ilines, a_state):
                         oops[0] = "jnz"
                 else:
                     raise Exception("WTF!!")
-                print("{} on {}".format(oops[0], ins+val))
 
             ins += 1
         elif ops[0] == "out":
@@ -144,7 +118,8 @@ for x in it.count():
             break
 
         if cnt > 100:
-            print("I think we might have it in {}".format(x))
             break
 
-
+    if cnt > 100:
+        print(x)
+        break
