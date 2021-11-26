@@ -1,50 +1,25 @@
 import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
 import collections
-import math
-import sys
-import heapq
-
-# findall, search, parse
-# from parse import *
-# import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
-
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
+import operator
 
 regs = collections.defaultdict(int)
+ops = {
+    "<": operator.lt,
+    "<=": operator.le,
+    "==": operator.eq,
+    "!=": operator.ne,
+    ">=": operator.ge,
+    ">": operator.gt,
+}
 
-for line in lines:
+for line in map(str.rstrip, fi.input()):
     reg, op, delta, _, op1, rel, op2 = line.split(" ")
     if op == "inc":
         delta = int(delta)
-    elif op == "dec":
-        delta = -int(delta)
     else:
-        raise Exception("WTF!")
+        delta = -int(delta)
 
-    if eval("{} {} {}".format(regs[op1], rel, op2)):
+    if ops[rel](regs[op1], int(op2)):
         regs[reg] += delta
 
 print(max(regs.values()))
-
-
-
