@@ -68,6 +68,13 @@ Had to copy a solution to get it done. Learned a lot.
 Had to get the explanation about how it worked from redditor. Learned a lot
 by doing this.
 
+### Year 2017
+
+#### Day 10
+
+I liked this task, not because it was so difficult, but because it was novel to
+implement a hashing algorithm.
+
 ### Year 2016
 
 
