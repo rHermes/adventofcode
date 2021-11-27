@@ -1,41 +1,5 @@
 import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
 import collections
-import math
-import sys
-import heapq
-
-# findall, search, parse
-from parse import *
-import more_itertools as mit
-import z3
-import numpy as np
-import lark
-import regex
-import intervaltree as itree
-
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-
-G = {}
-for line in lines:
-    src, dsts = line.split(" <-> ")
-    G[int(src)] = [int(x) for x in dsts.split(", ")]
-
-# print(G)
 
 def solve(G, src):
     Q = collections.deque([src])
@@ -53,13 +17,17 @@ def solve(G, src):
 
     return seen
 
+G = {}
+for line in map(str.rstrip, fi.input()):
+    src, dsts = line.split(" <-> ")
+    G[int(src)] = [int(x) for x in dsts.split(", ")]
+
 not_seen = set(G.keys())
 
-groups = []
+groups = 0
 while len(not_seen) > 0:
     src = list(not_seen)[0]
-    grp = solve(G, src)
-    not_seen -= grp
-    groups.append(grp)
+    not_seen -= solve(G, src)
+    groups += 1
 
-print(len(groups))
+print(groups)
