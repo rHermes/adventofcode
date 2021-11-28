@@ -9,13 +9,13 @@ import sys
 import heapq
 
 # findall, search, parse
-from parse import *
+# from parse import *
 import more_itertools as mit
-import z3
-import numpy as np
-import lark
-import regex
-import intervaltree as itree
+# import z3
+# import numpy as np
+# import lark
+# import regex
+# import intervaltree as itree
 
 # print(sys.getrecursionlimit())
 sys.setrecursionlimit(6500)
