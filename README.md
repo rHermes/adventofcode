@@ -75,6 +75,10 @@ by doing this.
 I liked this task, not because it was so difficult, but because it was novel to
 implement a hashing algorithm.
 
+#### Day 16
+
+Nice task, which includes loop detection.
+
 ### Year 2016
 
 
