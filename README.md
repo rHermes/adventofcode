@@ -79,6 +79,10 @@ implement a hashing algorithm.
 
 Nice task, which includes loop detection.
 
+#### Day 23
+
+Requires reverse engineering the algorithm in a small ISA program. Very fun!
+
 ### Year 2016
 
 
@@ -97,6 +101,7 @@ to C and then compiles the program and executes it. Due to the loop being set, t
 compiler is able to optimize it away.
 
 This is pretty cool :)
+
 
 ### Year 2015
 
