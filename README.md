@@ -112,6 +112,14 @@ to all inputs, even malicously crafted ones.
 
 ## Personal Stats
 
+### 2021
+
+```
+      -------Part 1--------   -------Part 2--------
+Day       Time  Rank  Score       Time  Rank  Score
+  1   00:01:13   142      0   00:03:12   183      0
+```
+
 ### 2020
 
 ```
