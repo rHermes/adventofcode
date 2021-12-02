@@ -31,5 +31,16 @@ groups = INPUT.split("\n\n")
 lines = list(INPUT.splitlines())
 numbers = [list(map(int, re.findall("[0-9]+", line))) for line in lines]
 
+
+hor = 0
+dep = 0
 for line in lines:
-    gprint(line)
+    d, b = line.split(" ")
+    if d == "forward":
+        hor += int(b)
+    elif d == "down":
+        dep -= int(b)
+    elif d == "up":
+        dep += int(b)
+
+print(hor * dep)
