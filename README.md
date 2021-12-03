@@ -115,10 +115,11 @@ to all inputs, even malicously crafted ones.
 ### 2021
 
 ```
-      -------Part 1--------   -------Part 2--------
-Day       Time  Rank  Score       Time  Rank  Score
-  2   00:01:47   158      0   00:05:41  1272      0
-  1   00:01:13   142      0   00:03:12   183      0
+      --------Part 1--------   -------Part 2--------
+Day       Time   Rank  Score       Time  Rank  Score
+  3   01:04:09  14883      0   01:13:03  7981      0
+  2   00:01:47    158      0   00:05:41  1272      0
+  1   00:01:13    142      0   00:03:12   183      0
 ```
 
 ### 2020
