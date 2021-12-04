@@ -1,29 +1,7 @@
 import fileinput as fi
-import re
 import itertools as it
-import functools as ft
-import string
+import re
 import collections
-import math
-import sys
-import heapq
-
-# findall, search, parse
-# from parse import *
-import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
-
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
 
 # Input parsing
 INPUT = "".join(fi.input()).rstrip()
@@ -88,7 +66,7 @@ def closest(pts, x, y, printer=False):
 # return all we need to know
 def precomp(pts, printer=False):
     (min_x, min_y), (max_x, max_y) = get_dims(pts)
-    offset = 10
+    offset = 1
     screen = []
     for y in range(min_y-offset, max_y+offset+1):
         row = []
@@ -129,7 +107,7 @@ def solve(pts):
     for k in infs:
         del wc[k]
 
-    return wc.most_common(1)
+    return wc.most_common(1)[0][1]
 
 
 
