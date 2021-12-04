@@ -6,6 +6,13 @@ I write more detailed notes in the commit messages!
 
 ## Task notes
 
+### 2021
+
+#### 4
+
+Second time I've placed on the leaderboard, but my best ranking so far!
+55 on part one and 41 on part two!
+
 ### 2020
 
 The first year I placed, just on a single task, and also the first year I had
@@ -34,6 +41,11 @@ Part 2 of this day was the first good task this year and I really liked it!
 #### 20
 
 Best task of the year so far, even if it is sort of simple once you know the trick.
+
+#### 21
+
+First time I placed on the leaderboard in AoC, with 89 on part one and 83 on part two.
+The task is quite ok.
 
 #### 23
 
