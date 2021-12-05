@@ -13,6 +13,12 @@ I write more detailed notes in the commit messages!
 Second time I've placed on the leaderboard, but my best ranking so far!
 55 on part one and 41 on part two!
 
+
+#### 5
+
+I actually managed to place on the leaderboard here for part one! Number 49!
+I got a bit slow on the second part, so I ended up getting 107 rank there.
+
 ### 2020
 
 The first year I placed, just on a single task, and also the first year I had
@@ -129,6 +135,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   -------Part 2--------
 Day       Time   Rank  Score       Time  Rank  Score
+  5   00:04:01     49     52   00:09:04   107      0
   4   00:07:08     55     46   00:09:02    41     60
   3   01:04:09  14883      0   01:13:03  7981      0
   2   00:01:47    158      0   00:05:41  1272      0
