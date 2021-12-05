@@ -1,44 +1,16 @@
 import fileinput as fi
 import re
-import itertools as it
-import functools as ft
-import string
-import collections
-import math
-import sys
-import heapq
 
-# findall, search, parse
-# from parse import *
-import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
+def part_at(part, t):
+    (x, y), (dx, dy) = part
+    return (x+dx*t, y+dy*t)
 
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
+def area_at(parts, t):
+    minx, miny = part_at(parts[0], t)
+    maxx, maxy = minx, miny
 
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-numbers = [list(map(int, re.findall("-?[0-9]+", line))) for line in lines]
-
-
-def get_dims(parts):
-    minx = parts[0][0][0]
-    maxx = minx
-    miny = parts[0][0][1]
-    maxy = miny
-
-    for (x,y), _ in parts[1:]:
+    for part in parts[1:]:
+        x, y = part_at(part, t)
         minx = min(x, minx)
         maxx = max(x, maxx)
         miny = min(y, miny)
@@ -46,46 +18,71 @@ def get_dims(parts):
 
     return (minx, miny), (maxx, maxy)
 
-def step(parts):
-    return [((x+dx, y+dy), (dx, dy)) for (x,y), (dx,dy) in parts]
+def print_parts_at(parts, t):
+    (minx,miny), (maxx,maxy) = area_at(parts, t)
 
-def print_parts(parts):
-    (minx,miny), (maxx,maxy) = get_dims(parts)
-
-    seen = set((x,y) for (x,y), _ in parts)
+    seen = set(part_at(p, t) for p in parts)
     for y in range(miny,maxy+1):
         for x in range(minx,maxx+1):
             if (x,y) in seen:
-                print("#", end="")
+                print("█", end="")
             else:
                 print(" ", end="")
 
         print("")
 
 
+def fair_at(parts, t):
+    (minx, miny), (maxx, maxy) = area_at(parts, t)
+    return (maxx-minx)*(maxy-miny)
 
-def solve(parts):
-    # print("Initialy")
-    # print_parts(parts)
 
-    i = 1
-    (minx,miny), (maxx,maxy) = get_dims(parts)
-    prev_area = (maxx-minx) * (maxy - miny)
+def find_moment(parts):
+    # We must furst increase until we find one where it is bigger
+    left = 0
+    prev_fair = fair_at(parts, left)
+    left = 1
     while True:
-        nparts = step(parts)
-        (minx,miny), (maxx,maxy) = get_dims(nparts)
-        area = (maxx-minx) * (maxy - miny)
-
-        if prev_area < area:
+        fair = fair_at(parts, left)
+        if prev_fair < fair:
             break
 
-        parts = nparts
-        prev_area = area
-        print("After {} seconds: {}".format(i, area))
-        i += 1
+        prev_fair = fair
+        left *= 2
 
-    print_parts(parts)
+    right = left
+    rv = fair
 
+    left = left // 2
+    lv = prev_fair
+
+
+    # Now we can test
+    while left+1 != right:
+        md = (left+right) // 2
+
+        # We find the slope at this point
+        fair = fair_at(parts, md)
+        ff = fair_at(parts, md+1)
+
+        if fair < ff:
+            right = md
+            rv = fair
+        else:
+            left = md
+            lv = fair
+
+    if lv < rv:
+        return left
+    else:
+        return right
+
+
+
+def solve(parts):
+    t = find_moment(parts)
+    print_parts_at(parts, t)
+
+numbers = [list(map(int, re.findall("-?[0-9]+", line))) for line in fi.input()]
 parts = [((x,y), (dx,dy)) for (x,y,dx,dy) in numbers]
-# print(solve((parts)))
 solve((parts))
