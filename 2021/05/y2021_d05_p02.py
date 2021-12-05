@@ -1,69 +1,31 @@
 import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
-import collections
-import math
-import sys
-import heapq
-
-# findall, search, parse
-# from parse import *
-import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
-
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-numbers = [list(map(int, re.findall("[0-9]+", line))) for line in lines]
 
 def solve(lines):
-    board = collections.defaultdict(int)
+    seen = set()
+    twice = set()
 
     for line in lines:
-        numbers = list(map(int, re.findall("[0-9]+", line)))
-        x1,y1, x2, y2 = numbers
-        (x1,y1), (x2,y2) = sorted([(x1,y1), (x2,y2)])
+        (x1,y1), (x2,y2) = sorted([list(map(int, p.split(","))) for p in line.split(" -> ")])
 
         if x1 == x2:
-            for y in range(min(y1,y2), max(y1,y2)+1):
-                board[(x1,y)] += 1
+            g = ((x1,y) for y in range(min(y1,y2), max(y1,y2)+1))
         elif y1 == y2:
-            for x in range(min(x1,x2), max(x1,x2)+1):
-                board[(x,y1)] += 1
-        elif abs(x1-x2) == abs(y1-y2):
+            g = ((x,y1) for x in range(x1, x2+1))
+        else:
             if y1 < y2:
-                dy = +1
-            elif y2 < y1:
-                dy = -1
+                w = range(y1, y2+1)
             else:
-                dy = 0
+                w = range(y1, y2-1, -1)
 
-            ky = y1
-            for x in range(x1, x2+1):
-                board[(x,ky)] += 1
-                ky += dy
+            g = zip(range(x1, x2+1), w)
+
+        for p in g:
+            if p in seen:
+                twice.add(p)
+            else:
+                seen.add(p)
 
 
-    ans = 0
-    for v in board.values():
-        if v > 1:
-            ans += 1
+    return len(twice)
 
-    return ans
-
-print(solve(lines))
+print(solve(fi.input()))
