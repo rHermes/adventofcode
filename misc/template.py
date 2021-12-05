@@ -29,7 +29,7 @@ def gprint(*args, **kwargs):
 INPUT = "".join(fi.input()).rstrip()
 groups = INPUT.split("\n\n")
 lines = list(INPUT.splitlines())
-numbers = [list(map(int, re.findall("[0-9]+", line))) for line in lines]
+numbers = [list(map(int, re.findall("-?[0-9]+", line))) for line in lines]
 
 for line in lines:
     gprint(line)
