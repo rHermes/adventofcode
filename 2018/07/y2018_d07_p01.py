@@ -1,70 +1,27 @@
 import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
-import collections
-import math
-import sys
 import heapq
+from graphlib import TopologicalSorter
 
-# findall, search, parse
-# from parse import *
-import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
+ts = TopologicalSorter()
 
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-numbers = [list(map(int, re.findall("[0-9]+", line))) for line in lines]
-
-G = collections.defaultdict(set)
-
-for line in reversed(sorted(lines, key=lambda x: x.split(" ")[-3])):
+for line in fi.input():
     pr = line.split(" ")
     a, b = pr[1], pr[-3]
-    G[b].add(a)
-    if a not in G:
-        G[a] = set()
+    ts.add(b, a)
 
-# import graphlib
+ts.prepare()
 
-# ts = graphlib.TopologicalSorter(G)
-# print("".join(reversed(list(ts.static_order()))))
+ans = ""
 
-print(G)
-order = []
-seen = set()
-while len(G) > len(seen):
-    cands = []
-    for k, v in G.items():
-        if k in seen:
-            continue
-        
-        left = v - seen
-        if len(left) == 0:
-            cands.append(k)
+Q = list(ts.get_ready())
+heapq.heapify(Q)
 
-    print(cands)
-    do = sorted(cands)[0]
-    print(do)
+while Q:
+    c = heapq.heappop(Q)
+    ans += c
 
-    # order.insert(0, do)
-    order.append(do)
-    seen.add(do)
+    ts.done(c)
+    for x in ts.get_ready():
+        heapq.heappush(Q, x)
 
-# print("".join(reversed(order)))
-print("".join(order))
+print(ans)

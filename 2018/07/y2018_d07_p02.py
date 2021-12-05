@@ -1,97 +1,43 @@
 import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
-import collections
-import math
-import sys
 import heapq
+from graphlib import TopologicalSorter
 
-# findall, search, parse
-# from parse import *
-import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
+ts = TopologicalSorter()
 
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-numbers = [list(map(int, re.findall("[0-9]+", line))) for line in lines]
-
-G = collections.defaultdict(set)
-F = collections.defaultdict(set)
-
-for line in reversed(sorted(lines, key=lambda x: x.split(" ")[-3])):
+for line in fi.input():
     pr = line.split(" ")
     a, b = pr[1], pr[-3]
-    G[b].add(a)
-    F[a].add(b)
-    if a not in G:
-        G[a] = set()
+    ts.add(b, a)
 
-# import graphlib
+ts.prepare()
 
-# ts = graphlib.TopologicalSorter(G)
-# print("".join(reversed(list(ts.static_order()))))
+EXTRA = 60
 
-# print(G)
+# Worker heaps
+IDLE = 5
+BUSY = []
 
-N_WORKERS = 5
-extra = 60
+Q = list(ts.get_ready())
+heapq.heapify(Q)
 
-workers = [[None, 0] for _ in range(N_WORKERS)]
-step = 0
-seen = set()
-inprog = set()
-while len(G) > len(seen):
-    # We skip this step for the first one
-    for worker in workers:
-        if worker[0] is None:
-            continue
+t_min = 0
+while ts.is_active():
+    # While there are tasks and idle workers, we hand out tasks.
+    while Q and IDLE > 0:
+        c = heapq.heappop(Q)
+        IDLE -= 1
 
-        worker[1] -= 1
+        heapq.heappush(BUSY, (t_min+ord(c)-(ord("A")-1)+EXTRA, c))
 
-        if worker[1] == 0:
-            print("At {} seconds we finished {}".format(step, worker[0]))
-            seen.add(worker[0])
-            worker[0] = None
-        elif worker[1] < 0:
-            raise Exception("Not popssible!")
+    # Now we should pop of the latest task, as there is nothing more to do
+    t, c = heapq.heappop(BUSY)
+    IDLE += 1
 
-    aworkers = [w for w in workers if w[0] is None]
+    # New lowest watermark
+    t_min = t
 
+    ts.done(c)
+    for x in ts.get_ready():
+        heapq.heappush(Q, x)
 
-    cands = []
-    for k, v in G.items():
-        if k in seen|inprog:
-            continue
-        
-        left = v - seen
-        if len(left) == 0:
-            cands.append(k)
-
-    for w, c in zip(aworkers, sorted(cands)):
-        print("At {} seconds we started work on {}".format(step, c))
-        w[0] = c
-        w[1] = ord(c) - ord('A') + 1 + extra
-        inprog.add(c)
-
-    step += 1
-
-print(step-1)
-
-# print("".join(reversed(order)))
-# print("".join(order))
+print(t_min)
