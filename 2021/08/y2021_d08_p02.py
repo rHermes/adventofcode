@@ -1,199 +1,30 @@
 import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
-import collections
-import math
-import sys
-import heapq
 
-# findall, search, parse
-# from parse import *
-import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
+# Taken from https://old.reddit.com/r/adventofcode/comments/rbj87a/2021_day_8_solutions/hnouzz3/
+# I couldn't do this better myself, but the idea is clever. We use masks of known digits to find
+# the next one. This is only possible because we can ensure that all ten digits are going to be on
+# the line.
+def smart_solve(line):
+    words, outs = line.split(" | ")
+    clues = [frozenset(x) for x in words.split()]
+    _1, _7, _4, *unknown, _8 = sorted(clues, key=len)
+    _9 = next(d for d in unknown if len(_4 & d) == 4); unknown.remove(_9)
+    _3 = next(d for d in unknown if len(d - _7) == 2); unknown.remove(_3)
+    _2 = next(d for d in unknown if len(_9 & d) == 4); unknown.remove(_2)
+    _0 = next(d for d in unknown if len(_1 & d) == 2); unknown.remove(_0)
+    _6 = next(d for d in unknown if len(d     ) == 6); unknown.remove(_6);
+    _5 = next(d for d in unknown)                    ; unknown.remove(_5);
 
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
+    keys = {"".join(sorted(v)): str(i) for i, v in enumerate([_0, _1, _2, _3, _4, _5, _6, _7, _8, _9])}
 
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
+    ans = ""
+    for word in outs.split():
+        ans += keys["".join(sorted(word))]
 
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-numbers = [list(map(int, re.findall("-?[0-9]+", line))) for line in lines]
-
-segs_on = {
-    "a": set([0, 2, 3, 5, 6, 7, 8, 9]),
-    "b": set([0, 4, 5, 6, 8, 9]),
-    "c": set([0, 1, 2, 3, 4, 7, 8, 9]),
-    "d": set([2, 3, 4, 5, 6, 8, 9]),
-    "e": set([0, 2, 6, 8]),
-    "f": set([0, 1, 3, 4, 5, 6, 7, 8, 9]),
-    "g": set([0, 2, 3, 5, 6, 8, 9])
-}
-
-def aro(line, known, pos):
-    # print(known, pos)
-    a, b = line.split(" | ")
-    for word in a.split(" "):
-        pairs = {}
-        for a, b in it.combinations(pos.items(), 2):
-            if len(a[1]) != 2:
-                continue
-            if a[0] == b[0]:
-                continue
-            if a[1] == b[1]:
-                pairs[(a[0], b[0])] = a[1]
-                pairs[(b[0], a[0])] = a[1]
-
-        pos_digits = set(range(10))
-        if len(word) == 2:
-            pos_digits = set([1])
-
-        if len(word) == 3:
-            pos_digits = set([7])
-
-        if len(word) == 4:
-            pos_digits = set([4])
-
-        if len(word) == 5:
-            pos_digits = set([2, 3, 5])
-
-        if len(word) == 6:
-            pos_digits = set([0, 6, 9])
-
-        if len(word) == 7:
-            pos_digits = set([8])
-
-        for k, v in known.items():
-            pss = segs_on[k]
-            if v in word:
-                pos_digits &= pss
-            else:
-                pos_digits -= pss
-
-        # for k, v in pos.items():
-        #     pss = segs_on[k]
-        #     if not any(z in word for z in v):
-        #         print("lel")
-        #         print(k, v, word, pss, pos_digits)
-        for (a,b), v in pairs.items():
-            if v.issubset(word):
-                # print("YEA")
-                # print(a,b,word,pos_digits)
-                # print(pos)
-                pos_digits &= (segs_on[a] & segs_on[b])
-
-
-
-        assert(len(pos_digits) > 0)
-        if len(pos_digits) != 1:
-            # print(word, pos_digits)
-            continue
-
-        digit = list(pos_digits)[0]
-        # print("{} must be digit {}".format(word, digit))
-
-        if digit == 1:
-            goods = "cf"
-        elif digit == 2:
-            goods = "acdeg"
-        elif digit == 0:
-            goods = "abcefg"
-        elif digit == 4:
-            goods = "bcdf"
-        elif digit == 5:
-            goods = "abdfg"
-        elif digit == 6:
-            goods = "abdefg"
-        elif digit == 7:
-            goods = "acf"
-        elif digit == 8:
-            goods = "abcdefg"
-        elif digit == 9:
-            goods = "abdcfg"
-        elif digit == 3:
-            goods = "acdfg"
-        else:
-            raise Exception("PLEASE MEAN: {}".format(digit))
-
-        for g in goods:
-            pos[g] &= set(word)
-
-        for y in "abcdefg":
-            if y in goods:
-                continue
-            else:
-                pos[y] -= set(word)
-
-        # print("YE:", pos)
-
-    return pos
+    return int(ans)
 
 def solve(lines):
-    ans = 0
-    for line in lines:
-        print(line)
-        known = {}
-        pos = {a: set("abcdefg") for a in "abcdefg"}
-        while len(known) < 7:
-            pos = aro(line, known, pos)
+    return sum(smart_solve(x) for x in lines)
 
-            for k, v in pos.items():
-                if k in known:
-                    continue
-
-                if len(v) != 1:
-                    continue
-
-                p = list(v)[0]
-                known[k] = p
-                break
-            else:
-                print("WE CAN'T FIX!")
-                print(known)
-                print(pos)
-                return
-
-            for k in pos.keys():
-                if k not in known:
-                    pos[k].discard(p)
-
-
-        # print(known)
-        snu = ""
-        rev_known = {v: k for k, v in known.items()}
-        for word in line.split(" | ")[1].split(" "):
-            leg = set(range(10))
-            for w in word:
-                leg &= segs_on[rev_known[w]]
-
-            for w in "abcdefg":
-                if w in word:
-                    continue
-                leg -= segs_on[rev_known[w]]
-
-
-            assert(len(leg) == 1)
-            le = list(leg)[0]
-            snu += str(le)
-
-        print(snu)
-        ans += int(snu)
-
-
-
-
-
-    return ans
-
+lines = map(str.rstrip, fi.input())
 print(solve(lines))

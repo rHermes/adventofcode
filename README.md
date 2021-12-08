@@ -19,6 +19,14 @@ Second time I've placed on the leaderboard, but my best ranking so far!
 I actually managed to place on the leaderboard here for part one! Number 49!
 I got a bit slow on the second part, so I ended up getting 107 rank there.
 
+#### 8
+
+This was a good task and in the solutions thread there are some really interesting solutions!
+
+You can do masking and frequency analysis. It's important to mention that we
+know that we have one of each digit on each line, this allows us to make many
+assumptions.
+
 ### 2020
 
 The first year I placed, just on a single task, and also the first year I had
