@@ -27,6 +27,11 @@ You can do masking and frequency analysis. It's important to mention that we
 know that we have one of each digit on each line, this allows us to make many
 assumptions.
 
+#### 9
+
+Simple task, but I managed to get on the leaderboard for part two! I got the
+100th spot, which is quite funny. I'm stoked to place either way :D
+
 ### 2020
 
 The first year I placed, just on a single task, and also the first year I had
@@ -143,6 +148,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   -------Part 2--------
 Day       Time   Rank  Score       Time  Rank  Score
+  9   00:04:03    150      0   00:10:31   100      1
   8   00:06:39    650      0   01:24:50  3815      0
   7   00:08:07   3423      0   00:09:12  1480      0
   6   00:04:01    290      0   00:07:37   232      0
