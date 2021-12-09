@@ -1,48 +1,25 @@
 import fileinput as fi
-import re
 import itertools as it
-import functools as ft
-import string
-import collections
-import math
-import sys
-import heapq
 
-# findall, search, parse
-# from parse import *
-import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
+def ortho(y, x, shape):
+    sy, sx = shape
+    if 0 < x: yield (y, x-1)
+    if x < sx-1: yield (y, x+1)
+    if 0 < y: yield (y-1, x)
+    if y < sy-1: yield (y+1, x)
 
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-numbers = [list(map(int, re.findall("-?[0-9]+", line))) for line in lines]
 
 def solve(lines):
-    wow = collections.defaultdict(lambda: int(10))
-    for y,line in enumerate(lines):
-        for x, c in enumerate(line):
-            wow[(y,x)] = int(c)
+    board = [[int(c) for c in line] for line in lines]
+    shape = (len(board), len(board[0]))
 
     ans = 0
-    for y in range(len(lines)):
-        for x in range(len(lines[0])):
-            if all([wow[(y,x)] < wow[(y+dy,x+dx)] for (dy,dx) in [(0,1), (0,-1), (1, 0), (-1,0)]]):
-                ans += wow[(y,x)] + 1
+    for (y,x) in it.product(range(shape[0]), range(shape[1])):
+        if all(board[y][x] < board[ay][ax] for (ay,ax) in ortho(y, x, shape)):
+            ans += board[y][x] + 1
+
     return ans
 
 
+lines = map(str.rstrip, fi.input())
 print(solve(lines))
