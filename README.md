@@ -27,6 +27,13 @@ You can do masking and frequency analysis. It's important to mention that we
 know that we have one of each digit on each line, this allows us to make many
 assumptions.
 
+#### 11
+
+This one is not so fun, but it's noteworthy, because I coded it in -2 degrees
+Celsius, with freezing hands, in the woods. I decided to sleep outside the day
+before and I took my laptop with me! I decided I wouldn't wake up on time, since
+it would be cold, but I did it once I had woken up and eaten.
+
 #### 9
 
 Simple task, but I managed to get on the leaderboard for part two! I got the
@@ -146,17 +153,20 @@ to all inputs, even malicously crafted ones.
 ### 2021
 
 ```
-      --------Part 1--------   -------Part 2--------
-Day       Time   Rank  Score       Time  Rank  Score
-  9   00:04:03    150      0   00:10:31   100      1
-  8   00:06:39    650      0   01:24:50  3815      0
-  7   00:08:07   3423      0   00:09:12  1480      0
-  6   00:04:01    290      0   00:07:37   232      0
-  5   00:04:01     49     52   00:09:04   107      0
-  4   00:07:08     55     46   00:09:02    41     60
-  3   01:04:09  14883      0   01:13:03  7981      0
-  2   00:01:47    158      0   00:05:41  1272      0
-  1   00:01:13    142      0   00:03:12   183      0
+      --------Part 1--------   --------Part 2--------
+Day       Time   Rank  Score       Time   Rank  Score
+ 12   00:08:41    239      0   00:28:05   1048      0
+ 11   04:22:30  13127      0   04:24:38  12822      0
+ 10   00:08:07    971      0   00:12:46    535      0
+  9   00:04:03    150      0   00:10:31    100      1
+  8   00:06:39    650      0   01:24:50   3815      0
+  7   00:08:07   3423      0   00:09:12   1480      0
+  6   00:04:01    290      0   00:07:37    232      0
+  5   00:04:01     49     52   00:09:04    107      0
+  4   00:07:08     55     46   00:09:02     41     60
+  3   01:04:09  14883      0   01:13:03   7981      0
+  2   00:01:47    158      0   00:05:41   1272      0
+  1   00:01:13    142      0   00:03:12    183      0
 ```
 
 ### 2020

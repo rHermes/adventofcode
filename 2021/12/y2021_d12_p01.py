@@ -9,7 +9,7 @@ import sys
 import heapq
 
 # findall, search, parse
-# from parse import *
+from parse import *
 import more_itertools as mit
 # import z3
 # import numpy as np
@@ -54,5 +54,45 @@ lines = list(INPUT.splitlines())
 numbers = [list(map(int, re.findall("-?[0-9]+", line))) for line in lines]
 grid = [[c for c in line] for line in lines]
 
-for line in lines:
-    gprint(line)
+
+def rek(G, pth, seen):
+    pths = set()
+
+    src = pth[-1]
+    for w in G[src]:
+        if w == "start":
+            continue
+
+        if w == "end":
+            pths.add(pth + ("end",))
+            continue
+
+        if w in seen:
+            continue
+
+
+
+        nseen = frozenset(seen)
+        if w.islower():
+            nseen = seen | frozenset((w,))
+
+
+
+        pths.update(rek(G, (pth + (w,)), nseen))
+
+    
+    return pths
+
+
+
+
+def solve():
+    G = cs.defaultdict(set)
+    for line in lines:
+        a, b = line.split("-")
+        G[a].add(b)
+        G[b].add(a)
+
+    return rek(G, ("start",), frozenset(["start"]))
+
+print(len(solve()))
