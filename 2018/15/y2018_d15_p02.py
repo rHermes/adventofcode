@@ -14,11 +14,13 @@ Point = tuple[int,int]
 Entity = tuple[Point,str,int,int,int]
 Board = list[list[bool]]
 
-def parse_input() -> tuple[list[Entity], Board]:
+lines = [x.rstrip() for x in fi.input()]
+
+def parse_input(n: int) -> tuple[list[Entity], Board]:
     ents = []
     board = []
     wi = it.count()
-    for y, line in enumerate(map(str.rstrip, fi.input())):
+    for y, line in enumerate(lines):
         row = []
         for x, c in enumerate(line):
             if c == '#':
@@ -27,7 +29,7 @@ def parse_input() -> tuple[list[Entity], Board]:
                 row.append(False)
 
             if c in "EG":
-                ents.append(((y,x),c,3,200,next(wi)))
+                ents.append(((y,x),c,[3, n][c == "E"],200,next(wi)))
                 
         board.append(row)
     
@@ -52,19 +54,25 @@ def reachable(board: Board, src: Point, taken: set[Point], in_range: set[Point])
     seen = set(taken)
     found = set()
 
+    best_depth = 10000000000000000
     while len(Q) > 0:
         depth, cur = Q.popleft()
+        if best_depth < depth:
+            continue
+
         if cur in seen:
             continue
         else:
             seen.add(cur)
 
+
         if cur in in_range:
+            if depth < best_depth:
+                best_depth = depth
+                gprint("We have a new best depth:", best_depth)
+
             found.add((depth,cur))
 
-        # Once we find one, we stop exploring, since we do this depth wise
-        # if found:
-        #     continue
 
         y, x = cur
         for dy, dx in zip([0, 0, -1, 1], [-1, 1, 0, 0]):
@@ -189,6 +197,9 @@ def one_round(board: Board, ents: list[Entity]):
             gprint("This was a dead entry")
             continue
 
+        # This might be slow, but  IDC
+        if sum(1 for e in ents if e[1] != ent[1]) == 0:
+            return False
     
         # We remove it from the entry list, as we will now
         # move it.
@@ -198,6 +209,7 @@ def one_round(board: Board, ents: list[Entity]):
         turn(board, ents, ent)
 
         # For now we break, as we don't insert stuff again.
+    return True
 
 def print_board(board: Board, ents: list[Entity]):
     ogres = set(e[0] for e in ents if e[1] == "G")
@@ -219,21 +231,37 @@ def print_board(board: Board, ents: list[Entity]):
 
     print("\n".join(ns))
 
-DEBUG = False
-ents, board = parse_input()
-
-print("Initially:")
-print_board(board, ents)
-for i in it.count(0):
-    print("After {} round:".format(i))
-    print_board(board, ents)
-    if len(set(e[1] for e in ents)) == 1:
-        break
-    one_round(board, ents)
+def go_for_it(n: int):
+    ents, board = parse_input(n)
     # print(ents)
-    print("")
+    # print("Initially:")
+    # print_board(board, ents)
+    n_elves_start = sum(1 for e in ents if e[1] == "E")
+    # print("start elves:", n_elves_start)
+    gad = 1
+    for i in it.count(0):
+        if sum(1 for e in ents if e[1] == "E") < n_elves_start:
+            return False
+        
+        # print("After {} round:".format(i))
+        # print_board(board, ents)
+        if len(ents) == n_elves_start:
+            break
 
-print(ents)
-print("It ended after {} rounds with an outcome of {}".format(i, i*sum(e[3] for e in ents)))
-print("It ended after {} rounds with an outcome of {}".format(i-1, (i-1)*sum(e[3] for e in ents)))
-print("It ended after {} rounds with an outcome of {}".format(i-2, (i-2)*sum(e[3] for e in ents)))
+        gad = one_round(board, ents)
+        # print(ents)
+        # print("")
+
+    if not gad:
+        i -= 1
+    # print(gad)
+    # print(ents)
+    print("It ended after {} rounds with an outcome of {}".format(i, i*sum(e[3] for e in ents)))
+    return True
+
+DEBUG = False
+for i in it.count(4):
+    # print(i)
+    x = go_for_it(i)
+    if x:
+        break

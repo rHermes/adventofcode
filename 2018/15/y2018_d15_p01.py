@@ -188,6 +188,10 @@ def one_round(board: Board, ents: list[Entity]):
         else:
             gprint("This was a dead entry")
             continue
+        
+        if sum(1 for e in ents if e[1] != ent[1]) == 0:
+            return False
+
 
     
         # We remove it from the entry list, as we will now
@@ -197,7 +201,8 @@ def one_round(board: Board, ents: list[Entity]):
         # This will modify the ents array
         turn(board, ents, ent)
 
-        # For now we break, as we don't insert stuff again.
+    # This was a full round
+    return True
 
 def print_board(board: Board, ents: list[Entity]):
     ogres = set(e[0] for e in ents if e[1] == "G")
@@ -222,18 +227,17 @@ def print_board(board: Board, ents: list[Entity]):
 DEBUG = False
 ents, board = parse_input()
 
-print("Initially:")
-print_board(board, ents)
+# print("Initially:")
+# print_board(board, ents)
 for i in it.count(0):
-    print("After {} round:".format(i))
-    print_board(board, ents)
+    # print("After {} round:".format(i))
+    # print_board(board, ents)
     if len(set(e[1] for e in ents)) == 1:
         break
-    one_round(board, ents)
+    gad = one_round(board, ents)
     # print(ents)
-    print("")
+    # print("")
 
-print(ents)
+if not gad:
+    i -= 1
 print("It ended after {} rounds with an outcome of {}".format(i, i*sum(e[3] for e in ents)))
-print("It ended after {} rounds with an outcome of {}".format(i-1, (i-1)*sum(e[3] for e in ents)))
-print("It ended after {} rounds with an outcome of {}".format(i-2, (i-2)*sum(e[3] for e in ents)))
