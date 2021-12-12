@@ -8,5 +8,8 @@ for line in map(str.rstrip, fi.input()):
     for i, c in enumerate(line):
         x[i][int(c)] += 1
 
+if not x:
+    x = [[0,0]]
+
 gamma = "".join("01"[a < b] for a,b in x)
 print(int(gamma, 2) * int(gamma.translate(str.maketrans("01", "10")), 2))
