@@ -1,7 +1,16 @@
 import fileinput as fi
 import collections as cs
+import functools as ft
 
-def solve(G: dict[str, set[str]], src: str, seen: frozenset[str]) -> int:
+
+G = cs.defaultdict(set)
+for line in map(str.rstrip, fi.input()):
+    a, b = line.split("-")
+    G[a].add(b)
+    G[b].add(a)
+
+@ft.cache
+def solve(src: str, seen: frozenset[str]) -> int:
     pths = 0
 
     for w in G[src]:
@@ -15,16 +24,9 @@ def solve(G: dict[str, set[str]], src: str, seen: frozenset[str]) -> int:
                 continue
             nseen = seen.union([w])
 
-        pths += solve(G, w, nseen)
+        pths += solve(w, nseen)
 
     return pths
 
 
-G = cs.defaultdict(set)
-for line in map(str.rstrip, fi.input()):
-    a, b = line.split("-")
-    G[a].add(b)
-    G[b].add(a)
-
-
-print(solve(G, "start", frozenset(["start"])))
+print(solve("start", frozenset(["start"])))
