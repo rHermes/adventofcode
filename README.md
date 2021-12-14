@@ -27,6 +27,11 @@ You can do masking and frequency analysis. It's important to mention that we
 know that we have one of each digit on each line, this allows us to make many
 assumptions.
 
+#### 9
+
+Simple task, but I managed to get on the leaderboard for part two! I got the
+100th spot, which is quite funny. I'm stoked to place either way :D
+
 #### 11
 
 This one is not so fun, but it's noteworthy, because I coded it in -2 degrees
@@ -34,10 +39,11 @@ Celsius, with freezing hands, in the woods. I decided to sleep outside the day
 before and I took my laptop with me! I decided I wouldn't wake up on time, since
 it would be cold, but I did it once I had woken up and eaten.
 
-#### 9
+#### 14
 
-Simple task, but I managed to get on the leaderboard for part two! I got the
-100th spot, which is quite funny. I'm stoked to place either way :D
+This was the second ok problem of the year. My placing was bad, but at this point
+I care more about getting more good problems.
+
 
 ### 2020
 
@@ -155,6 +161,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 14   00:06:51    287      0   00:27:04    778      0
  13   00:09:52    353      0   00:11:45    184      0
  12   00:08:41    239      0   00:28:05   1048      0
  11   04:22:30  13127      0   04:24:38  12822      0
