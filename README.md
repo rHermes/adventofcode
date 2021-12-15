@@ -44,6 +44,17 @@ it would be cold, but I did it once I had woken up and eaten.
 This was the second ok problem of the year. My placing was bad, but at this point
 I care more about getting more good problems.
 
+#### 15
+
+And I placed again! On part two, I got 57 place! I didn't expect this as I was doing
+very not so well on part one, but I guess a bunch of factors played in my advantage.
+I didn't actually extend the grid, I just calculated the values for each field. I also
+noticed that we wrapped back to 1, instead of 0. Instead of trying to figure out how to
+do that neatly, I just did it with a range expression.
+
+I got some sad news today, that a winter half marathon I was running got canceled, I
+guess this is some sort of consolation price :P
+
 
 ### 2020
 
@@ -161,6 +172,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 15   00:06:59    185      0   00:12:27     57     44
  14   00:06:51    287      0   00:27:04    778      0
  13   00:09:52    353      0   00:11:45    184      0
  12   00:08:41    239      0   00:28:05   1048      0
