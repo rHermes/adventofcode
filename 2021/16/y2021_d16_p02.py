@@ -1,167 +1,50 @@
 import fileinput as fi
-import re
-import itertools as it
+import operator as op
 import functools as ft
-import string
-import collections as cs
-import math
-import cmath
-import sys
-import heapq
 
-# findall, search, parse
-from parse import *
-import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
+# inspired heavily by: https://old.reddit.com/r/adventofcode/comments/rhj2hm/2021_day_16_solutions/hoqwhnj/
+# The idea here is that we never need to backtrack, so we can simply operate on one array. We reverse it,
+# to get constant time `pop`.
 
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
+ops = [op.add, op.mul, min, max, lambda x, y: 16*x +y, op.gt, op.lt, op.eq]
 
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
+def read_bits(data, n):
+    for _ in range(n):
+        yield data.pop()
 
-def ortho(y, x, shape):
-    """Returns all orthagonaly adjacent points, respecting boundary conditions"""
-    sy, sx = shape
-    if 0 < x: yield (y, x-1)
-    if x < sx-1: yield (y, x+1)
-    if 0 < y: yield (y-1, x)
-    if y < sy-1: yield (y+1, x)
+def as_num(bits):
+    return sum((2**i) * b for i, b in enumerate(reversed(bits)))
 
-def adj(y, x, shape):
-    """Returns all points around a point, given the shape of the array"""
-    sy, sx = shape
-    for dy,dx in it.product([-1,0,1], [-1,0,1]):
-        if dy == 0 and dx == 0:
-            continue
+def read_num(data, n):
+    return as_num(list(read_bits(data, n)))
 
-        py = y + dy
-        px = x + dx
+def decode(data):
+    """evaluate a treestructure"""
+    version = read_num(data, 3)
+    type_id = read_num(data, 3)
 
-        if 0 <= px < sx and 0 <= py < sy:
-            yield (py,px)
+    def get_subpackets():
+        if type_id == 4:
+            while True:
+                done = not data.pop()
+                yield read_num(data, 4)
+                if done:
+                    return
 
-
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-numbers = [list(map(int, re.findall("-?[0-9]+", line))) for line in lines]
-grid = [[c for c in line] for line in lines]
-gsz = (len(grid), len(grid[0]))
-
-def padd(packets):
-    return sum(p[2] for p in packets)
-
-def pprod(packets):
-    return math.prod(p[2] for p in packets)
-
-def pmin(packets):
-    return min(p[2] for p in packets)
-
-def pmax(packets):
-    return max(p[2] for p in packets)
-
-def pgt(pf):
-    return int(pf[0][2] > pf[1][2])
-
-def plt(pf):
-    return int(pf[0][2] < pf[1][2])
-
-def peq(pf):
-    return int(pf[0][2] == pf[1][2])
-
-
-
-op_d = {
-    0: padd,
-    1: pprod,
-    2: pmin,
-    3: pmax,
-    5: pgt,
-    6: plt,
-    7: peq,
-}
-
-def decode(h):
-    # print("called decode with {}".format(h))
-    oh = h
-    ver = int(h[:3],2)
-    h = h[3:]
-    typ = int(h[:3],2)
-    h = h[3:]
-
-    if typ == 4:
-        nums = []
-        while h[0] != "0":
-            nums.append(h[1:5])
-            h = h[5:]
-
-        nums.append(h[1:5])
-        h = h[5:]
-
-        nn = "".join(nums)
-        gv = int(nn, 2)
-        # print(gv)
-        return ("literal", ver, gv, h)
-    else:
-        op = op_d[typ]
-        lty = h[0] == "1"
-        h = h[1:]
-        if lty:
-            subpak = int(h[:11], 2)
-            h = h[11:]
-            vs = []
-            for i in range(subpak):
-                kk = decode(h)
-                h = kk[-1]
-                vs.append(kk)
-
-            ov = op(vs)
-
-            return ("op_cnt", ver, ov, subpak, vs, h)
+        lid = data.pop()
+        if lid:
+            for _ in range(read_num(data, 11)):
+                yield decode(data)
         else:
-            npak = int(h[:15], 2)
-            h = h[15:]
-            kv = h[:npak]
-            h = h[npak:]
+            blen = read_num(data, 15)
+            l1 = len(data) - blen
+            while len(data) != l1:
+                yield decode(data)
 
-            vs = []
-            vs.append(decode(kv))
-            while len(vs[-1][-1]) != 0:
-                # print(vs)
-                if not "1" in vs[-1][-1]:
-                    break
-                kk = vs[-1][-1]
-                # print(kk)
-                vs.append(decode(kk))
-
-            ov = op(vs)
-
-            return ("op_len", ver, ov, typ, lty, npak, vs, h)
-            
+    return ft.reduce(ops[type_id], get_subpackets())
 
 
-
-
-def solve(s):
-    # extra 0z at then end?
-    h = "".join("{:04b}".format(int(x, 16)) for x in s)
-    # print(h)
-    ww =  decode(h)
-    print("ANS IS {}".format(ww[2]))
-    return ww
-
-
-
-
-
-
-solve(lines[0])
-# print(solve(lines[0]))
+line = next(fi.input()).rstrip()
+h = "".join("{:04b}".format(int(x, 16)) for x in line)
+bits = [x == "1" for x in h][::-1]
+print(decode(bits))
