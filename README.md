@@ -55,6 +55,10 @@ do that neatly, I just did it with a range expression.
 I got some sad news today, that a winter half marathon I was running got canceled, I
 guess this is some sort of consolation price :P
 
+#### 16
+
+Third ok problem of the year, a fun parsing task.
+
 
 ### 2020
 
@@ -172,6 +176,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 16   00:31:20    399      0   00:38:02    362      0
  15   00:06:59    185      0   00:12:27     57     44
  14   00:06:51    287      0   00:27:04    778      0
  13   00:09:52    353      0   00:11:45    184      0

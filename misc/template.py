@@ -9,7 +9,7 @@ import sys
 import heapq
 
 # findall, search, parse
-# from parse import *
+from parse import *
 import more_itertools as mit
 # import z3
 # import numpy as np
@@ -53,6 +53,10 @@ groups = INPUT.split("\n\n")
 lines = list(INPUT.splitlines())
 numbers = [list(map(int, re.findall("-?[0-9]+", line))) for line in lines]
 grid = [[c for c in line] for line in lines]
+gsz = (len(grid), len(grid[0]))
 
-for line in lines:
-    gprint(line)
+def solve():
+    for line in lines:
+        gprint(line)
+
+print(solve())
