@@ -1,94 +1,14 @@
 import fileinput as fi
 
-# Returns the final position of x, given a high y.
-def final_x(x0, dx):
-    return x0 + ((dx * (dx + 1))//2)
+ymin = int(next(fi.input()).rstrip().split()[3][2:].split("..")[0])
+assert(ymin <= 0)
 
-# Returns the y positon at t with initial velocity dy
-def y_at(dy, t):
-    return -(t * (t - 1 - 2*dy)) // 2
-
-# We create a bound on the valid xmin, xmax
-def find_valid_xs(xmin, xmax):
-    valid = set()
-    for dx in range(0, xmax+1):
-        if final_x(0, dx) < xmin:
-            continue
-
-        x = 0
-        ndx = dx
-        while x <= xmax:
-            if xmin <= x:
-                break
-
-            x += ndx
-            ndx -= 1
-        else:
-            continue
-
-        valid.add(dx)
-
-    return valid
-
-
-def step(x,y, dx, dy):
-    if 0 < dx:
-        ndx = dx-1
-    else:
-        ndx = dx
-
-    return (x+dx, y+dy,ndx, dy-1)
-
-# Retuns if the shot would have gone in and if it's worth trying to
-# change y
-def try_vec(xmin,xmax,ymin,ymax, dx, dy):
-    x, y = 0, 0
-    max_y = 0
-    found = False
-    while ymin <= y and x <= xmax:
-        max_y = max(max_y, y)
-        # We will never hit now, might as well just break it of
-        # We will also never hit the target, as giving us more hight
-        # will not lead to us getting father.
-        if dx == 0 and x < xmin:
-            return None, True
-
-        if ymin <= y <= ymax and xmin <= x <= xmax:
-            return max_y, False
-        else:
-            x, y, dx, dy = step(x, y, dx, dy)
-
-    return None, (xmax < x and ymax < y)
-
-
-def solve(xmin,xmax,ymin,ymax):
-    assert(xmin <= xmax and ymin <= ymax)
-
-    # We assert that x can only be positive. This is reasonable, given the puzzle text.
-    assert(0 <= xmin)
-    # We also assume that y is always below us. This is reasonable, given the puzzle text.
-    assert(ymax <= 0)
-
-    ans = ymin
-    gav = find_valid_xs(xmin,xmax)
-    for dx in gav:
-        # We cannot actually solve this generally, so we have to guess at the max y
-        for dy in range(ans, 1000):
-            maxy, stop_it = try_vec(xmin,xmax,ymin,ymax,dx,dy)
-            if maxy is not None:
-                ans = max(ans, maxy)
-
-            if stop_it:
-                break
-
-    return ans
-
-
-# y equation, where m is the initial vector: y_m(t) = - (t * (t - 1 - 2*m)) // 2
-
-line = next(fi.input()).rstrip()
-parts = line.split()
-xmin, xmax = map(int,parts[2][2:-1].split(".."))
-ymin, ymax = map(int,parts[3][2:].split(".."))
-
-print(solve(xmin,xmax,ymin,ymax))
+# Since it's a parobola, the ball is going to come down to y=0 again, with
+# the velocity -(dy+1), where dy is the initial velocity. This means that
+# we just have to find the biggest dy that doesn't immidiatily go below the
+# target area. This is always going to be dy = (-ymin)-1.
+#
+# The height of the arch is the sum of the triangle numbers, so we get
+# (dy*(dy+1))//2, which when we insert dy = (-ymin)-1 we get
+# (ymin*(ymin+1))//2, which is the answer.
+print((ymin*(ymin+1))//2)
