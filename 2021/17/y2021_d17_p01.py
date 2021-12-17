@@ -48,16 +48,39 @@ def adj(y, x, shape):
             yield (py,px)
 
 
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-numbers = [list(map(int, re.findall("-?[0-9]+", line))) for line in lines]
-grid = [[c for c in line] for line in lines]
-gsz = (len(grid), len(grid[0]))
+def step(x,y, dx, dy):
+    if dx < 0:
+        ndx = dx+1
+    elif dx > 0:
+        ndx = dx-1
+    else:
+        ndx = dx
+    return (x+dx, y+dy,ndx, dy-1)
 
-def solve():
-    for line in lines:
-        gprint(line)
+def try_vec(xmin,xmax,ymin,ymax, dx, dy):
+    x, y = 0, 0
+    max_y = 0
+    found = False
+    while ymin <= y and x <= xmax:
+        max_y = max(max_y, y)
+        if ymin <= y <= ymax and xmin <= x <= xmax:
+            return max_y
+        else:
+            x, y, dx, dy = step(x, y, dx, dy)
 
-print(solve())
+    return None
+        
+
+def solve(xmin,xmax,ymin,ymax):
+    max_al = 0
+    for dx in range(0, xmax+1):
+        for dy in range(0, 600):
+            al = try_vec(xmin,xmax,ymin,ymax,dx,dy)
+            if al is not None:
+                print(dx, dy, al)
+                max_al = max(max_al, al)
+
+    return max_al
+
+# print(solve(20,30,-10,-5)) # example
+print(solve(135,155,-102,-78)) # my input
