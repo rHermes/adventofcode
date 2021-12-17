@@ -1,89 +1,93 @@
 import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
-import collections as cs
-import math
-import sys
-import heapq
 
-# findall, search, parse
-from parse import *
-import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
-# from bidict import bidict
+# Returns the final position of x, given a high y.
+def final_x(x0, dx):
+    return x0 + ((dx * (dx + 1))//2)
 
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
+# Returns the y positon at t with initial velocity dy
+def y_at(dy, t):
+    return -(t * (t - 1 - 2*dy)) // 2
 
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-def ortho(y, x, shape):
-    """Returns all orthagonaly adjacent points, respecting boundary conditions"""
-    sy, sx = shape
-    if 0 < x: yield (y, x-1)
-    if x < sx-1: yield (y, x+1)
-    if 0 < y: yield (y-1, x)
-    if y < sy-1: yield (y+1, x)
-
-def adj(y, x, shape):
-    """Returns all points around a point, given the shape of the array"""
-    sy, sx = shape
-    for dy,dx in it.product([-1,0,1], [-1,0,1]):
-        if dy == 0 and dx == 0:
+# We create a bound on the valid xmin, xmax
+def find_valid_xs(xmin, xmax):
+    valid = set()
+    for dx in range(0, xmax+1):
+        if final_x(0, dx) < xmin:
             continue
 
-        py = y + dy
-        px = x + dx
+        x = 0
+        ndx = dx
+        while x <= xmax:
+            if xmin <= x:
+                break
 
-        if 0 <= px < sx and 0 <= py < sy:
-            yield (py,px)
+            x += ndx
+            ndx -= 1
+        else:
+            continue
+
+        valid.add(dx)
+
+    return valid
 
 
 def step(x,y, dx, dy):
-    if dx < 0:
-        ndx = dx+1
-    elif dx > 0:
+    if 0 < dx:
         ndx = dx-1
     else:
         ndx = dx
+
     return (x+dx, y+dy,ndx, dy-1)
 
+# Retuns if the shot would have gone in and if it's worth trying to
+# change y
 def try_vec(xmin,xmax,ymin,ymax, dx, dy):
     x, y = 0, 0
     max_y = 0
     found = False
     while ymin <= y and x <= xmax:
-        max_y = max(max_y, y)
+        # We will never hit now, might as well just break it of
+        # We will also never hit the target, as giving us more hight
+        # will not lead to us getting father.
+        if dx == 0 and x < xmin:
+            return False, True
+
         if ymin <= y <= ymax and xmin <= x <= xmax:
-            return max_y
+            return True, False
         else:
             x, y, dx, dy = step(x, y, dx, dy)
 
-    return None
-        
+    return False, (xmax < x and ymax < y)
+
 
 def solve(xmin,xmax,ymin,ymax):
-    max_al = 0
-    good = 0
-    for dx in range(0, xmax+1):
-        for dy in range(-600, 600):
-            al = try_vec(xmin,xmax,ymin,ymax,dx,dy)
-            if al is not None:
-                good += 1
-                print(dx, dy, al)
-                max_al = max(max_al, al)
+    assert(xmin <= xmax and ymin <= ymax)
 
-    return good
-    return max_al
+    # We assert that x can only be positive. This is reasonable, given the puzzle text.
+    assert(0 <= xmin)
+    # We also assume that y is always below us. This is reasonable, given the puzzle text.
+    assert(ymax <= 0)
 
-# print(solve(20,30,-10,-5)) # example
-print(solve(135,155,-102,-78)) # my input
+    ans = 0
+    gav = find_valid_xs(xmin,xmax)
+    for dx in gav:
+        # We cannot actually solve this generally, so we have to guess at the max y
+        for dy in range(ymin, 1000):
+            hit, stop_it = try_vec(xmin,xmax,ymin,ymax,dx,dy)
+            if hit:
+                ans += 1
+
+            if stop_it:
+                break
+
+    return ans
+
+
+# y equation, where m is the initial vector: y_m(t) = - (t * (t - 1 - 2*m)) // 2
+
+line = next(fi.input()).rstrip()
+parts = line.split()
+xmin, xmax = map(int,parts[2][2:-1].split(".."))
+ymin, ymax = map(int,parts[3][2:].split(".."))
+
+print(solve(xmin,xmax,ymin,ymax))
