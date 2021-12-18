@@ -1,179 +1,81 @@
 import fileinput as fi
 import itertools as it
+import functools as ft
 import math
 from ast import literal_eval
-from copy import deepcopy
 
-# list, val, dir
-def add_on(w, x, left):
-    a, b = w
-    al = isinstance(a, list)
-    bl = isinstance(b, list)
+# Inspired/stolen from: https://github.com/benediktwerner/AdventOfCode/blob/master/2021/day18/sol.py
 
+def add_to(x, n, left):
+    if n is None:
+        return x
+    if isinstance(x, int):
+        return x + n
     if left:
-        if al:
-            add_on(a, x, left)
-        else:
-            w[0] += x
+        return (add_to(x[0], n, left), x[1])
     else:
-        # Right
-        if bl:
-            add_on(b, x, left)
-        else:
-            w[1] += x
+        return (x[0], add_to(x[1], n, left))
 
-    
+# returns: changed, left, exp, right
+def explode(x, n=4):
+    if isinstance(x, int):
+        return False, None, x, None
 
-def explodes(w, depth=0):
-    a, b = w
-    al = isinstance(a, list)
-    bl = isinstance(b, list)
+    if n == 0:
+        return True, x[0], 0, x[1]
 
-    if depth == 3 and (al or bl):
-        if al:
-            l, r = a[0], a[1]
-            w[0] = 0
+    a, b = x
+    change, left, a, right = explode(a, n - 1)
+    if change:
+        return True, left, (a, add_to(b, right, left=True)), None
 
-            if not bl:
-                w[1] += r
-            else:
-                add_on(w[1], r, left=True)
-            r = None
+    change, left, b, right = explode(b, n - 1)
+    if change:
+        return True, None, (add_to(a, left, left=False), b), right
 
-            return (l,r)
-        else:
-            assert(bl)
+    return False, None, x, None
 
-            l, r = b[0], b[1]
-            w[1] = 0
+# Returns changed, x
+def split(x):
+    if isinstance(x, int):
+        if 10 <= x:
+            return True, (x // 2, math.ceil(x / 2))
+        return False, x
 
-            if not al:
-                w[0] += l
-            else:
-                add_on(w[0], l, left=False)
-            l = None
+    a, b = x
 
-            return (l, r)
-        
-        raise Exception("Not supposed to happen")
+    change, a = split(a)
+    if change:
+        return True, (a, b)
 
-    
-    if al:
-        kk = explodes(a, depth+1)
-        if kk is not None:
-            l, r = kk
-            if l is not None:
-                assert(r is None)
-                return (l,r)
+    change, b = split(b)
+    return change, (a, b)
 
-            if r is not None:
-                assert(l is None)
-
-                if bl:
-                    add_on(b, r, left=True)
-                else:
-                    w[1] += r
-
-                return (None, None)
-
-            return (None, None)
-
-    if bl:
-        kk = explodes(b, depth+1)
-        if kk is not None:
-            l, r = kk
-            if r is not None:
-                assert(l is None)
-                return (l,r)
-
-            if l is not None:
-                assert(r is None)
-
-                if al:
-                    add_on(a, l, left=False)
-                else:
-                    w[0] += l
-
-                return (None, None)
-
-            return (None, None)
-
-    return None
-
-def splits(w):
-    a, b = w
-    al = isinstance(a, list)
-    bl = isinstance(b, list)
-
-    if al:
-        k = splits(a)
-        if k:
-            return True
-    else:
-        if 9 < a:
-            l =a//2
-            r = int(math.ceil(a/2))
-            w[0] = [l, r]
-            return True
-
-    if bl:
-        k = splits(b)
-        if k:
-            return True
-    else:
-        if 9 < b:
-            l =b//2
-            r = int(math.ceil(b/2))
-            w[1] = [l, r]
-            return True
-    
-    return False
-
-
-def reduce(w):
-    # We repetedly do both
-    while True:
-        if explodes(w, depth=0) is not None:
-            continue
-
-        if splits(w):
-            continue
-
-        break
 
 def sadd(a, b):
-    w = [a,b]
-    reduce(w)
-    return w
+    x = (a, b)
+    while True:
+        change, _, x, _ = explode(x)
+        if change:
+            continue
 
-def mag(w):
-    ans = 0
-    a, b = w
-    al = isinstance(a, list)
-    bl = isinstance(b, list)
-    if al:
-        ans += 3*mag(a)
-    else:
-        ans += 3*a
+        change, x = split(x)
+        if not change:
+            break
 
-    if bl:
-        ans += 2*mag(b)
-    else:
-        ans += 2*b
+    return x
 
-    return ans
+def mag(x):
+    if isinstance(x, int):
+        return x
 
-def solve(nums):
-    lmag = 0
-    for (a,b) in it.permutations(nums,r=2):
-        aw = deepcopy(a)
-        bw = deepcopy(b)
-        kk = sadd(aw, bw)
-        kw = mag(kk)
-        if lmag < kw:
-            lmag = kw
+    return 3 * mag(x[0]) + 2 * mag(x[1])
 
-    return lmag
 
-nums = [literal_eval(x.rstrip()) for x in fi.input()]
-print(solve(nums))
+def solve(numbers):
+    return max(mag(sadd(a,b)) for a, b in it.permutations(numbers, r=2))
+
+# I want tuples, not lists, so I am sure they are immutable
+tr = str.maketrans("[]", "()")
+numbers = [literal_eval(x.rstrip().translate(tr)) for x in fi.input()]
+print(solve(numbers))
