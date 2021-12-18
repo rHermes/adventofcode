@@ -1,80 +1,23 @@
 import fileinput as fi
-import re
 import itertools as it
-import functools as ft
-import string
-import collections as cs
 import math
-import sys
-import heapq
-from copy import deepcopy
-
-# findall, search, parse
-from parse import *
-import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
-# from bidict import bidict
-
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-def ortho(y, x, shape):
-    """Returns all orthagonaly adjacent points, respecting boundary conditions"""
-    sy, sx = shape
-    if 0 < x: yield (y, x-1)
-    if x < sx-1: yield (y, x+1)
-    if 0 < y: yield (y-1, x)
-    if y < sy-1: yield (y+1, x)
-
-def adj(y, x, shape):
-    """Returns all points around a point, given the shape of the array"""
-    sy, sx = shape
-    for dy,dx in it.product([-1,0,1], [-1,0,1]):
-        if dy == 0 and dx == 0:
-            continue
-
-        py = y + dy
-        px = x + dx
-
-        if 0 <= px < sx and 0 <= py < sy:
-            yield (py,px)
-
-
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-numbers = [list(map(int, re.findall("-?[0-9]+", line))) for line in lines]
-grid = [[c for c in line] for line in lines]
-gsz = (len(grid), len(grid[0]))
+from ast import literal_eval
 
 # list, val, dir
-def add_on(w, x, d):
-    lef = d == "left"
-
+def add_on(w, x, left):
     a, b = w
     al = isinstance(a, list)
     bl = isinstance(b, list)
 
-    if lef:
-        # left
+    if left:
         if al:
-            add_on(a, x, d)
+            add_on(a, x, left)
         else:
             w[0] += x
     else:
         # Right
         if bl:
-            add_on(b, x, d)
+            add_on(b, x, left)
         else:
             w[1] += x
 
@@ -86,8 +29,6 @@ def explodes(w, depth=0):
     bl = isinstance(b, list)
 
     if depth == 3 and (al or bl):
-        # print("We should explode")
-        # print(w)
         if al:
             l, r = a[0], a[1]
             w[0] = 0
@@ -95,7 +36,7 @@ def explodes(w, depth=0):
             if not bl:
                 w[1] += r
             else:
-                add_on(w[1], r, 'left')
+                add_on(w[1], r, left=True)
             r = None
 
             return (l,r)
@@ -108,7 +49,7 @@ def explodes(w, depth=0):
             if not al:
                 w[0] += l
             else:
-                add_on(w[0], l, 'right')
+                add_on(w[0], l, left=False)
             l = None
 
             return (l, r)
@@ -128,7 +69,7 @@ def explodes(w, depth=0):
                 assert(l is None)
 
                 if bl:
-                    add_on(b, r, 'left')
+                    add_on(b, r, left=True)
                 else:
                     w[1] += r
 
@@ -148,7 +89,7 @@ def explodes(w, depth=0):
                 assert(r is None)
 
                 if al:
-                    add_on(a, l, 'right')
+                    add_on(a, l, left=False)
                 else:
                     w[0] += l
 
@@ -171,9 +112,6 @@ def splits(w):
         if 9 < a:
             l =a//2
             r = int(math.ceil(a/2))
-           # print("We should split!")
-            # print(w)
-            # print(l, r)
             w[0] = [l, r]
             return True
 
@@ -185,33 +123,27 @@ def splits(w):
         if 9 < b:
             l =b//2
             r = int(math.ceil(b/2))
-            # print("We should split!")
-            # print(w)
-            # print(l, r)
             w[1] = [l, r]
             return True
     
     return False
 
 
-
-
-def sadd(a, b):
-    return [a,b]
-
-
 def reduce(w):
     # We repetedly do both
     while True:
-        k = explodes(w,0)
-        if k is not None:
+        if explodes(w, depth=0) is not None:
             continue
 
-        k = splits(w)
-        if k:
+        if splits(w):
             continue
 
         break
+
+def sadd(a, b):
+    w = [a,b]
+    reduce(w)
+    return w
 
 def mag(w):
     ans = 0
@@ -231,19 +163,15 @@ def mag(w):
     return ans
 
 
-
-def solve():
-    ans = eval(lines[0])
+def solve(lines):
+    ans = literal_eval(lines[0])
     reduce(ans)
 
     for line in lines[1:]:
         w = eval(line)
         ans = sadd(ans, w)
-        reduce(ans)
-        print(ans)
 
-    return ans
+    return mag(ans)
 
-ww = solve()
-print(ww)
-print(mag(ww))
+lines = [x.rstrip() for x in fi.input()]
+print(solve(lines))
