@@ -63,6 +63,11 @@ Third ok problem of the year, a fun parsing task.
 
 Really nice adhoc task! Involves adding together lists with custom rules, quite complex logic.
 
+#### 19
+
+Best task of the year, by a long shot so far. You are trying to triangulate the positon of some
+scanners based on their distances to some probes. I had a bad time here, but I had a blast solving it.
+
 
 ### 2020
 
@@ -180,6 +185,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 19   02:47:04   1243      0   02:49:42   1108      0
  18   00:50:48    277      0   00:53:34    251      0
  17   00:11:45    294      0   00:13:29    133      0
  16   00:31:20    399      0   00:38:02    362      0
