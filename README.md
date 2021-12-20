@@ -68,6 +68,12 @@ Really nice adhoc task! Involves adding together lists with custom rules, quite 
 Best task of the year, by a long shot so far. You are trying to triangulate the positon of some
 scanners based on their distances to some probes. I had a bad time here, but I had a blast solving it.
 
+#### 20
+
+This was a fun task, whichI could have placed very high on, but I made one silly little mistake, that
+cost me 1 and a half minutes! Either way, first time this year I felt like I really just
+killed the task from the first second!
+
 
 ### 2020
 
@@ -185,6 +191,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 20   00:18:35    153      0   00:19:01    102      0
  19   02:47:04   1243      0   02:49:42   1108      0
  18   00:50:48    277      0   00:53:34    251      0
  17   00:11:45    294      0   00:13:29    133      0
