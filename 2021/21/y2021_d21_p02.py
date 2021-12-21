@@ -3,29 +3,37 @@ import itertools as it
 import functools as ft
 import collections as cs
 
-# Calculate the posibilities, sum, number of combs with this sum
-POSES = list(cs.Counter(map(sum,it.product(range(1,4),repeat=3))).items())
+DICE_SIDES = 3
+NUMBER_OF_DICE = 3
+WINNING_SCORE = 21
+BOARD_SIZE = 10
+
+def get_combs(dice):
+    assert(0 <= dice)
+
+    if dice == 0:
+        return cs.Counter({0: 1})
+    if dice == 1:
+        return cs.Counter({k: 1 for k in range(1, DICE_SIDES+1)})
+
+    c = cs.Counter()
+    for forward, count in get_combs(dice-1).items():
+        c.update({forward+n: count for n in range(1, DICE_SIDES+1)})
+
+    return c
+
+POSES = list(get_combs(NUMBER_OF_DICE).items())
 
 @ft.cache
-def win(p1, p2, s1, s2, turn_p1):
-    assert(s1 < 21 and s2 < 21)
-
+def win(p1, p2, s1, s2):
     w1, w2 = 0, 0
     for forward, count in POSES:
-        if turn_p1:
-            pp1 = (p1 + forward) % 10
-            ss1 = s1 + pp1 + 1
-            if 21 <= ss1:
-                ww1, ww2 = 1, 0
-            else:
-                ww1, ww2 = win(pp1, p2, ss1, s2, False)
+        p1_ = (p1 + forward) % BOARD_SIZE
+        s1_ = s1 + p1_ + 1
+        if s1_ >= WINNING_SCORE:
+            ww1, ww2 = 1, 0
         else:
-            pp2 = (p2 + forward) % 10
-            ss2 = s2 + pp2 + 1
-            if 21 <= ss2:
-                ww1, ww2 = 0, 1
-            else:
-                ww1, ww2 = win(p1, pp2, s1, ss2, True)
+            ww2, ww1 = win(p2, p1_, s2, s1_)
 
         w1, w2 = w1 + ww1*count, w2 + ww2*count
 
@@ -33,10 +41,9 @@ def win(p1, p2, s1, s2, turn_p1):
 
 
 def solve(p1, p2):
-    w1, w2 = win(p1-1, p2-1, 0, 0, True)
+    w1, w2 = win(p1-1, p2-1, 0, 0)
     return max(w1, w2)
 
 
 p1, p2 = [int(line.split()[-1]) for line in fi.input()]
-
 print(solve(p1, p2))
