@@ -81,6 +81,12 @@ Most challenging task this year, I spent a lot of time on this to try to solve i
 with a library and so on, but ended up hacking something together with the
 `intervaltree` library.
 
+#### 23
+
+Another banger! It's some mix of a graph problem and a "hanoi" game. I could have solved
+part two faster, but I ended up making a mistake, where I didn't update my "done"
+function to account for the extra creatures.
+
 
 ### 2020
 
@@ -198,6 +204,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 23   00:46:37    703      0   01:39:37    352      0
  22   00:08:03    283      0   03:13:50   2014      0
  21   00:12:49   1096      0   00:25:44    227      0
  20   00:18:35    153      0   00:19:01    102      0
