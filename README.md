@@ -87,6 +87,11 @@ Another banger! It's some mix of a graph problem and a "hanoi" game. I could hav
 part two faster, but I ended up making a mistake, where I didn't update my "done"
 function to account for the extra creatures.
 
+#### 24
+
+What a day! One of the best days in AoC history! It's a reverse engineering problem, that I don't
+know a general solution for, but instead I've found a solution for my input.
+
 
 ### 2020
 
@@ -204,6 +209,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 24   04:58:40   1901      0   04:59:14   1793      0
  23   00:46:37    703      0   01:39:37    352      0
  22   00:08:03    283      0   03:13:50   2014      0
  21   00:12:49   1096      0   00:25:44    227      0
