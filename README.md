@@ -8,6 +8,15 @@ I write more detailed notes in the commit messages!
 
 ### 2021
 
+A year of mostly too simple tasks, but the latter ones where really good.
+Especially day 24 was a banger! I placed 4 times this year, which was
+awesome! I'm going to continue training, so I might be able to place
+higher next year!
+
+This was also the first year where I had more than one private leaderboard!
+Pexip ran an internal leaderboard and I was able to place number one there,
+which is nice :D
+
 #### 4
 
 Second time I've placed on the leaderboard, but my best ranking so far!
@@ -209,6 +218,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 25   00:12:54    303      0   00:12:58    261      0
  24   04:58:40   1901      0   04:59:14   1793      0
  23   00:46:37    703      0   01:39:37    352      0
  22   00:08:03    283      0   03:13:50   2014      0
