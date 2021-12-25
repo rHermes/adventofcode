@@ -1,114 +1,40 @@
 import fileinput as fi
-import re
 import itertools as it
-import functools as ft
-import string
-import collections as cs
-import math
-import sys
-import heapq
 
-# findall, search, parse
-from parse import *
-import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
-# from bidict import bidict
+dxs = set()
+dys = set()
 
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
+for y, row in enumerate(fi.input()):
+    for x, c in enumerate(row.rstrip()):
+        if c == '>':
+            dxs.add((y,x))
+        elif c == 'v':
+            dys.add((y,x))
 
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
+my, mx = y+1, x+1
 
-def ortho(y, x, shape):
-    """Returns all orthagonaly adjacent points, respecting boundary conditions"""
-    sy, sx = shape
-    if 0 < x: yield (y, x-1)
-    if x < sx-1: yield (y, x+1)
-    if 0 < y: yield (y-1, x)
-    if y < sy-1: yield (y+1, x)
+for i in it.count(1):
+    ndxs, ndys = set(),set()
+    moved = False
 
-def adj(y, x, shape):
-    """Returns all points around a point, given the shape of the array"""
-    sy, sx = shape
-    for dy,dx in it.product([-1,0,1], [-1,0,1]):
-        if dy == 0 and dx == 0:
-            continue
-
-        py = y + dy
-        px = x + dx
-
-        if 0 <= px < sx and 0 <= py < sy:
-            yield (py,px)
-
-
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-numbers = [list(map(int, re.findall("-?[0-9]+", line))) for line in lines]
-grid = [[c for c in line] for line in lines]
-gsz = (len(grid), len(grid[0]))
-
-
-def solve():
-    downs = set()
-    rights = set()
-
-    for y, row in enumerate(grid):
-        for x, c in enumerate(row):
-            if c == '>':
-                rights.add((y,x))
-            if c == 'v':
-                downs.add((y,x))
-
-
-    my, mx = gsz
-    for i in range(100000):
-        # print("Step {}".format(i))
-        # print(downs)
-        # print(rights)
-
-        new_downs = set()
-        new_rights = set()
-
-        moved = 0
-        for y,x in rights:
-            dx = (x+1)%mx
-            if (y,dx) not in rights and (y,dx) not in downs:
-                new_rights.add((y,dx))
-                moved += 1
-            else:
-                new_rights.add((y,x))
-
-        for y,x in downs:
-            dy = (y+1)%my
-            if (dy,x) not in new_rights and (dy, x) not in downs:
-                new_downs.add((dy,x))
-                moved += 1
-            else:
-                new_downs.add((y,x))
-
-        downs = new_downs
-        rights = new_rights
-        if moved == 0:
-            break
+    for y,x in dxs:
+        np = (y,(x+1)%mx)
+        if np not in dxs and np not in dys:
+            ndxs.add(np)
+            moved = True
         else:
-            print(i, moved)
+            ndxs.add((y,x))
 
-    return i+1
+    for y,x in dys:
+        np = ((y+1)%my,x)
+        if np not in ndxs and np not in dys:
+            ndys.add(np)
+            moved = True
+        else:
+            ndys.add((y,x))
 
+    dxs, dys = ndxs, ndys
+    if not moved:
+        break
 
-
-
-
-    for line in lines:
-        gprint(line)
-
-print(solve())
+print(i)
