@@ -1,121 +1,44 @@
 import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
 import collections as cs
-import math
-import sys
-import heapq
-
-# findall, search, parse
-from parse import *
-import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
-# from bidict import bidict
-
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-def ortho(y, x, shape):
-    """Returns all orthagonaly adjacent points, respecting boundary conditions"""
-    sy, sx = shape
-    if 0 < x: yield (y, x-1)
-    if x < sx-1: yield (y, x+1)
-    if 0 < y: yield (y-1, x)
-    if y < sy-1: yield (y+1, x)
-
-def adj(y, x, shape):
-    """Returns all points around a point, given the shape of the array"""
-    sy, sx = shape
-    for dy,dx in it.product([-1,0,1], [-1,0,1]):
-        if dy == 0 and dx == 0:
-            continue
-
-        py = y + dy
-        px = x + dx
-
-        if 0 <= px < sx and 0 <= py < sy:
-            yield (py,px)
 
 
 # Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-numbers = [list(map(int, re.findall("-?[0-9]+", line))) for line in lines]
-pos_numbers = [list(map(int, re.findall("[0-9]+", line))) for line in lines]
-grid = [[c for c in line] for line in lines]
-gsz = (len(grid), len(grid[0]))
+lines = [line.rstrip() for line in fi.input() if line != "\n"]
 
-def solve():
-    kv = {}
-    dir =  []
-    i = 0
-    while i < len(lines):
-        w = lines[i].split(" ")
-        i += 1
-        if w[1] == "cd":
-            if w[2] == "/":
-                dir = []
-            elif w[2] == "..":
-                dir = dir[:-1]
-            else:
-                dir.append(w[2])
+idx = 0
+current_dir = ("root",)
+dir_sizes = cs.defaultdict(int)
+while idx < len(lines):
+    parts = lines[idx].split(" ")
+    idx += 1
+    if parts[1] == "cd":
+        if parts[2] == "/":
+            current_dir = ("root",)
+        elif parts[2] == "..":
+            current_dir = current_dir[:-1]
         else:
-            while i < len(lines) and not lines[i].startswith("$ "):
-                sz, name = lines[i].split(" ")
-                i += 1
-                if sz == "dir":
-                    continue
-                    
-                sz = int(sz)
-                fn = "/" + "/".join(dir + [name])
-                kv[fn] = ("/" + "/".join(dir), sz)
+            current_dir = current_dir + (parts[2],)
+    else:
+        # We must now consume an ls command
+        while idx < len(lines) and not lines[idx].startswith("$ "):
+            size, name = lines[idx].split(" ")
+            idx += 1
+            if size == "dir":
+                continue
+           
+            size = int(size)
+            for j in range(len(current_dir)):
+                dir_name = "/".join(current_dir[:j+1])
+                dir_sizes[dir_name] += size
 
 
-    print(kv)
-    szes = cs.defaultdict(int)
-    keys = kv.keys()
-    kks = sorted(keys, key=lambda x: len(x.split("/")), reverse=True)
-    print(kks)
-    for key in kks:
-        root, sz = kv[key]
-        szes["/"] += sz
-        if root == "/":
-            continue
+root_cost = dir_sizes["root"]
+current = 70000000 - root_cost
+needed = 30000000
 
-        lv = root.split("/")
-        lv = lv[1:]
+ans = 100000000000000000000
+for v in dir_sizes.values():
+    if needed <= (current + v):
+        ans = min(ans, v)
 
-        cur_pth = ""
-        for part in lv:
-            cur_pth += "/" + part
-            szes[cur_pth] += sz
-
-
-
-    root_cost = szes["/"]
-    current = 70000000 - root_cost
-    needed = 30000000
-    print(current)
-
-    ans = 100000000000000000000
-    for v in szes.values():
-        if needed <= (current + v):
-            ans = min(ans, v)
-    
-    return ans
-
-
-
-print(solve())
+print(ans)
