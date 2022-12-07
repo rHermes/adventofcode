@@ -58,7 +58,63 @@ grid = [[c for c in line] for line in lines]
 gsz = (len(grid), len(grid[0]))
 
 def solve():
-    for line in lines:
-        gprint(line)
+    kv = {}
+    dir =  []
+    i = 0
+    while i < len(lines):
+        w = lines[i].split(" ")
+        i += 1
+        if w[1] == "cd":
+            if w[2] == "/":
+                dir = []
+            elif w[2] == "..":
+                dir = dir[:-1]
+            else:
+                dir.append(w[2])
+        else:
+            while i < len(lines) and not lines[i].startswith("$ "):
+                sz, name = lines[i].split(" ")
+                i += 1
+                if sz == "dir":
+                    continue
+                    
+                sz = int(sz)
+                fn = "/" + "/".join(dir + [name])
+                kv[fn] = ("/" + "/".join(dir), sz)
+
+
+    print(kv)
+    szes = cs.defaultdict(int)
+    keys = kv.keys()
+    kks = sorted(keys, key=lambda x: len(x.split("/")), reverse=True)
+    print(kks)
+    for key in kks:
+        root, sz = kv[key]
+        print(root, sz)
+        szes["/"] += sz
+        if root == "/":
+            continue
+
+        lv = root.split("/")
+        lv = lv[1:]
+
+        cur_pth = ""
+        for part in lv:
+            cur_pth += "/" + part
+            szes[cur_pth] += sz
+
+
+
+    ans = 0
+    for k, v in szes.items():
+        if 100000 < v:
+            continue
+        ans += v
+
+    return ans
+
+
+
+
 
 print(solve())

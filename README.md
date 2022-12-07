@@ -6,6 +6,13 @@ I write more detailed notes in the commit messages!
 
 ## Task notes
 
+### 2022
+
+#### 7
+
+Quite a fun task, involves building a filetree and calculating sizes of the
+directories. I didn't perform too well on this, but it was very fun :)
+
 ### 2021
 
 A year of mostly too simple tasks, but the latter ones where really good.
@@ -218,6 +225,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+  7   00:30:11   2041      0   00:34:46   1667      0
   6   00:47:59  17337      0   00:49:52  16516      0
   5   00:12:41    925      0   00:13:17    612      0
   4   00:03:28    530      0   00:05:40    640      0
