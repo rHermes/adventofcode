@@ -1,13 +1,20 @@
 import fileinput as fi
 import collections as cs
+import graphlib
 
 
 # Input parsing
 lines = [line.rstrip() for line in fi.input() if line != "\n"]
 
-idx = 0
+G = graphlib.TopologicalSorter()
+
+
+files = set()
+node_sizes = cs.defaultdict(int)
+
+
 current_dir = ("root",)
-dir_sizes = cs.defaultdict(int)
+idx = 0
 while idx < len(lines):
     parts = lines[idx].split(" ")
     idx += 1
@@ -17,7 +24,9 @@ while idx < len(lines):
         elif parts[2] == "..":
             current_dir = current_dir[:-1]
         else:
-            current_dir = current_dir + (parts[2],)
+            new_dir = current_dir + (parts[2],)
+            G.add(current_dir, new_dir)
+            current_dir = new_dir
     else:
         # We must now consume an ls command
         while idx < len(lines) and not lines[idx].startswith("$ "):
@@ -27,18 +36,29 @@ while idx < len(lines):
                 continue
            
             size = int(size)
-            for j in range(len(current_dir)):
-                dir_name = "/".join(current_dir[:j+1])
-                dir_sizes[dir_name] += size
+            filename = current_dir + (name,)
+            files.add(filename)
+
+            node_sizes[filename] = size
+
+            G.add(current_dir, filename)
+
+# We now add together all the nodes, from the bottom up
+for node in G.static_order():
+    if node == ("root",):
+        continue
+
+    base = node[:-1]
+    node_sizes[base] += node_sizes[node]
 
 
-root_cost = dir_sizes["root"]
+# Find the answer.
+root_cost = node_sizes[("root",)]
 current = 70000000 - root_cost
 needed = 30000000
+minimal = needed - current
 
-ans = 100000000000000000000
-for v in dir_sizes.values():
-    if needed <= (current + v):
-        ans = min(ans, v)
-
-print(ans)
+for node, total_size in sorted(node_sizes.items(), key=lambda xs: xs[1]):
+    if minimal <= total_size and node not in files:
+        print(total_size)
+        break
