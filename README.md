@@ -8,6 +8,10 @@ I write more detailed notes in the commit messages!
 
 ### 2022
 
+#### 9
+
+Interesting task, but not that hard to solve if you don't make any mistakes.
+
 #### 7
 
 Quite a fun task, involves building a filetree and calculating sizes of the
@@ -225,6 +229,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+  9   00:16:01   1168      0   00:27:42   1087      0
   8   00:23:39   4041      0   00:37:11   3218      0
   7   00:30:11   2041      0   00:34:46   1667      0
   6   00:47:59  17337      0   00:49:52  16516      0
