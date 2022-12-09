@@ -1,124 +1,32 @@
 import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
-import collections as cs
-import math
-import sys
-import heapq
 
-# findall, search, parse
-from parse import *
-import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
-# from bidict import bidict
+NUM_KNOTS = 10
 
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
+sign = lambda x: -1 if x < 0 else (1 if x > 0 else 0)
 
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
+def step(head, tail):
+    if abs(head - tail) < 2:
+        return tail
 
-def ortho(y, x, shape):
-    """Returns all orthagonaly adjacent points, respecting boundary conditions"""
-    sy, sx = shape
-    if 0 < x: yield (y, x-1)
-    if x < sx-1: yield (y, x+1)
-    if 0 < y: yield (y-1, x)
-    if y < sy-1: yield (y+1, x)
+    tail += sign(head.real - tail.real)
+    tail += sign(head.imag - tail.imag) * 1j
+    return tail
 
-def adj(y, x, shape):
-    """Returns all points around a point, given the shape of the array"""
-    sy, sx = shape
-    for dy,dx in it.product([-1,0,1], [-1,0,1]):
-        if dy == 0 and dx == 0:
-            continue
+DIRS = {"D": -1j, "R": 1, "L": -1, "U": 1j}
+knots = [0 for _ in range(NUM_KNOTS)]
+visited = {0}
 
-        py = y + dy
-        px = x + dx
+lines = filter(bool, map(str.rstrip, fi.input()))
 
-        if 0 <= px < sx and 0 <= py < sy:
-            yield (py,px)
+for line in lines:
+    dir, amount = line.split(" ")
+    odelta  = DIRS[dir]
+    amount = int(amount)
+    for _ in range(amount):
+        knots[0] += odelta
+        for i in range(1,NUM_KNOTS):
+            knots[i] = step(knots[i-1], knots[i])
 
+        visited.add(knots[-1])
 
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-numbers = [list(map(int, re.findall("-?[0-9]+", line))) for line in lines]
-pos_numbers = [list(map(int, re.findall("[0-9]+", line))) for line in lines]
-grid = [[c for c in line] for line in lines]
-gsz = (len(grid), len(grid[0]))
-
-
-def step(H, T):
-    hy, hx = H
-    oty, otx = T
-    ty, tx = T
-
-    py, px = (hy - ty, hx - tx)
-
-    if py == 0:
-        if px <= -2:
-            tx += px + 1
-        elif 2 <= px:
-            tx += px - 1
-    elif px == 0:
-        if py == -2:
-            ty += -1
-        elif py == 2:
-            ty += 1
-    elif abs(px) < 2 and abs(py) < 2:
-        # We do nothing because we are just touching
-        pass
-    else:
-        if 0 < py:
-            ty += 1
-            if 0 < px:
-                tx += 1
-            else:
-                tx -= 1
-        else:
-            ty -= 1
-            if 0 < px:
-                tx += 1
-            else:
-                tx -= 1
-
-    return (ty-oty, tx-otx)
-
-
-def solve():
-    places = set()
-    places.add((0,0))
-    dirs = {"D": (-1, 0), "R": (0, 1), "L": (0, -1), "U": (1, 0)}
-    KNOTS = [(0,0) for _ in range(10)]
-    for line in lines:
-        dir, amnt = line.split(" ")
-        orig_delta = dirs[dir]
-        amnt = int(amnt)
-        for _ in range(amnt):
-            H = KNOTS[0]
-            dy, dx = orig_delta
-            H = (H[0] + dy, H[1] + dx)
-            KNOTS[0] = H
-            for i in range(1,10):
-                H, T = KNOTS[i-1], KNOTS[i]
-                dy, dx = step(H, T)
-                T = (T[0] + dy, T[1] + dx)
-                KNOTS[i] = T
-
-            places.add(KNOTS[9])
-
-    # print(places)
-    return len(places)
-
-
-print(solve())
+print(len(visited))
