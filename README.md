@@ -8,6 +8,25 @@ I write more detailed notes in the commit messages!
 
 ### 2022
 
+#### 11
+
+This is both a cool parsing task, but the twist in part two is really enjoable
+here. We have to keep the numbers we are working with small, but how do we do
+that? The key is to recognize that since all tests are done with divisibility,
+we can use the fact that all operators are the same under modulo to keep them bounded.
+
+I had the gut that this would work, as the problem kind of reminded me of the 
+[Chinese remainder theorem](https://en.wikipedia.org/wiki/Chinese_remainder_theorem)
+which I have done in an earlier task. It turned out to be right. For a more through
+explanation, read in that task.
+
+Real time spent on this was:
+
+Part one: 00:25:38
+Part two: 00:06:20
+
+
+
 #### 9
 
 Interesting task, but not that hard to solve if you don't make any mistakes.
@@ -229,6 +248,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 11   00:47:03   4246      0   00:53:23   2183      0
  10   07:07:06  29886      0   07:15:43  25352      0
   9   00:16:01   1168      0   00:27:42   1087      0
   8   00:23:39   4041      0   00:37:11   3218      0
