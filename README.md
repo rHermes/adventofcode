@@ -25,8 +25,6 @@ Real time spent on this was:
 Part one: 00:25:38
 Part two: 00:06:20
 
-
-
 #### 9
 
 Interesting task, but not that hard to solve if you don't make any mistakes.
@@ -248,6 +246,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 12   00:32:54   2296      0   00:49:11   2976      0
  11   00:47:03   4246      0   00:53:23   2183      0
  10   07:07:06  29886      0   07:15:43  25352      0
   9   00:16:01   1168      0   00:27:42   1087      0
