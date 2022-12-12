@@ -1,30 +1,6 @@
 import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
 import collections as cs
-import math
-import sys
-import heapq
 
-# findall, search, parse
-from parse import *
-import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
-# from bidict import bidict
-
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
 
 def ortho(y, x, shape):
     """Returns all orthagonaly adjacent points, respecting boundary conditions"""
@@ -34,111 +10,43 @@ def ortho(y, x, shape):
     if 0 < y: yield (y-1, x)
     if y < sy-1: yield (y+1, x)
 
-def adj(y, x, shape):
-    """Returns all points around a point, given the shape of the array"""
-    sy, sx = shape
-    for dy,dx in it.product([-1,0,1], [-1,0,1]):
-        if dy == 0 and dx == 0:
-            continue
-
-        py = y + dy
-        px = x + dx
-
-        if 0 <= px < sx and 0 <= py < sy:
-            yield (py,px)
 
 
 # Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-numbers = [list(map(int, re.findall("-?[0-9]+", line))) for line in lines]
-pos_numbers = [list(map(int, re.findall("[0-9]+", line))) for line in lines]
-grid = [[c for c in line] for line in lines]
+lines = filter(bool, map(str.rstrip, fi.input()))
+grid = [list(line) for line in lines]
 gsz = (len(grid), len(grid[0]))
 
-import networkx as nx
 def solve():
     my, mx = gsz
-
-    ass = set()
+    roots = []
     for y in range(my):
         for x in range(mx):
-            if grid[y][x] == "a":
-                ass.add((y,x))
             if grid[y][x] == "S":
-                start = (y, x)
                 grid[y][x] = "a"
             if grid[y][x] == "E":
                 end = (y, x)
                 grid[y][x] = "z"
+
+            grid[y][x] = ord(grid[y][x]) - ord("a")
     
-    print("Start: {}, End: {}".format(start, end))
-
-    G = nx.DiGraph()
-    dm = {}
-    md = {}
-    sc = {}
-
-    for y in range(my):
-        for x in range(mx):
-            dm[(y,x)] = len(dm) + 1
-            md[dm[(y,x)]] = (y,x)
-            sc[dm[(y,x)]] = ord(grid[y][x]) - ord('a')
-            
-            G.add_node(dm[(y,x)])
-
-    for y in range(my):
-        for x in range(mx):
-            c = ord(grid[y][x]) - ord('a')
-            for (ly,lx) in ortho(y,x,gsz):
-                pc = ord(grid[ly][lx]) - ord('a')
-                if (pc - c) <= 1:
-                    G.add_edge(dm[(y,x)], dm[(ly,lx)])
-                    # G.add_edge(dm[(ly,lx)], dm[(y,x)])
-  
-    print("lol")
-    print(G)
-
-    for (dist, nodes) in enumerate(nx.bfs_layers(G, [dm[l] for l in ass])):
-        if dm[end] in nodes:
-            return dist
-        # print(node)
-
-    return 0
-    # w = nx.shortest_path(G, dm[start], dm[end])
-    # print(w)
-    # return w
 
 
-
-    seen = set()
-    Q = cs.deque([(end,)])
-
-    mx = 0
+    inits = [(0, end)]
+    Q = cs.deque(inits)
+    seen = set(path for _, path in inits)
     while Q:
-        path = Q.popleft()
-        py,px = path[-1]
-        c = ord(grid[py][px]) - ord('a')
-        # seen.add((py,px))
+        score, path = Q.popleft()
+        py,px = path
+        c = grid[py][px]
 
         if c == 0:
-            return path
-
-
-        
+            return score
 
         for (ly,lx) in ortho(py,px,gsz):
-            pc = ord(grid[ly][lx]) - ord('a')
-            if pc - c <= 1:
-                Q.append(path + ((ly,lx),))
+            pc = grid[ly][lx]
+            if c - pc <= 1 and (ly,lx) not in seen:
+                seen.add((ly,lx))
+                Q.append((score + 1, (ly,lx)))
 
-
-            
-
-
-
-kv = solve()
-print(kv)
-# print(kv)
-# print(len(kv) - 1)
+print(solve())
