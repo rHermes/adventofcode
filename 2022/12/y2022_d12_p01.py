@@ -1,6 +1,5 @@
 import fileinput as fi
-import collections as cs
-
+import heapq
 
 def ortho(y, x, shape):
     """Returns all orthagonaly adjacent points, respecting boundary conditions"""
@@ -9,7 +8,6 @@ def ortho(y, x, shape):
     if x < sx-1: yield (y, x+1)
     if 0 < y: yield (y-1, x)
     if y < sy-1: yield (y+1, x)
-
 
 # Input parsing
 lines = filter(bool, map(str.rstrip, fi.input()))
@@ -29,12 +27,17 @@ def solve():
 
             grid[y][x] = ord(grid[y][x]) - ord("a")
     
+    # The number of levels we have to go before we are at z
+    # or how far away from the end we are.
+    h = lambda y,x,c: max(25 - c, abs(y - end[0]) + abs(x -end[1]))
 
-    inits = [(0, start)]
-    Q = cs.deque(inits)
-    seen = set(path for _, path in inits)
+    start_positions = [start]
+    Q = [(h(y, x, grid[y][x]), 0, (y,x)) for y,x in start_positions]
+    heapq.heapify(Q)
+    seen = set(start_positions)
+
     while Q:
-        score, path = Q.popleft()
+        _, score, path = heapq.heappop(Q)
         py,px = path
 
         if path == end:
@@ -46,6 +49,6 @@ def solve():
             pc = grid[ly][lx]
             if pc - c <= 1 and (ly,lx) not in seen:
                 seen.add((ly,lx))
-                Q.append((score + 1, (ly,lx)))
+                heapq.heappush(Q, (score + 1 + h(ly,lx,pc), score + 1, (ly,lx)))
 
 print(solve())

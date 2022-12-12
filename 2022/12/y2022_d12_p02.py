@@ -1,5 +1,5 @@
 import fileinput as fi
-import collections as cs
+import heapq
 
 
 def ortho(y, x, shape):
@@ -9,7 +9,6 @@ def ortho(y, x, shape):
     if x < sx-1: yield (y, x+1)
     if 0 < y: yield (y-1, x)
     if y < sy-1: yield (y+1, x)
-
 
 
 # Input parsing
@@ -30,13 +29,11 @@ def solve():
 
             grid[y][x] = ord(grid[y][x]) - ord("a")
     
-
-
-    inits = [(0, end)]
-    Q = cs.deque(inits)
-    seen = set(path for _, path in inits)
+    # (est, steps, pos)
+    Q = [(25, 0, end)]
+    seen = set((end,))
     while Q:
-        score, path = Q.popleft()
+        _, score, path = heapq.heappop(Q)
         py,px = path
         c = grid[py][px]
 
@@ -47,6 +44,6 @@ def solve():
             pc = grid[ly][lx]
             if c - pc <= 1 and (ly,lx) not in seen:
                 seen.add((ly,lx))
-                Q.append((score + 1, (ly,lx)))
+                heapq.heappush(Q, (pc + score + 1, score + 1, (ly,lx)))
 
 print(solve())
