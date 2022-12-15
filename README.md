@@ -8,9 +8,32 @@ I write more detailed notes in the commit messages!
 
 ### 2022
 
+#### 15 ( WOULD HAVE BEEN LEADERBOARD)
+
+FUUUUUUUUUUUUUUUUUCCCCCCCCCCCCCKKKKKKKKKKKKKKKKKKKKKKK
+
+I decided that on this day I would sleep in, to try to get back on my feet
+sleep wise. I thought to myself: "I'm not going to get on the leaderboard
+anyway". I guess I should have known better than to jinks myself like that,
+but nothing to do about it now. My time was:
+
+Part one: 00:09:19 (Rank 58)
+Part two: 00:09:19 (Rank 19)
+Total:    00:18:39
+
+I even had a stupid mistake on part one, so I could potentially have gotten 60
+seconds earlier than that too.
+
+This one really hurts. But I guess I should just take it with me that I would have
+placed on at least one task this year.
+
+The task itself is quite nice. For part 1 I just focused on just the single row,
+and in part two I actually used z3 to solve it!
+
+
 #### 11
 
-This is both a cool parsing task, but the twist in part two is really enjoable
+This is both a cool parsing task, but the twist in part two is really enjoyable
 here. We have to keep the numbers we are working with small, but how do we do
 that? The key is to recognize that since all tests are done with divisibility,
 we can use the fact that all operators are the same under modulo to keep them bounded.
@@ -246,6 +269,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 15   05:12:15  12374      0   05:21:36   7458      0
  14   00:15:10    313      0   00:20:04    336      0
  13   00:15:17    494      0   00:21:06    495      0
  12   00:32:54   2296      0   00:49:11   2976      0
