@@ -1,102 +1,63 @@
 import fileinput as fi
 import re
-import itertools as it
-import functools as ft
-import string
 import collections as cs
-import collections.abc as abc
-import math
-import sys
-import heapq
 
-import typing
-
-# findall, search, parse
-from parse import *
-import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
-from bidict import bidict
-
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-positionT = tuple[int,int]
-def ortho(y: int, x: int, shape: positionT) -> abc.Iterator[positionT]:
-    """Returns all orthagonaly adjacent points, respecting boundary conditions"""
-    sy, sx = shape
-    if 0 < x: yield (y, x-1)
-    if x < sx-1: yield (y, x+1)
-    if 0 < y: yield (y-1, x)
-    if y < sy-1: yield (y+1, x)
-
-def adj(y: int, x: int, shape: positionT) -> abc.Iterator[positionT]:
-    """Returns all points around a point, given the shape of the array"""
-    sy, sx = shape
-    for dy,dx in it.product([-1,0,1], [-1,0,1]):
-        if dy == 0 and dx == 0:
-            continue
-
-        py = y + dy
-        px = x + dx
-
-        if 0 <= px < sx and 0 <= py < sy:
-            yield (py,px)
-
-
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-numbers = [list(map(int, re.findall("-?[0-9]+", line))) for line in lines]
-pos_numbers = [list(map(int, re.findall("[0-9]+", line))) for line in lines]
-grid = [[c for c in line] for line in lines]
-gsz = (len(grid), len(grid[0]))
 
 cache = {}
-def best(valves, remaining, open: tuple[str], node):
-    if remaining == 0:
+def best(rates: dict[str,int], dists: dict[tuple[str,str],int], remaining: int,  notdone: frozenset[str], node: str) -> int:
+    global cache
+    if remaining == 0 or len(notdone) == 0:
         return 0
+    
+    
+    # I trust there will be no hash collitions, so I just store the hash values, to avoid memory growth
+    hh = hash((remaining, notdone, node))
+    if hh in cache:
+        return cache[hh]
 
-    if (remaining, open, node) in cache:
-        return cache[(remaining, open, node)]
-
-    rate, cango = valves[node]
-
-    pos = []
-    if not (rate == 0 or node in open):
-        pos.append((remaining-1)*rate + best(valves, remaining - 1, open + (node,), node))
-
-    for nnode in cango:
-        pos.append(best(valves, remaining - 1, open, nnode))
-
-    cache[(remaining, open, node)] = max(pos)
-    return max(pos)
+    ans = 0
+    for next_node in notdone:
+        cost = dists[(node, next_node)]
+        time_left_then = remaining - cost -1
+        if time_left_then < 1:
+            continue
 
 
+        next_node_rate = rates[next_node]
+        nwdone = notdone - frozenset([next_node])
+        sw = time_left_then * next_node_rate
+        ans = max(ans, sw + best(rates, dists, time_left_then, nwdone, next_node))
+
+    cache[hh] = ans
+    return ans
 
 
-
-
-
-
-
-def solve():
-    valves = {}
+lines = fi.input()
+def solve() -> int:
+    dists = cs.defaultdict(lambda: 10000000000000)
+    rates = {}
     for line in lines:
-        name, rate, _, _, _, leads = parse("Valve {} has flow rate={:d}; {} {} to {} {}", line)
-        leads = leads.split(", ")
-        valves[name] = (rate, leads)
+        m = re.match(r"Valve (\w+) has flow rate=(\d+); tunnels? leads? to valves? ((?:[A-Z][A-Z], )*[A-Z][A-Z])", line)
+        if not m:
+            continue
+        name, rate, leads = m.groups()
+        rates[name] = int(rate)
 
-    return best(valves, 30, (), "AA")
+        dists[(name,name)] = 0
+        for lead in leads.split(", "):
+            dists[(name,lead)] = 1
+
+    
+    # Calculate the shortest distance between all paths
+    ks = list(rates.keys())
+    for k in ks:
+        for i in ks:
+            for j in ks:
+                if dists[(i,k)] + dists[(k,j)] < dists[(i,j)]:
+                    dists[(i,j)] = dists[(i,k)] + dists[(k,j)]
+    
+    notdone = frozenset(sorted(name for name, rate in rates.items() if rate != 0))
+    return best(rates, dists, 30, notdone, "AA")
 
 
 
