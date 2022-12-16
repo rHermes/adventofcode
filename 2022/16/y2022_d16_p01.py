@@ -19,7 +19,7 @@ import more_itertools as mit
 # import lark
 # import regex
 # import intervaltree as itree
-# from bidict import bidict
+from bidict import bidict
 
 # print(sys.getrecursionlimit())
 sys.setrecursionlimit(6500)
@@ -61,9 +61,43 @@ pos_numbers = [list(map(int, re.findall("[0-9]+", line))) for line in lines]
 grid = [[c for c in line] for line in lines]
 gsz = (len(grid), len(grid[0]))
 
+cache = {}
+def best(valves, remaining, open: tuple[str], node):
+    if remaining == 0:
+        return 0
+
+    if (remaining, open, node) in cache:
+        return cache[(remaining, open, node)]
+
+    rate, cango = valves[node]
+
+    pos = []
+    if not (rate == 0 or node in open):
+        pos.append((remaining-1)*rate + best(valves, remaining - 1, open + (node,), node))
+
+    for nnode in cango:
+        pos.append(best(valves, remaining - 1, open, nnode))
+
+    cache[(remaining, open, node)] = max(pos)
+    return max(pos)
+
+
+
+
+
+
+
+
+
 def solve():
-    a = set()
+    valves = {}
     for line in lines:
-        gprint(line)
+        name, rate, _, _, _, leads = parse("Valve {} has flow rate={:d}; {} {} to {} {}", line)
+        leads = leads.split(", ")
+        valves[name] = (rate, leads)
+
+    return best(valves, 30, (), "AA")
+
+
 
 print(solve())

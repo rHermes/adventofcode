@@ -8,6 +8,27 @@ I write more detailed notes in the commit messages!
 
 ### 2022
 
+#### 16 LEADERBOARD MOFOS
+
+Well, this was a really nice surprise, given that I would have placed very
+well yesterday. It really surprised me that I placed at all here, I didn't
+expect it, as I felt rather slow on part 1. For part two, I should have
+pivoted to another strategy earlier, but that ended up not happening.
+
+The problem is quite nice, part 1 can be done by simply using good old
+memoziation, but part two needs to be done somewhat smarter. I tried
+everything I could to find a way, but in the end what ended up working
+was calculating the distance between all the nodes and only focusing on
+those nodes which had a valve with a rate of more than 0.
+
+This allowed me to skip a lot of the intermediate steps, as there is no
+point in moving anywhere, if we are not actually going to open that
+valve. I also changed it so that the time is tracked independently for
+each player.
+
+I'm sure this can be optimized more, and it still takes a long time,
+but I got it in the end.
+
 #### 15 ( WOULD HAVE BEEN LEADERBOARD)
 
 FUUUUUUUUUUUUUUUUUCCCCCCCCCCCCCKKKKKKKKKKKKKKKKKKKKKKK
@@ -269,6 +290,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 16   00:16:11     27     74   01:22:08    192      0
  15   05:12:15  12374      0   05:21:36   7458      0
  14   00:15:10    313      0   00:20:04    336      0
  13   00:15:17    494      0   00:21:06    495      0
