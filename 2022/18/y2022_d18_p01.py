@@ -14,7 +14,7 @@ import typing
 # findall, search, parse
 from parse import *
 import more_itertools as mit
-# import z3
+import z3
 # import numpy as np
 # import lark
 # import regex
@@ -38,13 +38,14 @@ def ortho(y: int, x: int, shape: positionT) -> abc.Iterator[positionT]:
     if 0 < y: yield (y-1, x)
     if y < sy-1: yield (y+1, x)
 
-def adj(y: int, x: int, shape: positionT) -> abc.Iterator[positionT]:
+def adj(z: int, y: int, x: int, shape: positionT) -> abc.Iterator[positionT]:
     """Returns all points around a point, given the shape of the array"""
-    sy, sx = shape
-    for dy,dx in it.product([-1,0,1], [-1,0,1]):
-        if dy == 0 and dx == 0:
+    sz, sy, sx = shape
+    for dz,dy,dx in it.product([-1,0,1], [-1,0,1], [-1,0,1]):
+        if dz== 0 and dy == 0 and dx == 0:
             continue
-
+        
+        pz = z + dz
         py = y + dy
         px = x + dx
 
@@ -61,8 +62,33 @@ pos_numbers = [list(map(int, re.findall("[0-9]+", line))) for line in lines]
 grid = [[c for c in line] for line in lines]
 gsz = (len(grid), len(grid[0]))
 
+def adj(z: int, y: int, x: int):
+    for dz,dy,dx in it.product([-1,0,1], [-1,0,1], [-1,0,1]):
+        if dz== 0 and dy == 0 and dx == 0:
+            continue
+        
+        pz = z + dz
+        py = y + dy
+        px = x + dx
+
+        yield (pz, py,px)
+
 def solve():
+    cubes = set()
     for line in lines:
-        gprint(line)
+        x, y, z = map(int,line.split(","))
+        cubes.add((z,y,x))
+
+    ans = 0
+    for (z ,y ,x) in cubes:
+        ans += 6
+        ans -= (z+1, y, x) in cubes
+        ans -= (z-1, y, x) in cubes
+        ans -= (z, y+1, x) in cubes
+        ans -= (z, y-1, x) in cubes
+        ans -= (z, y, x+1) in cubes
+        ans -= (z, y, x-1) in cubes
+
+    return ans
 
 print(solve())
