@@ -14,6 +14,21 @@ Kind of a cool task, where I had to use bidict to get things working. pypy
 made a real difference here, but I know this can be done much faster, if
 I just figure out where my bug is in the indexing.
 
+#### 17
+
+Very nice task, but it's not that hard once you realize what the trick is. One
+thing I got stumped on, was the fact that the example input creates no "floors"
+like the other inputs does. I initially discarded the idea of using memoization,
+because it didn't work on the example.
+
+Once I got that down, it's a matter of reducing the question down to a graph and
+then finding the loop step. once your done with that, just just have to do the last
+few cycles yourself.
+
+This took some time figuring out, and it also showed the advantage of using typing
+in python. It made some of these long types much more managable.
+
+
 #### 16 LEADERBOARD MOFOS
 
 Well, this was a really nice surprise, given that I would have placed very
@@ -298,7 +313,7 @@ to all inputs, even malicously crafted ones.
 Day       Time   Rank  Score       Time   Rank  Score
  20   01:30:37   2424      0   02:02:29   2507      0
  18   00:05:18    472      0   00:22:46    583      0
- 17   00:26:26    140      0          -      -      -
+ 17   00:26:26    140      0       >24h  13817      0
  16   00:16:11     27     74   01:22:08    192      0
  15   05:12:15  12374      0   05:21:36   7458      0
  14   00:15:10    313      0   00:20:04    336      0
