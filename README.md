@@ -8,6 +8,12 @@ I write more detailed notes in the commit messages!
 
 ### 2022
 
+#### 20
+
+Kind of a cool task, where I had to use bidict to get things working. pypy
+made a real difference here, but I know this can be done much faster, if
+I just figure out where my bug is in the indexing.
+
 #### 16 LEADERBOARD MOFOS
 
 Well, this was a really nice surprise, given that I would have placed very
@@ -290,6 +296,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 20   01:30:37   2424      0   02:02:29   2507      0
  18   00:05:18    472      0   00:22:46    583      0
  17   00:26:26    140      0          -      -      -
  16   00:16:11     27     74   01:22:08    192      0
