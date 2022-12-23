@@ -14,6 +14,39 @@ Kind of a cool task, where I had to use bidict to get things working. pypy
 made a real difference here, but I know this can be done much faster, if
 I just figure out where my bug is in the indexing.
 
+#### 19
+
+Well, fuck me side ways, this was a real hard one! I spent a lot of time trying
+to solve both part 1 and part 2 one this one. I had to resort to using something
+called "codon" to be able to do this fast enough.
+
+In the beginning I tried to do a normal dynamic programming setup, but it didn't
+work, not even for part one. After switching to codon, I was able to get part 1,
+with the basic approach, but part two just wouldn't fall.
+
+I actually solved this on a plane to Doha!, 11km up in the air! I also submitted it
+there, as there was 1 hour of free wifi! This is really cool, as I have now done it
+in -5 degrees in a hammock and on a plane!
+
+One of the breakthroughs was realizing that I could most likely only consider
+buying one robot at a time. The text is kind of vague on this, but you can read
+from the fact that it says: "We have one fabricator". This allowed me to get
+part 1.
+
+For part two, the thing that made it feasible was me dropping the amount of states
+I have to discover. The key is that we always just have to think about what
+the next robot we are going to build is. And so we only have to consider when
+we can do that. The logic goes like this:
+
+If the next robot to build is an ore robot, then it makes no sense to wait longer
+than necessary. We gain nothing by doing it later than when we can do it. So we
+either buy it right now if we can, or we can skip ahead to a time when we can do
+it. This skips a lot of states in between
+
+Even with this, it take a long time, so I'll be interested in seeing how other people
+solved this fast!
+
+
 #### 17
 
 Very nice task, but it's not that hard once you realize what the trick is. One
@@ -313,6 +346,7 @@ to all inputs, even malicously crafted ones.
 Day       Time   Rank  Score       Time   Rank  Score
  21   00:14:08   1351      0   00:27:44    458      0
  20   01:30:37   2424      0   02:02:29   2507      0
+ 19       >24h  10912      0       >24h  11056      0
  18   00:05:18    472      0   00:22:46    583      0
  17   00:26:26    140      0       >24h  13817      0
  16   00:16:11     27     74   01:22:08    192      0
