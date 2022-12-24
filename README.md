@@ -17,6 +17,16 @@ Part 1: 00:39:23
 Part 2: 00:01:46
 Total : 00:41:09
 
+### 22
+
+Part two here is quite cool,  I haven't made this generic yet, I just hardcoded it for
+my input. I look forward to seeing how other people solved it.
+
+I got a really bad time on part 2 here, because I made 1 mistake on part one. Just one
+fucking letter off, but that was all it took.
+
+I solved it by actually drawing the cube on a piece of paper, and folding that, to figure
+out how the edges connected. It was a good move, but I made one typo, and that was all it took.
 
 
 #### 20
@@ -357,7 +367,7 @@ to all inputs, even malicously crafted ones.
 Day       Time   Rank  Score       Time   Rank  Score
  24   00:40:18    537      0   00:48:46    555      0
  23   04:25:17   4870      0   04:27:03   4640      0
- 22   00:30:35    390      0          -      -      -
+ 22   00:30:35    390      0       >24h   9323      0
  21   00:14:08   1351      0   00:27:44    458      0
  20   01:30:37   2424      0   02:02:29   2507      0
  19       >24h  10912      0       >24h  11056      0
