@@ -8,6 +8,17 @@ I write more detailed notes in the commit messages!
 
 ### 2022
 
+#### 23
+
+Wasted a loooottttttttt of time on part 1, because I didn't do adjancency correctly and included
+the position itself, just not the eight positions around.
+
+Part 1: 00:39:23
+Part 2: 00:01:46
+Total : 00:41:09
+
+
+
 #### 20
 
 Kind of a cool task, where I had to use bidict to get things working. pypy
@@ -344,6 +355,9 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 24   00:40:18    537      0   00:48:46    555      0
+ 23   04:25:17   4870      0   04:27:03   4640      0
+ 22   00:30:35    390      0          -      -      -
  21   00:14:08   1351      0   00:27:44    458      0
  20   01:30:37   2424      0   02:02:29   2507      0
  19       >24h  10912      0       >24h  11056      0
