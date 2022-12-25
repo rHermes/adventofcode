@@ -8,6 +8,17 @@ I write more detailed notes in the commit messages!
 
 ### 2022
 
+This was a bit of a tame year, but there where some tasks which really had a bit
+of kick to them. Day 17, 19 and 22 was quite hard. Especially day 19 was the high
+point for me. I think overall the year was too easy, but that has been the trend
+for the last few years now.
+
+I only placed on day this year, but I could have placed another one too, if I hadn't
+decided to sleep in that day.
+
+This was the first year where I had some real competition from colleagues, which
+is really nice.
+
 #### 23
 
 Wasted a loooottttttttt of time on part 1, because I didn't do adjancency correctly and included
@@ -365,6 +376,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 25   00:15:31    510      0   00:15:35    429      0
  24   00:40:18    537      0   00:48:46    555      0
  23   04:25:17   4870      0   04:27:03   4640      0
  22   00:30:35    390      0       >24h   9323      0
