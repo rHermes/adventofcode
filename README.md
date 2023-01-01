@@ -137,6 +137,8 @@ placed on at least one task this year.
 The task itself is quite nice. For part 1 I just focused on just the single row,
 and in part two I actually used z3 to solve it!
 
+Having read the mega thread, this has a really nice solution!
+
 
 #### 11
 
