@@ -373,6 +373,17 @@ to all inputs, even malicously crafted ones.
 
 ## Personal Stats
 
+### 2023
+
+```
+      --------Part 1--------   --------Part 2--------
+Day       Time   Rank  Score       Time   Rank  Score
+  4   00:13:34   4916      0   00:21:58   2611      0
+  3   05:57:00  28244      0   06:04:21  22241      0
+  2   00:10:07   1293      0   00:12:00    878      0
+  1   00:01:50    153      0   00:19:10   1624      0
+```
+
 ### 2022
 
 ```
