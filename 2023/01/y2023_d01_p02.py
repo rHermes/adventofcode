@@ -1,116 +1,19 @@
 import fileinput as fi
-import re
-import itertools as it
-import functools as ft
-import string
-import collections as cs
-import collections.abc as abc
-import math
-import sys
-import heapq
+import regex
 
-import typing
+# Prepare a lookup table
+nums = "123456789"
+dec_nums = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+vals = {k: int(k) for k in nums}
 
-# findall, search, parse
-from parse import *
-import more_itertools as mit
-# import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
-# from bidict import bidict
+reg = "|".join(list(nums) + dec_nums)
 
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
+for i, dnum in enumerate(dec_nums, start=1):
+    vals[dnum] = i
+   
+ans = 0
+for line in map(str.rstrip, fi.input()):
+    hits = regex.findall(reg, line, overlapped=True)
+    ans += 10*vals[hits[0]] + vals[hits[-1]]
 
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-positionT = tuple[int,int]
-def ortho(y: int, x: int, shape: positionT) -> abc.Iterator[positionT]:
-    """Returns all orthagonaly adjacent points, respecting boundary conditions"""
-    sy, sx = shape
-    if 0 < x: yield (y, x-1)
-    if x < sx-1: yield (y, x+1)
-    if 0 < y: yield (y-1, x)
-    if y < sy-1: yield (y+1, x)
-
-def adj(y: int, x: int, shape: positionT) -> abc.Iterator[positionT]:
-    """Returns all points around a point, given the shape of the array"""
-    sy, sx = shape
-    for dy,dx in it.product([-1,0,1], [-1,0,1]):
-        if dy == 0 and dx == 0:
-            continue
-
-        py = y + dy
-        px = x + dx
-
-        if 0 <= px < sx and 0 <= py < sy:
-            yield (py,px)
-
-
-# Input parsing
-INPUT = "".join(fi.input()).rstrip()
-groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-numbers = [list(map(int, re.findall("-?[0-9]+", line))) for line in lines]
-pos_numbers = [list(map(int, re.findall("[0-9]+", line))) for line in lines]
-grid = [[c for c in line] for line in lines]
-gsz = (len(grid), len(grid[0]))
-
-
-def solve():
-    ans = 0
-    for line in lines:
-        if line is None:
-            continue 
-        
-        print(line, end=" ")
-        digits = []
-        while 0 < len(line):
-            if line[0] in "123456789":
-                digits.append(line[0])
-                line = line[1:]
-            elif len(line) == 1:
-                line = []
-            else:
-                if line.startswith("one"):
-                    digits.append("1")
-                    # line = line[3:]
-                elif line.startswith("two"):
-                    digits.append("2")
-                    # line = line[3:]
-                elif line.startswith("three"):
-                    digits.append("3")
-                    # line = line[len("three"):]
-                elif line.startswith("four"):
-                    digits.append("4")
-                    # line = line[len("four"):]
-                elif line.startswith("five"):
-                    digits.append("5")
-                    # line = line[len("five"):]
-                elif line.startswith("six"):
-                    digits.append("6")
-                    # line = line[len("six"):]
-                elif line.startswith("seven"):
-                    digits.append("7")
-                    # line = line[len("seven"):]
-                elif line.startswith("eight"):
-                    digits.append("8")
-                    # line = line[len("eight"):]
-                elif line.startswith("nine"):
-                    digits.append("9")
-                    # line = line[len("nine"):]
-                # else:
-                line = line[1:]
-                
-        print(digits) 
-        realsum = int(digits[0] + digits[-1])
-        print(realsum)
-        ans += realsum
-    return ans
-
-print(solve())
+print(ans) 
