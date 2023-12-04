@@ -71,9 +71,9 @@ def solve():
         nums.append(int(line))
         stored[i] = i
 
-    # LOOPS = 1
+    LOOPS = 1
     # DEC_KEY = 1
-    LOOPS = 10
+    # LOOPS = 10
     DEC_KEY = 811589153
     nums = [x*DEC_KEY for x in nums]
     orig_nums = tuple(nums)
@@ -85,10 +85,12 @@ def solve():
         # now_lineup = [orig_nums[stored.inverse[(i + zero_pos_cur) % N]] for i in range(0, len(orig_nums))]
         # # now_lineup = [orig_nums[stored.inverse[(i + zero_index) % N]] for i in range(0, len(orig_nums))]
         # print("BEFORE {}:".format(TT), now_lineup)
-        for orig_spot, num in tqdm.tqdm(enumerate(orig_nums), total=len(orig_nums)):
-        # for orig_spot, num in enumerate(orig_nums):
+        # for orig_spot, num in tqdm.tqdm(enumerate(orig_nums), total=len(orig_nums)):
+        for orig_spot, num in enumerate(orig_nums):
+            # zero_pos_cur = stored[zero_index]
+            # now_lineup = [orig_nums[stored.inverse[(i + zero_pos_cur) % N]] for i in range(0, len(orig_nums))]
             # now_lineup = [orig_nums[stored.inverse[i]] for i in range(0, len(orig_nums))]
-            # gprint(now_lineup)
+            # print(now_lineup)
             # REAL_BEFORE_SPOT = stored[orig_spot]
             # ONUM = num
              
@@ -150,13 +152,15 @@ def solve():
 
 
                     rem -= 1
-            # REAL_AFTER_SPOT = stored[orig_spot]
+            REAL_AFTER_SPOT = stored[orig_spot]
 
             # print(ONUM, REAL_BEFORE_SPOT, REAL_AFTER_SPOT)
 
+            # zero_pos_cur = stored[zero_index]
+            # now_lineup = [orig_nums[stored.inverse[(i + zero_pos_cur) % N]] for i in range(0, len(orig_nums))]
             # now_lineup = [orig_nums[stored.inverse[i]] for i in range(0, len(orig_nums))]
-            # gprint(now_lineup)
-            # gprint("")
+            # print(now_lineup)
+            # print("")
 
         # now_lineup = [orig_nums[stored.inverse[i]] for i in range(0, len(orig_nums))]
         # zero_pos_cur = stored[zero_index]
