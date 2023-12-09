@@ -1,119 +1,79 @@
 import fileinput as fi
 import re
-import itertools as it
-import functools as ft
-import string
-import collections as cs
-import collections.abc as abc
-import math
-import sys
-import heapq
 
-import typing
 
-from tqdm import tqdm
-
-# findall, search, parse
-from parse import *
-import more_itertools as mit
-import z3
-# import numpy as np
-# import lark
-# import regex
-# import intervaltree as itree
-# from bidict import bidict
-
-# print(sys.getrecursionlimit())
-sys.setrecursionlimit(6500)
-
-# Debug logging
-DEBUG = True
-def gprint(*args, **kwargs):
-    if DEBUG: print(*args, **kwargs)
-
-positionT = tuple[int,int]
-def ortho(y: int, x: int, shape: positionT) -> abc.Iterator[positionT]:
-    """Returns all orthagonaly adjacent points, respecting boundary conditions"""
-    sy, sx = shape
-    if 0 < x: yield (y, x-1)
-    if x < sx-1: yield (y, x+1)
-    if 0 < y: yield (y-1, x)
-    if y < sy-1: yield (y+1, x)
-
-def adj(y: int, x: int, shape: positionT) -> abc.Iterator[positionT]:
-    """Returns all points around a point, given the shape of the array"""
-    sy, sx = shape
-    for dy,dx in it.product([-1,0,1], [-1,0,1]):
-        if dy == 0 and dx == 0:
-            continue
-
-        py = y + dy
-        px = x + dx
-
-        if 0 <= px < sx and 0 <= py < sy:
-            yield (py,px)
-
+# There is actually no need for merging in the puzzle input, but I'm keeping
+# this here, since it could drastically cut down compute time for other 
+def merge_ranges(x: list[tuple[int,int]]):
+    """The ranges have to be sorted"""
+    i = 0
+    while i < len(x)-1:
+        fs, fe = x[i]
+        ss, se = x[i+1]
+        if ss <= fe-1:
+            x.pop(0)
+            x[0] = (fs, max(fe, se))
+        else:
+            i += 1
 
 # Input parsing
 INPUT = "".join(fi.input()).rstrip()
 groups = INPUT.split("\n\n")
-lines = list(INPUT.splitlines())
-numbers = [list(map(int, re.findall("-?[0-9]+", line))) for line in lines]
-pos_numbers = [list(map(int, re.findall("[0-9]+", line))) for line in lines]
-grid = [[c for c in line] for line in lines]
-gsz = (len(grid), len(grid[0]))
 
-
-
+# Prepare the the phase map
 phases = []
-for g in groups[1:]:
-    rgs = []
-    for x in list(g.splitlines())[1:]:
-        tr, sr, lr = map(int, x.split(" "))
-        rgs.append((sr, tr, lr))
+for group in groups[1:]:
+    ranges = []
+    for x in list(group.splitlines())[1:]:
+        target, source, length = map(int, x.split(" "))
+        ranges.append((source, source + length - 1, target, length))
+    
+    ranges.sort()
+    phases.append(ranges)
 
-    phases.append(rgs)
+# Create the initial items
+cur_ranges = []
+seeds = [int(x) for x in re.findall("-?[0-9]+", groups[0])]
+i = 0
+while i < len(seeds):
+    start, length = seeds[i], seeds[i+1]
+    i += 2
+    cur_ranges.append((start, start + length - 1))
 
+cur_ranges.sort()
+merge_ranges(cur_ranges)
 
-grps_seeds = numbers[0]
-seeds = []
-num_seeds = 0
-
-# print(num_seeds)
-
-s = z3.Solver()
-# s = z3.Optimize()
-
-zans = z3.Int("zans") 
-
-goods = []
-for start, l in mit.chunked(grps_seeds, 2):
-    goods.append(z3.And(start <= zans, zans <= (start + l)))
-
-s.add(z3.Or(goods))
-
-location = zans
 for phase in phases:
-    # We are in a phase
-    temp = location
-    sexpr = temp
-    for sr, tr, lr in phase:
-        sexpr = z3.If(
-            z3.And(sr <= temp, temp <= sr + lr),
-            tr + (temp - sr),
-            sexpr
-        )
+    # We have to go over ranges each time.
+    ranges_left = list(cur_ranges)
+    next_ranges = []
 
-    location = sexpr
+    while ranges_left:
+        rs, re = ranges_left.pop(0)
+
+        for (start, end, target, length) in phase:
+            if not (start <= re and rs <= end):
+                continue
+            
+            # If the start is not covered, we add it to the next_ranges, as we are not covered
+            if rs < start:
+                next_ranges.append((rs, start-1))
+            
+            gs = max(rs, start)
+            ge = min(re, end)
+            next_ranges.append((gs - start + target, ge - start + target))
 
 
-fl = z3.Int("fl")
+            if end < re:
+                ranges_left.append((end+1, re))
 
-s.add(fl == location)
-# print(location)
-while s.check() == z3.sat:
-    # print("wow")
-    m = s.model()
-    print(m[zans], m[fl])
-    s.add(location < m[fl].as_long())
+            break
+        else:
+            next_ranges.append((rs, re))
+    
+    next_ranges.sort()
+    merge_ranges(next_ranges)
 
+    cur_ranges = next_ranges
+        
+print(cur_ranges[0][0])
