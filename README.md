@@ -6,6 +6,23 @@ I write more detailed notes in the commit messages!
 
 ## Task notes
 
+### 2023
+
+#### Day 10
+
+This was a very cool day, part two is a doozy. I ended up solving this by implemeting
+"virtual coordinates", by doubling the input space, and inserting empty ground between
+everything. Then I used a graph search to determine which coordinates could be reached.
+
+I learned after submitting that there is a much, much easier way to do it, and it's to
+simply scan each line and keeping track if we have touched a vertical wall, to see if we
+are inside or not. This is so much simpler, and I cannot believe I didn't think of it. I'm
+sure it has a name, I've heard of this before, but I cannot remember it now. (I looked it up,
+its a simple form of "ray casting".
+
+I had a bunch of bugs on this one, had to so I spent a bunch of time on part two. But I
+got it done in the end.
+
 ### 2022
 
 This was a bit of a tame year, but there where some tasks which really had a bit
@@ -378,6 +395,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 10   00:13:36    191      0   01:43:24   1980      0
   9   00:10:34   1393      0   00:13:17   1167      0
   8   00:05:05    419      0   00:21:48    879      0
   7   00:20:18    991      0   00:33:15   1119      0
