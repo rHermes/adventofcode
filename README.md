@@ -395,6 +395,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 11   03:22:37  13797      0   03:35:50  12395      0
  10   00:13:36    191      0   01:43:24   1980      0
   9   00:10:34   1393      0   00:13:17   1167      0
   8   00:05:05    419      0   00:21:48    879      0
