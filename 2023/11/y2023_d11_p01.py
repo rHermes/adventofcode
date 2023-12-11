@@ -1,22 +1,19 @@
 import fileinput as fi
 
 grid = [list(line.rstrip()) for line in fi.input()]
+Y,X = len(grid), len(grid[0])
 
-dys = []
-for j in range(len(grid)):
-    if all(c == "." for c in grid[j]):
-        dys.append(j)
+# These sets store which rows and columns need to be expanded
+dys = set(range(Y))
+dxs = set(range(X))
+pos = []
 
-dxs = []
-for i in range(len(grid[0])):
-    if all(row[i] == "." for row in grid):
-        dxs.append(i)
-
-pos = [] 
-for j in range(len(grid)):
-    for i in range(len(grid[0])):
-        if grid[j][i] == "#":
-            pos.append((j,i))
+for y in range(Y):
+    for x in range(X):
+        if grid[y][x] == "#":
+            pos.append((y,x))
+            dys.discard(y)
+            dxs.discard(x)
 
 # We update the positions
 DIFF = 2
