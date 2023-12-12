@@ -8,9 +8,17 @@ I write more detailed notes in the commit messages!
 
 ### 2023
 
+#### Day 12
+
+This one was really nice! I solved it eventually using dynamic programming and memorization,
+with a bunch of tricks to prune the tree. I have a feeling that non of the pruning techniques
+was important, because the task completed so fast when I implemented the right memorization.
+
+I don't know what the correct way to do this is, so I look forward to this!
+
 #### Day 10
 
-This was a very cool day, part two is a doozy. I ended up solving this by implemeting
+This was a very cool day, part two is a doozy. I ended up solving this by implementing
 "virtual coordinates", by doubling the input space, and inserting empty ground between
 everything. Then I used a graph search to determine which coordinates could be reached.
 
@@ -38,7 +46,7 @@ is really nice.
 
 #### 23
 
-Wasted a loooottttttttt of time on part 1, because I didn't do adjancency correctly and included
+Wasted a loooottttttttt of time on part 1, because I didn't do adjacency correctly and included
 the position itself, just not the eight positions around.
 
 Part 1: 00:39:23
@@ -395,6 +403,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 12   00:29:45   1855      0   01:50:08   2076      0
  11   03:22:37  13797      0   03:35:50  12395      0
  10   00:13:36    191      0   01:43:24   1980      0
   9   00:10:34   1393      0   00:13:17   1167      0
