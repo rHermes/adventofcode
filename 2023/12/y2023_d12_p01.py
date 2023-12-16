@@ -1,45 +1,72 @@
 import fileinput as fi
+import collections as cs
 
-G = {}
-def nways(springs, nums):
-    global G
+def countPossible(springs, nums):
+    """
+    The idea here is taken straight from:
+    https://github.com/ConcurrentCrab/AoC/blob/main/solutions/12-2.go
 
-    if not springs:
-        return not nums
+    which again is from:
+    https://old.reddit.com/r/adventofcode/comments/18ge41g/2023_day_12_solutions/kd3rclt/
 
-    if not nums:
-        return "#" not in springs
+    The idea here is that we loop over a NDFA, but we keep all possible states in memory
+    at once. This makes the solution O(n) and the state maps are very small for the given
+    inputs.
 
-    if len(springs) < sum(nums):
-        return 0
+    The poster was inspired by the techniques described in the following blog posts:
+    https://swtch.com/%7Ersc/regexp/regexp1.html
+    https://research.swtch.com/glob
 
-    sig = hash((springs, nums))
-    if sig in G:
-        return G[sig]
+    It is a very clever solution and I'm much happier with this one, than the
+    memoization solution I had before.
+    """
+    curStates = cs.defaultdict(int)
+    nextStates = cs.defaultdict(int)
 
-    k = len(springs) - nums[0]
-    if "#" in springs:
-        k = min(springs.index("#"), k)
-
+    # string index, nums index, continuous run, want a dot next
+    curStates[(0,0,0,False)] = 1
 
     ans = 0
-    for i in range(k+1):
-        end = i+nums[0]
-        if "." not in springs[i:end] and (len(springs) <= end or springs[end] != "#"):
-            ans += nways(springs[end+1:], nums[1:])
+    while curStates:
+        for state, num in curStates.items():
+            si, ni, cc, expdot = state
+            if si == len(springs):
+                if ni == len(nums):
+                    ans += num
 
-    G[sig] = ans
+                continue
+
+            c = springs[si]
+            if c in "#?" and ni < len(nums) and not expdot:
+                # We are still looking for broken springs
+                if c == "?" and cc == 0:
+                    nextStates[(si + 1, ni, 0, False)] += num
+
+                cc += 1
+                if cc == nums[ni]:
+                    ni += 1
+                    cc = 0
+                    expdot = True
+
+                nextStates[(si + 1, ni, cc, expdot)] += num
+
+
+            elif c in ".?" and cc == 0:
+                # We are not in a contiguous row of broken springs
+                nextStates[(si + 1, ni, 0, False)] += num
+
+        # This is just to keep the memory low, we could also just
+        # deallocate the nextStates completely.
+        curStates, nextStates = nextStates, curStates
+        nextStates.clear()
+
     return ans
-
-def solve(line):
-    springs, nu = line.split()
-    nums = tuple(int(x) for x in nu.split(","))
-    ways = nways(springs, nums)
-    return ways
-
 
 ans = 0
 for line in map(str.rstrip, fi.input()):
-    ans += solve(line)
+    springs, nu = line.split()
+    nums = tuple(int(x) for x in nu.split(","))
+
+    ans += countPossible(springs, nums)
 
 print(ans)

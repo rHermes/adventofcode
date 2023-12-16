@@ -16,6 +16,16 @@ was important, because the task completed so fast when I implemented the right m
 
 I don't know what the correct way to do this is, so I look forward to this!
 
+EDIT:
+
+So I ended up doing this in two turns. The solution could be made simpler by fitting the runs
+of hot springs one at a time, as a block, and then looking for the next run. This removed the
+need for a bunch of the tree pruning and was quite fast when memoization was used.
+
+But the really cool solution I found in the reddit thread. Someone implemented it as a sort
+of NDFA, which runs in O(n) and uses very little to no memory. It uses no memoization and
+is very short and sweet.
+
 #### Day 10
 
 This was a very cool day, part two is a doozy. I ended up solving this by implementing
