@@ -8,6 +8,18 @@ I write more detailed notes in the commit messages!
 
 ### 2023
 
+#### Day 18
+
+Ok, this day was cool, because I got to use something I learned in day 10, which is 
+[Pick's theorem](https://en.wikipedia.org/wiki/Pick%27s_theorem) and the
+[Shoelace formula](https://en.wikipedia.org/wiki/Shoelace_formula) to compute the number of
+points in no time. If I hadn't known about this, I would have to use some sort of scanline
+algorithm with a sort of scanline tree of the Y axis.
+
+
+But this is worth checking out, because without knowing about this theorem, it becomes
+close to impossible.
+
 #### Day 12
 
 This one was really nice! I solved it eventually using dynamic programming and memorization,
@@ -413,6 +425,7 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 18   00:25:29   1219      0   00:57:17   1067      0
  17   00:36:31    903      0   00:39:12    644      0
  16   00:12:12    128      0   00:17:29    184      0
  15   06:24:20  20298      0   06:35:42  16148      0
