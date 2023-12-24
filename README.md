@@ -8,6 +8,18 @@ I write more detailed notes in the commit messages!
 
 ### 2023
 
+#### Day 20
+
+I don't actually think this task was all that good, but I ended up reverse engineering the
+topology of the program, to make it work. This is sort of cool, I guess.
+
+#### Day 19
+
+This was a truly cool day, where solving part two was very bespoke. I ended up solving it
+similarly to the day 5, where we care more about ranges than not ranges. Either way,
+it was cool and I solved it! For me, this might be the coolest day of the year so far, after
+day 12!
+
 #### Day 18
 
 Ok, this day was cool, because I got to use something I learned in day 10, which is 
@@ -425,6 +437,8 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 20   00:32:06    315      0   01:34:58   1086      0
+ 19   07:02:22  12430      0   15:58:10  12037      0
  18   00:25:29   1219      0   00:57:17   1067      0
  17   00:36:31    903      0   00:39:12    644      0
  16   00:12:12    128      0   00:17:29    184      0
