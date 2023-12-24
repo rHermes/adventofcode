@@ -8,6 +8,12 @@ I write more detailed notes in the commit messages!
 
 ### 2023
 
+#### Day 24
+
+This was a really cool use of z3, but I don't really know how to solve part 1 or part 2
+without z3. I will be looking at it some myself, before looking at reddit, to see if I
+can figure something out myself.
+
 #### Day 20
 
 I don't actually think this task was all that good, but I ended up reverse engineering the
@@ -437,6 +443,8 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 24   07:16:47   6992      0   07:25:53   2953      0
+ 23   16:04:59  11141      0   16:56:37   7854      0
  22       >24h  12398      0       >24h  11435      0
  21   00:19:49   2026      0          -      -      -
  20   00:32:06    315      0   01:34:58   1086      0
