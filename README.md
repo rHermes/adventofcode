@@ -8,6 +8,28 @@ I write more detailed notes in the commit messages!
 
 ### 2023
 
+Another tame year, I must admit. We had really good turn out at work, but other than
+that there are only a few of the tasks that stand out to me. They were harder than
+last year, but not really in any creative ways like the intcode ways of 2019.
+
+There was only one task I had to cheat on and that was day 21, part 2. I only found a
+solution and pasted in the answer, I didn't look at the solution, but I wanted to be
+able to press the button as soon as possible on day 25.
+
+#### Day 25
+
+This was sort of a fun day, I solved this by finding two nodes with a max distance
+between them, so I knew they where in two different clusters. After this, I tried all
+permutations where I could remove edges in this chain, until I found a way to make it
+so there was no connection between them.
+
+This hinged on multiple facts, like the fact that we know there will only be one unique
+solution, that it's possible to do this in two edge removals and more.
+
+I'll look forward to reading the reddit comments on this, as I think I can learn some new
+graph algorithms here!
+
+
 #### Day 24
 
 This was a really cool use of z3, but I don't really know how to solve part 1 or part 2
@@ -443,10 +465,11 @@ to all inputs, even malicously crafted ones.
 ```
       --------Part 1--------   --------Part 2--------
 Day       Time   Rank  Score       Time   Rank  Score
+ 25   01:26:44   1931      0   01:26:48   1649      0
  24   07:16:47   6992      0   07:25:53   2953      0
  23   16:04:59  11141      0   16:56:37   7854      0
  22       >24h  12398      0       >24h  11435      0
- 21   00:19:49   2026      0          -      -      -
+ 21   00:19:49   2026      0       >24h  11197      0
  20   00:32:06    315      0   01:34:58   1086      0
  19   07:02:22  12430      0   15:58:10  12037      0
  18   00:25:29   1219      0   00:57:17   1067      0
