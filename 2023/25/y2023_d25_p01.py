@@ -1,5 +1,4 @@
 import fileinput as fi
-import collections as cs
 import random
 from dataclasses import dataclass
 
@@ -67,8 +66,6 @@ def krushal(V: set[str], E: list[tuple[str,str]], doUntil=2):
             rest -= 1
             if rest < doUntil:
                 ans = D.Size(a) * D.Size(b)
-
-                # D.Union(a, b)
                 break
 
             D.Union(a, b)
@@ -82,25 +79,7 @@ def krushal(V: set[str], E: list[tuple[str,str]], doUntil=2):
         if a != b:
             numCuts += 1
     
-    # print(numCuts)
     return (numCuts, ans)
-
-# def fastmincut(V
-
-def print_dot_tree(E, F):
-    print("graph G {")
-          # }
-    for u, v in E:
-        # if (u, v) == F[-1]:
-        #     print ("\t{} -- {} [color=\"orange\", penwidth=2.0]".format(u, v))
-        if (u, v) in F:
-            print ("\t{} -- {} [color=\"red\", penwidth=2.0]".format(u, v))
-        else:
-            print("\t{} -- {}".format(u, v))
-
-    print("}")
-
-
 
 # Parse input
 V = set()
@@ -115,12 +94,9 @@ for line in fi.input():
 
 
 # To pin the value for now
-random.seed(1)
-
-EE = list(E)
 while True:
-    random.shuffle(EE)
-    numCuts, ans = krushal(V, EE)
+    random.shuffle(E)
+    numCuts, ans = krushal(V, E)
     if numCuts <= 3:
         print(ans)
         break
