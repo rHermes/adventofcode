@@ -1,7 +1,6 @@
 import fileinput as fi
 import random
 import collections as cs
-import copy
 
 # Parse input
 G = cs.defaultdict(lambda: cs.defaultdict(set))
@@ -14,11 +13,16 @@ for line in fi.input():
 
 
 def contract(G, until):
-    graph = copy.deepcopy(G)
+    # deepcopy is very slow for this task, so we implement the copying
+    # by hand.
+    graph = cs.defaultdict(lambda: cs.defaultdict(set))
+    for node, rest in G.items():
+        for dst, vals in rest.items():
+            graph[node][dst] = set(vals)
+
     while until < len(graph):
         start, rest = random.choice(list(graph.items()))
         end, _ = random.choice(list(rest.items()))
-        # print("First we are merging {} and {}".format(start, end))
 
         for node, connections in rest.items():
             if node == end:
@@ -41,13 +45,13 @@ def contract(G, until):
 
 def fastmincut(G):
     if len(G) <= 6:
-        # print("wow")
         return contract(G, 2)
     else:
+        ## This treshold was found via experimentation to be
+        ## orders of magnitude better than the limit given on the wikipedia page.
         # t = math.ceil(1 + len(G)/math.sqrt(2))
         # t = math.ceil(len(G)/2.1)
         t = len(G) // 2.1 
-        # print(t)
         G1 = contract(G, t)
         G2 = contract(G, t)
 
@@ -64,12 +68,22 @@ def fastmincut(G):
         else:
             return fm2
 
+def subgraph_size(G, start):
+    seen = set()
+    Q = cs.deque([start])
+    while Q:
+        node = Q.pop()
+        if node in seen:
+            continue
+        else:
+            seen.add(node)
 
-    
+        for dst in G[node].keys():
+            if dst not in seen:
+                Q.append(dst)
 
+    return len(seen)
 
-# To pin the value for now
-random.seed(1)
 
 mincut = 1000000000000000000000000000000000
 bestcut = set()
@@ -80,8 +94,14 @@ while True:
     if len(cut) < mincut:
         mincut = len(cut)
         bestcut = cut
-        print(bestcut)
         if mincut == 3:
             break
 
-# print(bestcut)
+# We modify the graph to split it
+for a, b in bestcut:
+    del G[a][b]
+    del G[b][a]
+
+# We know these two must be in two different subgraphs.
+a, b = bestcut.pop()
+print(subgraph_size(G, a) * subgraph_size(G, b))

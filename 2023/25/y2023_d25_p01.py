@@ -1,54 +1,48 @@
 import fileinput as fi
 import random
-from dataclasses import dataclass
-
-@dataclass
-class DSUSet:
-    parent: str
-    size: int = 1
-
 
 class DSU(object):
     def __init__(self):
-        self.sets = {}
+        self.sizes = {}
+        self.parents = {}
 
     def MakeSet(self, x):
-        if x in self.sets:
+        if x in self.parents:
             return
 
-        self.sets[x]  = DSUSet(x)
+        self.parents[x] = x
+        self.sizes[x] = 1
 
     def Find(self, x):
         """Finds the root parent for an element"""
-        s = self.sets[x]
+        s = self.parents[x]
 
-        if s.parent != x:
-            s.parent = self.Find(s.parent)
-            return s.parent
+        if x != s:
+            self.parents[x] = self.Find(s)
+            return self.parents[x]
         else:
             return x
     
     def Union(self, x, y):
         """Add the two items into the same group"""
-        x = self.Find(x)
-        y = self.Find(y)
+        x = self.parents[x]
+        y = self.parents[y]
 
         if x == y:
             return
 
-        a = self.sets[x]
-        b = self.sets[y]
+        xs = self.sizes[x]
+        ys = self.sizes[y]
 
-        if a.size < b.size:
-            a, b = b, a
+        if xs < ys:
             x, y = y, x
-
-        b.parent = x
-        a.size += b.size
+        
+        self.parents[y] = x
+        self.sizes[x] += self.sizes[y]
 
     def Size(self, x):
         a = self.Find(x)
-        return self.sets[a].size
+        return self.sizes[a]
         
 
 def krushal(V: set[str], E: list[tuple[str,str]], doUntil=2):
@@ -92,11 +86,11 @@ for line in fi.input():
         mmin, mmax = min(src, dst), max(src, dst)
         E.append((mmin,mmax))
 
-
-# To pin the value for now
 while True:
-    random.shuffle(E)
     numCuts, ans = krushal(V, E)
     if numCuts <= 3:
         print(ans)
         break
+
+    random.shuffle(E)
+
