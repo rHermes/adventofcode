@@ -29,6 +29,13 @@ solution, that it's possible to do this in two edge removals and more.
 I'll look forward to reading the reddit comments on this, as I think I can learn some new
 graph algorithms here!
 
+So I looked on reddit here and found multiple cool solutions. I've done quite the deep
+dive on this one and I've learned about multiple min-cut algorithms from this. My
+favorite solution for the actual problem though is one that takes advantage of the
+fact that we know there is only one min-cut and that we how what the answer is already.
+
+I've written a long explanation about my thinking in the corresponding file.
+
 
 #### Day 24
 
