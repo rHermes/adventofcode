@@ -27,7 +27,9 @@ for seed in seeds:
         i = bisect.bisect_left(phase, cur, key=lambda x: x[0])
         if i != len(phase):
             source_end, source_start, target_start, length = phase[i]
-            if source_start <= cur <= source_end:
+            # We already know we are less than the source_end, from the
+            # "bisect_left" function.
+            if source_start <= cur:
                 cur = target_start + (cur - source_start)
 
     ans = min(ans, cur)
