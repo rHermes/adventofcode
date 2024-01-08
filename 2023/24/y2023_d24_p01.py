@@ -1,22 +1,22 @@
 import fileinput as fi
 import itertools as it
+
+# For a free 2-3x speedup switch this out with cfractions
 from fractions import Fraction
 
 def convert(pos, vel):
     """This convert them over to standard (m, b) form"""
     px, py, _ = pos
     dx, dy, _ = vel
+    
+    # We just pick two easy points, s = 0 and s = 1
+    x0, y0 = px, py
+    x1, y1 = px + dx, py + dy
 
-    x0s = Fraction(-px, dx)
-    y0 = dy*x0s + py
-
-    x1s = Fraction((1-px), dx)
-    y1 = dy*x1s + py
-
-    m = (y1-y0)
-    b = y0
-
-    return (m, b)
+    return (
+        Fraction(y1 - y0, x1 - x0),
+        Fraction(x1*y0 - x0*y1, x1 - x0)
+    )
 
 
 def collides(a, b, mmin=200000000000000, mmax=400000000000000):
