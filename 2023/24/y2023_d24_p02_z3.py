@@ -27,9 +27,19 @@ for stone in stones:
 
 if so.check() == z3.sat:
     m = so.model()
+    # print(m)
+    print(m[sx])
+    print(m[sy])
+    print(m[sz])
+
     dx = m[sx].as_long()
     dy = m[sy].as_long()
     dz = m[sz].as_long()
+
+    print(m[svx])
+    print(m[svy])
+    print(m[svz])
+    print("")
 
     dvx = m[svx].as_long()
     dvy = m[svy].as_long()
