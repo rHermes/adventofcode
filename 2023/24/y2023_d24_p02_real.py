@@ -53,12 +53,8 @@ joinedM = np.block([
     [MP1, -MV1]
 ])
 
-print(joinedM.dtype)
 
-# print(joinedM)
-print("")
 wk = np.linalg.solve(joinedM, joinedC)
-print(wk)
 vel, pos = np.split(wk, 2)
 ans = 0
 for k in pos:
