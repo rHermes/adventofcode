@@ -43,6 +43,24 @@ This was a really cool use of z3, but I don't really know how to solve part 1 or
 without z3. I will be looking at it some myself, before looking at reddit, to see if I
 can figure something out myself.
 
+I couldn't figure this out myself, but the reddit thread really showed some awesome
+solutions! It was possible to form a set of linear equations and I was able to derive
+it myself, once they showed the starting conditions. I ended up coding Guassian 
+elimination myself to make sure the answer didn't have any rounding errors.
+
+I'll write more about this in the comments of the task, but it's a really cool one!
+
+#### Day 21
+
+So this turned out to be the hardest one this year, or at least the one I spent the most
+time on. I didn't know how to do part two for the longest time and so I cheated and found
+a solution on the internet and just found the answer so I could complete the year on day 25.
+
+I did however, not look at the solution I downloaded and decided I wanted to solve this
+problem myself. I ended up solving it with a rather custom algorithm, which I was not able
+to find on reddit. It is a strong solution I think, but it requires one thing of the input
+and that is that there is no stones in the same row and column as the starting point.
+
 #### Day 20
 
 I don't actually think this task was all that good, but I ended up reverse engineering the

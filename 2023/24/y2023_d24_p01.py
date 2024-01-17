@@ -1,27 +1,34 @@
+# The idea here is to convert each hailstone into a 2d line and then
+# do standard intersection on them. By removing the time aspect of the
+# hailstones, we are able to do the intersections faster. We use fractions
+# to avoid floating point issues.
 import fileinput as fi
 import itertools as it
-from fractions import Fraction
+
+# For a free 2-3x speedup switch this out with cfractions
+try:
+    from cfractions import Fraction
+except ImportError as e:
+    from fractions import Fraction
 
 def convert(pos, vel):
     """This convert them over to standard (m, b) form"""
     px, py, _ = pos
     dx, dy, _ = vel
 
-    x0s = Fraction(-px, dx)
-    y0 = dy*x0s + py
+    # We just pick two easy points, s = 0 and s = 1
+    x0, y0 = px, py
+    x1, y1 = px + dx, py + dy
 
-    x1s = Fraction((1-px), dx)
-    y1 = dy*x1s + py
-
-    m = (y1-y0)
-    b = y0
-
-    return (m, b)
+    return (
+        Fraction(y1 - y0, x1 - x0),
+        Fraction(x1*y0 - x0*y1, x1 - x0)
+    )
 
 
 def collides(a, b, mmin=200000000000000, mmax=400000000000000):
-    (apx, apy, _), (adx, ady, _), (ma, ba) = a
-    (bpx, bpy, _), (bdx, bdy, _), (mb, bb) = b
+    (apx, _, _), (adx, _, _), (ma, ba) = a
+    (bpx, _, _), (bdx, _, _), (mb, bb) = b
 
     nom = bb - ba
     dem = ma - mb
