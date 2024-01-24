@@ -77,7 +77,12 @@ blockSW = (Y-1, 0)
 blockSE = (Y-1, X-1)
 
 
+# Verify assertions about starting conditions
 assert(start == blockC)
+for y in range(0,Y):
+    assert((y, blockC[1]) in open)
+for x in range(0,X):
+    assert((blockC[0], x) in open)
 
 costC = calcCost(open, blockC)
 
@@ -91,34 +96,11 @@ costNE = calcCost(open, blockNE)
 costSW = calcCost(open, blockSW)
 costSE = calcCost(open, blockSE)
 
-# maxCostC = max(costC.values())
-
-# maxCostW = max(costW.values())
-# maxCostE = max(costE.values())
-# maxCostN = max(costN.values())
-# maxCostS = max(costS.values())
-
-# maxCostNW = max(costNW.values())
-# maxCostNE = max(costNE.values())
-# maxCostSW = max(costSW.values())
-# maxCostSE = max(costSE.values())
-
-# print(maxCostC)
-
-# print(maxCostW)
-# print(maxCostE)
-# print(maxCostN)
-# print(maxCostS)
-
-# print(maxCostNW)
-# print(maxCostNE)
-# print(maxCostSW)
-# print(maxCostSE)
-
 
 STEPS = 26501365
 # STEPS = 1000000000
 
+# We are inserting weirder here, to specify if we want odd or even steps.
 WEIRDER = STEPS % 2 == 0
 
 ans = 0
@@ -128,7 +110,6 @@ ans += numSteppedOn(costC, STEPS, False != WEIRDER)
 
 
 # Ok let's just figure out how far we get, in the north direction first.
-
 def calcStraightPlots(firstCost, enterCost, DX):
     maxCost = max(enterCost.values())
 
@@ -220,10 +201,10 @@ ans += plotsS
 ans += plotsE
 ans += plotsW
 
-print("In the north there are {} plots stepped on".format(plotsN))
-print("In the south there are {} plots stepped on".format(plotsS))
-print("In the west there are {} plots stepped on".format(plotsW))
-print("In the east there are {} plots stepped on".format(plotsE))
+# print("In the north there are {} plots stepped on".format(plotsN))
+# print("In the south there are {} plots stepped on".format(plotsS))
+# print("In the west there are {} plots stepped on".format(plotsW))
+# print("In the east there are {} plots stepped on".format(plotsE))
 
 
 plotsNW = calcSlopePlots(costC[blockNW], costSE, Y)
@@ -231,10 +212,10 @@ plotsNE = calcSlopePlots(costC[blockNE], costSW, Y)
 plotsSW = calcSlopePlots(costC[blockSW], costNE, Y)
 plotsSE = calcSlopePlots(costC[blockSE], costNW, Y)
 
-print("In the NW there are {} plots stepped on".format(plotsNW))
-print("In the NE there are {} plots stepped on".format(plotsNE))
-print("In the SW there are {} plots stepped on".format(plotsSW))
-print("In the SE there are {} plots stepped on".format(plotsSE))
+# print("In the NW there are {} plots stepped on".format(plotsNW))
+# print("In the NE there are {} plots stepped on".format(plotsNE))
+# print("In the SW there are {} plots stepped on".format(plotsSW))
+# print("In the SE there are {} plots stepped on".format(plotsSE))
 
 ans += plotsNW
 ans += plotsNE
@@ -242,10 +223,3 @@ ans += plotsSW
 ans += plotsSE
 
 print(ans)
-# So we have now
-# A bit cheating but here we are
-# ACTUAL_ANSWER = 618261433219147
-
-# print("We have calculated {} which means there remains {} plots".format(ans, ACTUAL_ANSWER - ans))
-# # print("This is {:.2f}% of the total".format(100 * ans / ACTUAL_ANSWER))
-# print("This is {}% of the total".format(100 * ans / ACTUAL_ANSWER))
