@@ -66,7 +66,6 @@ for phase in phases:
             if end < re:
                 ranges_left.append((end, re))
             
-            print("we restart")
             break
         else:
             next_ranges.append((rs, re))
